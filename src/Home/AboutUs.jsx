@@ -54,12 +54,12 @@ const AboutUs = () => {
     },
   ];
   return (
-    <section className="grid grid-cols-1 md:grid-cols-3  items-center justify-between bg-gradient-to-r from-gray-900 to-yellow-400 text-white h-[100vh] md:h-[85vh]  p-8 md:py-20 md:pl-56">
+    <section className="grid grid-cols-1 md:grid-cols-3  items-center justify-between bg-linear-to-r from-gray-900 to-yellow-400 text-white h-screen md:h-[85vh]  p-8 md:py-20 md:pl-56">
       <div className="flex flex-col gap-6 md:w-1/2">
         {countList.map((item, index) => {
           return (
             <div className="flex flex-row gap-10 items-center " key={index}>
-              <div className="flex-shrink-0">{item.iconName}</div>
+              <div className="shrink-0">{item.iconName}</div>
 
               <div className="space-y-1">
                 <p className="text-4xl font-semibold space-x-2">

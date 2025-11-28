@@ -55,7 +55,7 @@ const Signup = () => {
   };
 
   return (
-    <div className="md:min-h-screen md:mt-0 mt-[10px] flex items-center justify-center bg-gray-50 md:p-6">
+    <div className="md:min-h-screen md:mt-0 mt-2.5 flex items-center justify-center bg-gray-50 md:p-6">
       <div className="max-w-md w-full bg-white rounded-2xl shadow-xl p-8">
         <h2 className="text-2xl font-semibold mb-6 text-center">
           Register Now

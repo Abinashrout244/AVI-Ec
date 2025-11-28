@@ -27,7 +27,7 @@ const aboutList = [
   },
 ];
 
-const about = () => {
+const About = () => {
   return (
     <div className="bg-yellow-50">
       <HeroBanner title={"About Our Brand"} page={"About"} />
@@ -79,4 +79,4 @@ const about = () => {
   );
 };
 
-export default about;
+export default About;

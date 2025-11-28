@@ -12,7 +12,7 @@ import { Provider } from "react-redux";
 import Store from "./utilis/Store.jsx";
 import CartPage from "./Shop/CartPage.jsx";
 import BlogPage from "./Blog/BlogPage.jsx";
-import About from "./About/about.jsx";
+import About from "./components/About.jsx";
 import Contact from "./Contact/Contact.jsx";
 import AuthProvider from "./context/AuthProvider.jsx";
 import PrivateRoute from "./privateRoute/PrivateRoute.jsx";
