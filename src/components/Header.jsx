@@ -38,7 +38,7 @@ const Header = () => {
         {/* Logo area */}
         <div className="logo ">
           <Link to={"/"}>
-            <img src={Logo} />
+            <img src={Logo} className="h-full w-[150px] md:w-full" />
           </Link>
         </div>
         {/* menuarea */}
@@ -121,94 +121,89 @@ const Header = () => {
             </div>
           )}
         </div>
-        <button
-          className="md:hidden block text-3xl font-semibold"
-          onClick={() => setToggleMenu(!toggleMenu)}
-        >
-          {toggleMenu ? "❌" : "☰"}
-        </button>
+
         {/* mobile menu */}
-        {toggleMenu && (
-          <div className="absolute bg-blue-300 top-21 left-0 w-full flex flex-col items-center gap-4 py-4 transition-all ease-in duration-400">
-            <div className="flex flex-col gap-20 items-center justify-around ">
-              <ul className="flex flex-col justify-around gap-10">
-                <li onClick={() => mneuopen()}>
-                  <Link to="/">Home</Link>
-                </li>
-                <li onClick={() => mneuopen()}>
-                  <Link to="/shop">Shop</Link>
-                </li>
-                <li onClick={() => mneuopen()}>
-                  <Link to="/blog">Blog</Link>
-                </li>
-                <li onClick={() => mneuopen()}>
-                  <Link to="/about">About</Link>
-                </li>
-                <li onClick={() => mneuopen()}>
-                  <Link to="/contact">Contact</Link>
-                </li>
-              </ul>
-              {/* Not logged in */}
-              {!user && (
-                <div className="flex flex-row gap-3">
-                  <Link to="/signup" onClick={mneuopen}>
-                    <button className="bg-blue-500 py-2 text-white font-semibold px-3.5 rounded-lg">
-                      Create Account
-                    </button>
-                  </Link>
-                  <Link to="/login" onClick={mneuopen}>
-                    <button className="bg-orange-500 py-2 text-white font-semibold px-3.5 rounded-lg">
-                      Login
-                    </button>
-                  </Link>
-                </div>
-              )}
-
-              {/* Logged in */}
-              {user && (
-                <div className="flex flex-col items-center gap-3">
-                  <button
-                    onClick={() => setProfileDrop(!profileDrop)}
-                    className="rounded-full transition-transform duration-200 hover:scale-105"
-                  >
-                    <div className="flex items-center">
-                      <img
-                        src={profile}
-                        className="size-12 rounded-full object-cover ring-2 ring-white shadow-md hover:ring-blue-400 transition-all duration-200"
-                        alt="profile"
-                      />
-                    </div>
-                  </button>
-
-                  {profileDrop && (
-                    <div className="bg-white w-48 text-black rounded-lg shadow-md py-2">
-                      <Link
-                        to="/cart-page"
-                        className="block px-4 py-2 hover:bg-gray-100"
-                        onClick={mneuopen}
-                      >
-                        Cart Page
-                      </Link>
-
-                      <Link
-                        to="/profile"
-                        className="block px-4 py-2 hover:bg-gray-100"
-                        onClick={mneuopen}
-                      >
-                        Profile
-                      </Link>
-
-                      <button
-                        className="w-full text-left px-4 py-2 hover:bg-gray-100"
-                        onClick={logOut}
-                      >
-                        Logout
-                      </button>
-                    </div>
-                  )}
-                </div>
-              )}
+        {/* MOBILE RIGHT SECTION (Visible only on mobile) */}
+        <div className="flex items-center gap-4 md:hidden">
+          {/* MOBILE AUTH BUTTONS */}
+          {!user ? (
+            <div className="flex items-center gap-2">
+              <Link to="/login">
+                <button className="bg-orange-500 text-white py-1 px-3 rounded-md text-sm">
+                  Login
+                </button>
+              </Link>
+              <Link to="/signup">
+                <button className="bg-blue-500 text-white py-1 px-3 rounded-md text-sm">
+                  Sign Up
+                </button>
+              </Link>
             </div>
+          ) : (
+            <button onClick={() => setProfileDrop(!profileDrop)}>
+              <img
+                src={profile}
+                className="size-10 rounded-full object-cover ring-2 ring-white"
+                alt="profile"
+              />
+            </button>
+          )}
+
+          {/* MENU ICON */}
+          <button
+            className="text-3xl font-semibold items-center"
+            onClick={() => setToggleMenu(!toggleMenu)}
+          >
+            {toggleMenu ? "❌" : "☰"}
+          </button>
+        </div>
+
+        {/* MOBILE DROPDOWN — ONLY NAV LINKS */}
+        {toggleMenu && (
+          <div className="absolute bg-blue-300 top-full left-0 w-full flex flex-col items-center gap-4 py-6 md:hidden">
+            <ul className="flex flex-col gap-6 text-lg font-medium text-black">
+              <li onClick={mneuopen}>
+                <Link to="/">Home</Link>
+              </li>
+              <li onClick={mneuopen}>
+                <Link to="/shop">Shop</Link>
+              </li>
+              <li onClick={mneuopen}>
+                <Link to="/blog">Blog</Link>
+              </li>
+              <li onClick={mneuopen}>
+                <Link to="/about">About</Link>
+              </li>
+              <li onClick={mneuopen}>
+                <Link to="/contact">Contact</Link>
+              </li>
+            </ul>
+          </div>
+        )}
+
+        {/* MOBILE PROFILE DROPDOWN */}
+        {profileDrop && user && (
+          <div className="absolute -right-5 top-20 bg-white shadow-lg text-black rounded-lg w-40 py-2 md:hidden">
+            <Link
+              to="/cart-page"
+              className="block px-4 py-2 hover:bg-gray-100"
+              onClick={() => setProfileDrop(false)}
+            >
+              Cart Page
+            </Link>
+            <Link
+              to="/profile"
+              className="block px-4 py-2 hover:bg-gray-100"
+              onClick={() => setProfileDrop(false)}
+            >
+              Profile
+            </Link>
+            <button
+              className="w-full text-left px-4 py-2 hover:bg-gray-100"
+              onClick={logOut}
+            >
+              Logout
+            </button>
           </div>
         )}
       </div>
