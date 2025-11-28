@@ -4,7 +4,11 @@ const CategoryCard = ({ imgUrl, imgAlt, title }) => {
   return (
     <div className=" brightness-75 hover:-translate-y-2 transition-all ease-in hover:opacity-75 rounded-sm   ">
       <div>
-        <img src={imgUrl} alt={imgAlt} />
+        <img
+          src={imgUrl}
+          alt={imgAlt}
+          className="w-full h-[290px] object-cover"
+        />
       </div>
       <div className="flex items-center fex-row gap-3 relative -top-12 left-4">
         <svg

@@ -1,7 +1,8 @@
 const blogList = [
   {
     id: 1,
-    imgUrl: "/src/assets/images/blog/01.jpg",
+    imgUrl:
+      "https://tse1.mm.bing.net/th/id/OIP.zEljqvQONNvl6GABD4d0zAHaFF?pid=Api&P=0&h=180",
     imgAlt: "Blog Thumb",
     title: "Business Ueporting Rouncil Them Could Plan.",
     desc: "Pluoresnts customize prancing apcentered customer service anding ands asing straelg Interacvely cordinate performe",
@@ -18,7 +19,8 @@ const blogList = [
   },
   {
     id: 2,
-    imgUrl: "/src/assets/images/blog/02.jpg",
+    imgUrl:
+      "https://tse4.mm.bing.net/th/id/OIP.GRkRTfe-tfa3Wno3XYKz9gHaE8?pid=Api&P=0&h=180",
     imgAlt: "Blog Thumb",
     title: "Financial Reporting Qouncil What Could More.",
     desc: "Pluoresnts customize prancing apcentered customer service anding ands asing straelg Interacvely cordinate performe",
@@ -35,7 +37,8 @@ const blogList = [
   },
   {
     id: 3,
-    imgUrl: "/src/assets/images/blog/03.jpg",
+    imgUrl:
+      "https://tse3.mm.bing.net/th/id/OIP.qXIsMfntQ1MvlTvR4hYPgQHaE8?pid=Api&P=0&h=180",
     imgAlt: "Blog Thumb",
     title: "Consulting Reporting Qounc Arei Could More.",
     desc: "Pluoresnts customize prancing apcentered customer service anding ands asing straelg Interacvely cordinate performe",
@@ -52,7 +55,8 @@ const blogList = [
   },
   {
     id: 4,
-    imgUrl: "/src/assets/images/blog/04.jpg",
+    imgUrl:
+      "https://tse1.mm.bing.net/th/id/OIP.X_rMGjV-QFVMxh3aeOD1HAHaE8?pid=Api&P=0&h=180",
     imgAlt: "Blog Thumb",
     title: "Strategic Social Media and of visual design.",
     desc: "Pluoresnts customize prancing apcentered customer service anding ands asing straelg Interacvely cordinate performe",
@@ -69,7 +73,8 @@ const blogList = [
   },
   {
     id: 5,
-    imgUrl: "/src/assets/images/blog/05.jpg",
+    imgUrl:
+      "https://tse3.mm.bing.net/th/id/OIP.NwHlFkr2nHn64-Zm9ASXKQHaE7?pid=Api&P=0&h=180",
     imgAlt: "Blog Thumb",
     title: "Find the Right Path for your Group Course online.",
     desc: "Pluoresnts customize prancing apcentered customer service anding ands asing straelg Interacvely cordinate performe",
@@ -86,7 +91,8 @@ const blogList = [
   },
   {
     id: 6,
-    imgUrl: "/src/assets/images/blog/06.jpg",
+    imgUrl:
+      "https://tse1.mm.bing.net/th/id/OIP.SYmiHPfkCpiyQr7XU7mPbQHaEF?pid=Api&P=0&h=180",
     imgAlt: "Blog Thumb",
     title: "Learn by doing with Real World Projects other countries.",
     desc: "Pluoresnts customize prancing apcentered customer service anding ands asing straelg Interacvely cordinate performe",
@@ -103,7 +109,8 @@ const blogList = [
   },
   {
     id: 7,
-    imgUrl: "/src/assets/images/blog/07.jpg",
+    imgUrl:
+      "https://tse2.mm.bing.net/th/id/OIP.l5LWlhHOf90kjmdJqBEOGAHaE8?pid=Api&P=0&h=180",
     imgAlt: "Blog Thumb",
     title: "The Importance Of Intrinsic for Students.",
     desc: "Pluoresnts customize prancing apcentered customer service anding ands asing straelg Interacvely cordinate performe",
@@ -120,7 +127,8 @@ const blogList = [
   },
   {
     id: 8,
-    imgUrl: "/src/assets/images/blog/08.jpg",
+    imgUrl:
+      "https://tse1.mm.bing.net/th/id/OIP.BDMhdXItRCO08Sf9sW_rGwHaE7?pid=Api&P=0&h=180",
     imgAlt: "Blog Thumb",
     title: "A Better Alternative To Grading Student Writing.",
     desc: "Pluoresnts customize prancing apcentered customer service anding ands asing straelg Interacvely cordinate performe",
@@ -137,7 +145,8 @@ const blogList = [
   },
   {
     id: 9,
-    imgUrl: "/src/assets/images/blog/09.jpg",
+    imgUrl:
+      "https://tse1.mm.bing.net/th/id/OIP.fBhXSFUkLFMM9v8VVUTRtgHaE8?pid=Api&P=0&h=180",
     imgAlt: "Blog Thumb",
     title: "The Challenge Global Learning In Public Education.",
     desc: "Pluoresnts customize prancing apcentered customer service anding ands asing straelg Interacvely cordinate performe",

@@ -4,37 +4,43 @@ import CategoryCard from "./CategoryCard";
 import icon from "../assets/icons/cube.svg";
 const categoryList = [
   {
-    imgUrl: "src/assets/images/category/01.jpg",
+    imgUrl:
+      "https://tse3.mm.bing.net/th/id/OIP.wJwYj1g3r1BzqO7tPgUs3QHaEo?pid=Api&P=0&h=180",
     imgAlt: "category rajibraj91 rajibraj",
     iconName: icon,
     title: "DSLR Camera",
   },
   {
-    imgUrl: "src/assets/images/category/02.jpg",
+    imgUrl:
+      "https://static.vecteezy.com/system/resources/previews/022/255/712/non_2x/beautiful-shoes-generative-ai-free-photo.jpg",
     imgAlt: "category rajibraj91 rajibraj",
     iconName: icon,
     title: "Shoes",
   },
   {
-    imgUrl: "src/assets/images/category/03.jpg",
+    imgUrl:
+      "https://tse4.mm.bing.net/th/id/OIP.67DZtOnSLEPKwSCDpAakmAHaE8?pid=Api&P=0&h=180",
     imgAlt: "category rajibraj91 rajibraj",
     iconName: icon,
     title: "Photography",
   },
   {
-    imgUrl: "src/assets/images/category/04.jpg",
+    imgUrl:
+      "https://thumbs.dreamstime.com/b/men-s-shoes-belt-tie-table-174136858.jpg",
     imgAlt: "category rajibraj91 rajibraj",
     iconName: icon,
     title: "Formal Dress",
   },
   {
-    imgUrl: "src/assets/images/category/05.jpg",
+    imgUrl:
+      "https://png.pngtree.com/background/20230524/original/pngtree-group-of-different-colored-handbags-picture-image_2707306.jpg",
     imgAlt: "category rajibraj91 rajibraj",
     iconName: icon,
     title: "Colorful Bags",
   },
   {
-    imgUrl: "src/assets/images/category/06.jpg",
+    imgUrl:
+      "https://tse2.mm.bing.net/th/id/OIP.Uk9UZPAVX-gZF3efDVhNsgHaE8?pid=Api&P=0&h=180",
     imgAlt: "category rajibraj91 rajibraj",
     iconName: icon,
     title: "Home Decor",
@@ -52,7 +58,7 @@ const HomeCategory = () => {
           Buy Everything with Us
         </h2>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-7">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-1 md:gap-6">
         {categoryList.map((item, index) => {
           return (
             <Link to="/shop" key={index}>

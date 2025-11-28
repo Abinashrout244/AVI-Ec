@@ -1,5 +1,6 @@
 import React from "react";
 import HeroBanner from "../components/HeroBanner";
+import { useNavigate } from "react-router-dom";
 const subTitle = "Get in touch with us";
 const title = "We're Always Eager To Hear From You!";
 const conSubTitle = "Get in touch with Contact us";
@@ -9,25 +10,29 @@ const btnText = "Send our Message";
 
 const contactList = [
   {
-    imgUrl: "/src/assets/images/icon/01.png",
+    imgUrl:
+      "https://tse3.mm.bing.net/th/id/OIP.vZ2Jcz-1jdgxnWlxqVlrKwHaHa?pid=Api&P=0&h=180",
     imgAlt: "contact icon",
     title: "Office Address",
     desc: "1201 park street, Fifth Avenue",
   },
   {
-    imgUrl: "/src/assets/images/icon/02.png",
+    imgUrl:
+      "https://tse4.mm.bing.net/th/id/OIP.mVg0rVNFv4j0nP0qa0QvugHaHa?pid=Api&P=0&h=180",
     imgAlt: "contact icon",
     title: "Phone number",
     desc: "+22698 745 632,02 982 745",
   },
   {
-    imgUrl: "/src/assets/images/icon/03.png",
+    imgUrl:
+      "https://tse4.mm.bing.net/th/id/OIP.rBajZk9yWx8HaQn6WZuvogAAAA?pid=Api&P=0&h=180",
     imgAlt: "contact icon",
     title: "Send email",
     desc: "admin@shopcart.com",
   },
   {
-    imgUrl: "/src/assets/images/icon/04.png",
+    imgUrl:
+      "https://tse4.mm.bing.net/th/id/OIP.rrT01-bWAz1P7aS7MQnXYQHaHa?pid=Api&P=0&h=180",
     imgAlt: "contact icon",
     title: "Our website",
     desc: "www.shopcart.com",
@@ -35,6 +40,32 @@ const contactList = [
 ];
 
 const Contact = () => {
+  const navigate = useNavigate();
+  const handleSignup = (e) => {
+    e.preventDefault();
+    const form = e.target;
+    const name = form.name.value;
+    const email = form.email.value;
+    const number = form.number.value;
+    const sub = form.sub.value;
+
+    if (!name || !email || !number || !sub) {
+      alert("All fields are mandatory. Please fill all the fields.");
+      return;
+    } else {
+      alert(`Submit Succesfulyy....\n
+          UserName:${name}\n
+          Email:${email}\n
+          Number:${number}\n
+          Subject:${sub}\n
+        `);
+    }
+
+    setTimeout(() => {
+      navigate("/");
+    }, 500);
+  };
+
   return (
     <div className="">
       <HeroBanner page={"Contact Us"} title={"Get In Touch With Us"} />
@@ -61,7 +92,11 @@ const Contact = () => {
                   key={index}
                   className="bg-white py-3 px-5 flex flex-row gap-2 items-center"
                 >
-                  <img src={item.imgUrl} alt={item.imgAlt} />
+                  <img
+                    src={item.imgUrl}
+                    alt={item.imgAlt}
+                    className="size-16"
+                  />
                   <div className="space-y-0.5">
                     <h2 className="font-semibold text-xl">{item.title}</h2>
                     <p>{item.desc}</p>
@@ -77,41 +112,63 @@ const Contact = () => {
         <p className=" text-2xl md:text-4xl text-center font-semibold">
           Fill The Form Below So We Can Get To Know You And Your Needs Better.
         </p>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
-          {/* Row 1 */}
-          <input
-            type="text"
-            placeholder="Your Name*"
-            className="shadow shadow-slate-400 p-3 rounded-sm w-full"
-          />
+        <form onSubmit={handleSignup}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-10">
+            {/* Row 1 */}
+            <input
+              type="text"
+              name="name"
+              id="name"
+              required
+              placeholder="Your Name*"
+              className="shadow shadow-slate-400 p-3 rounded-sm w-full"
+            />
 
-          <input
-            type="text"
-            placeholder="Your Email*"
-            className="shadow shadow-slate-400 p-3 rounded-sm w-full"
-          />
+            <input
+              type="email"
+              id="email"
+              name="email"
+              required
+              placeholder="Your Email*"
+              className="shadow shadow-slate-400 p-3 rounded-sm w-full"
+            />
 
-          {/* Row 2 */}
-          <input
-            type="text"
-            placeholder="Mobile Number*"
-            className="shadow shadow-slate-400 p-3 rounded-sm w-full"
-          />
+            {/* Row 2 */}
+            <input
+              type="text"
+              name="number"
+              id="number"
+              required
+              placeholder="Mobile Number*"
+              className="shadow shadow-slate-400 p-3 rounded-sm w-full"
+            />
 
-          <input
-            type="text"
-            placeholder="Your Subject*"
-            className="shadow shadow-slate-400 p-3 rounded-sm w-full"
-          />
-        </div>
+            <input
+              type="text"
+              id="sub"
+              name="sub"
+              required
+              placeholder="Your Subject*"
+              className="shadow shadow-slate-400 p-3 rounded-sm w-full"
+            />
+          </div>
 
-        {/* Textarea below */}
-        <div className="mt-4">
-          <textarea
-            placeholder="Your Message*"
-            className="shadow-sm shadow-slate-300 p-3 rounded-md w-full h-40"
-          ></textarea>
-        </div>
+          {/* Textarea below */}
+          <div className="mt-4">
+            <textarea
+              placeholder="Your Message*"
+              className="shadow-sm shadow-slate-300 p-3 rounded-md w-full h-40"
+            ></textarea>
+          </div>
+          <div className="flex justify-center items-center pt-4">
+            <button
+              type="submit"
+              className="bg-blue-600 text-white px-16 py-2 rounded-md"
+            >
+              Submit
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   );

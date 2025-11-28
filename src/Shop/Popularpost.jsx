@@ -4,28 +4,32 @@ import { Link } from "react-router-dom";
 const postList = [
   {
     id: 1,
-    imgUrl: "/src/assets/images/blog/10.jpg",
+    imgUrl:
+      "https://tse1.mm.bing.net/th/id/OIP.elhNKszD_-QhuhwbJtbUZgHaE8?pid=Api&P=0&h=180",
     imgAlt: "rajibraj91",
     title: "Poor People Campaign Our Resources",
     date: "Jun 05,2022",
   },
   {
     id: 2,
-    imgUrl: "/src/assets/images/blog/11.jpg",
+    imgUrl:
+      "https://tse2.mm.bing.net/th/id/OIP.rnHni72jK4d5bnZ2HS_A2QHaE7?pid=Api&P=0&h=180",
     imgAlt: "rajibraj91",
     title: "Poor Peoples Campaign Our Resources",
     date: "Jun 05,2022",
   },
   {
     id: 3,
-    imgUrl: "/src/assets/images/blog/12.jpg",
+    imgUrl:
+      "https://tse2.mm.bing.net/th/id/OIP.TlMoTQmv8bp92N_EqxhymwHaE8?pid=Api&P=0&h=180",
     imgAlt: "rajibraj91",
     title: "Poor Peoples Campaign Our Resources",
     date: "Jun 05,2022",
   },
   {
     id: 4,
-    imgUrl: "/src/assets/images/blog/09.jpg",
+    imgUrl:
+      "https://tse2.mm.bing.net/th/id/OIP.5IxaIVOZsNsNctnwLfePxAHaE8?pid=Api&P=0&h=180",
     imgAlt: "rajibraj91",
     title: "Poor Peoples Campaign Our Resources",
     date: "Jun 05,2022",

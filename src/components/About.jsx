@@ -8,19 +8,21 @@ const desc =
 
 const aboutList = [
   {
-    imgUrl: "/src/assets/images/about/icon/01.jpg",
+    imgUrl: "https://cdn-icons-png.freepik.com/512/6997/6997674.png",
     imgAlt: "about icon rajibraj91 rajibraj",
     title: "Skilled Instructors",
     desc: "Distinctively provide acces mutfuncto users whereas communicate leveraged services",
   },
   {
-    imgUrl: "/src/assets/images/about/icon/02.jpg",
+    imgUrl:
+      "https://tse4.mm.bing.net/th/id/OIP.QDFEuIKmXssCtMlXzPqbfgHaH0?pid=Api&P=0&h=180",
     imgAlt: "about icon rajibraj91 rajibraj",
     title: "Get Certificate",
     desc: "Distinctively provide acces mutfuncto users whereas communicate leveraged services",
   },
   {
-    imgUrl: "/src/assets/images/about/icon/03.jpg",
+    imgUrl:
+      "https://tse3.mm.bing.net/th/id/OIP.ahyJaS8whsyYidcD3vvpdQAAAA?pid=Api&P=0&h=180",
     imgAlt: "about icon rajibraj91 rajibraj",
     title: "Online Classes",
     desc: "Distinctively provide acces mutfuncto users whereas communicate leveraged services",
