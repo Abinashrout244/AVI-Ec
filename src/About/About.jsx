@@ -2,7 +2,6 @@ import React from "react";
 import HeroBanner from "../components/HeroBanner";
 import img1 from "../assets/images/about/01.jpg";
 import img2 from "../assets/images/about/02.jpg";
-import img from "../assets/images/about/icon/02.jpg";
 
 const desc =
   "Distinctively provide acces mutfuncto users whereas transparent proceses somes ncentivize eficient functionalities rather than extensible archtectur communicate leveraged services and cross-platform.";
