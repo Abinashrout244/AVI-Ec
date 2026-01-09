@@ -58,4 +58,4 @@ Firebase Auth
 
 Environment Variables (.env)
 
-Context API for global auth state
+
