@@ -1,12 +1,12 @@
 import ReactDOM from "react-dom/client";
-import React from "react";
+import React, { lazy, Suspense } from "react";
 
 import "./index.css";
 import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import Home from "./Home/Home.jsx";
 import Blog from "./Blog/Blog.jsx";
-import Shop from "./Shop/Shop.jsx";
+//import Shop from "./Shop/Shop.jsx";
 import Singleproduct from "./Shop/Singleproduct.jsx";
 import { Provider } from "react-redux";
 import Store from "./utilis/Store.jsx";
@@ -19,6 +19,9 @@ import PrivateRoute from "./privateRoute/PrivateRoute.jsx";
 import Login from "./components/Login.jsx";
 import Signup from "./components/Signup.jsx";
 
+const Shop = lazy(() => import("./Shop/Shop.jsx"));
+import Shimmer from "./components/Shimmer.jsx";
+
 const approuter = createBrowserRouter([
   {
     path: "/",
@@ -27,7 +30,14 @@ const approuter = createBrowserRouter([
       { path: "/", element: <Home /> },
       { path: "/blog", element: <Blog /> },
       { path: "/blog/:id", element: <BlogPage /> },
-      { path: "/shop", element: <Shop /> },
+      {
+        path: "/shop",
+        element: (
+          <Suspense fallback={<Shimmer />}>
+            <Shop />
+          </Suspense>
+        ),
+      },
       { path: "shop/:id", element: <Singleproduct /> },
       {
         path: "/cart-page",
@@ -56,5 +66,5 @@ ReactDOM.createRoot(document.getElementById("root")).render(
     <Provider store={Store}>
       <RouterProvider router={approuter}></RouterProvider>
     </Provider>
-  </AuthProvider>
+  </AuthProvider>,
 );
