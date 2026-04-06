@@ -1,92 +1,73 @@
 import React from "react";
+import { motion } from "framer-motion";
 
 const Pegination = ({ productperpage, totalproducts, currPage, peginate }) => {
   const totalPages = Math.ceil(totalproducts / productperpage);
 
-  const pagenums = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pagenums.push(i);
-  }
-
-  const goPrev = () => {
-    if (currPage > 1) peginate(currPage - 1);
-  };
-
-  const goNext = () => {
-    if (currPage < totalPages) peginate(currPage + 1);
+  const getPages = () => {
+    const pages = [];
+    if (totalPages <= 7) {
+      for (let i = 1; i <= totalPages; i++) pages.push(i);
+    } else {
+      pages.push(1);
+      if (currPage > 3) pages.push("...");
+      const start = Math.max(2, currPage - 1);
+      const end = Math.min(totalPages - 1, currPage + 1);
+      for (let i = start; i <= end; i++) pages.push(i);
+      if (currPage < totalPages - 2) pages.push("...");
+      pages.push(totalPages);
+    }
+    return pages;
   };
 
   return (
-    <div
-      className="
-  flex items-center justify-center 
-  gap-2 md:gap-3 
-  mt-6 flex-wrap
-  px-3
-"
-    >
-      {/* Prev Button */}
-      <button
-        onClick={goPrev}
+    <div className="flex items-center justify-center gap-2 py-8">
+      {/* Prev */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => currPage > 1 && peginate(currPage - 1)}
         disabled={currPage === 1}
-        className="
-      p-2 md:p-3
-      disabled:opacity-40 disabled:cursor-not-allowed
-    "
+        className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/50 text-[12px] uppercase tracking-widest disabled:opacity-30 disabled:cursor-not-allowed hover:border-amber-400/30 hover:text-white transition-all"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          className="md:w-4 md:h-4"
-          viewBox="0 0 16 16"
-        >
-          <path d="m3.86 8.753 5.482 4.796c.646.566 1.658.106 1.658-.753V3.204a1 1 0 0 0-1.659-.753l-5.48 4.796a1 1 0 0 0 0 1.506z" />
-        </svg>
-      </button>
+        ← Prev
+      </motion.button>
 
-      {/* Page Numbers */}
-      <ul className="flex gap-2 md:gap-4 flex-wrap justify-center">
-        {pagenums.map((num) => (
-          <li key={num}>
-            <button
-              onClick={() => peginate(num)}
-              className={`
-            px-3 py-1.5 md:px-4 md:py-2 
-            rounded-full shadow text-sm md:text-base
-            transition-all
-            ${
-              currPage === num
-                ? "bg-gradient-to-r from-amber-300 to-yellow-200 text-slate-900 font-bold scale-105"
-                : "bg-white/5 text-slate-200 border border-white/10 hover:bg-white/10"
-            }
-          `}
+      {/* Page numbers */}
+      <div className="flex items-center gap-1.5">
+        {getPages().map((page, i) =>
+          page === "..." ? (
+            <span key={`ellipsis-${i}`} className="px-2 text-white/20 text-sm">
+              ···
+            </span>
+          ) : (
+            <motion.button
+              key={page}
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => peginate(page)}
+              className={`size-10 rounded-full text-sm font-semibold transition-all duration-200 ${
+                currPage === page
+                  ? "bg-amber-400 text-slate-900 shadow-lg shadow-amber-400/25"
+                  : "bg-white/5 border border-white/10 text-white/50 hover:border-amber-400/30 hover:text-white"
+              }`}
             >
-              {num}
-            </button>
-          </li>
-        ))}
-      </ul>
+              {page}
+            </motion.button>
+          )
+        )}
+      </div>
 
-      {/* Next Button */}
-      <button
-        onClick={goNext}
+      {/* Next */}
+      <motion.button
+        whileHover={{ scale: 1.05 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => currPage < totalPages && peginate(currPage + 1)}
         disabled={currPage === totalPages}
-        className="
-      p-2 md:p-3
-      disabled:opacity-40 disabled:cursor-not-allowed
-    "
+        className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/50 text-[12px] uppercase tracking-widest disabled:opacity-30 disabled:cursor-not-allowed hover:border-amber-400/30 hover:text-white transition-all"
       >
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="14"
-          height="14"
-          className="md:w-4 md:h-4"
-          viewBox="0 0 16 16"
-        >
-          <path d="m12.14 8.753-5.482 4.796c-.646.566-1.658.106-1.658-.753V3.204a1 1 0 0 1 1.659-.753l5.48 4.796a1 1 0 0 1 0 1.506z" />
-        </svg>
-      </button>
+        Next →
+      </motion.button>
     </div>
   );
 };
