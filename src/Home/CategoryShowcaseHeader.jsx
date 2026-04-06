@@ -1,52 +1,33 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
+
+const FILTERS = ["All", "Shoes", "Bags", "Phones", "Beauty"];
 
 const CategoryShowcaseHeader = ({ filterItem, active }) => {
   return (
-    <div className="flex items-center flex-col flex-wrap md:flex-row justify-center md:justify-between gap-4 md:px-20 py-4 glass-panel rounded-2xl">
-      <h1 className="text-4xl font-semibold text-white">Our Products</h1>
-      <ul className="flex flex-row gap-6 md:gap-16 flex-wrap justify-center items-center md:justify-around">
-        <button
-          onClick={() => filterItem("All")}
-          className={`text-lg font-semibold  hover:bg-amber-300/10 hover:px-3 hover:py-1 hover:rounded-full ${
-            active == "All" ? "text-amber-300" : "text-slate-200"
+    <div className="flex items-center flex-wrap gap-3 justify-center">
+      {FILTERS.map((label) => (
+        <motion.button
+          key={label}
+          onClick={() => filterItem(label)}
+          whileHover={{ scale: 1.04 }}
+          whileTap={{ scale: 0.96 }}
+          className={`relative px-5 py-2 rounded-full text-[12px] uppercase tracking-[0.15em] font-semibold transition-all duration-300 ${
+            active === label
+              ? "text-slate-900"
+              : "text-white/50 hover:text-white border border-white/10 hover:border-white/25"
           }`}
         >
-          <li>All</li>
-        </button>
-        <button
-          onClick={() => filterItem("Shoes")}
-          className={`text-lg font-semibold hover:bg-amber-300/10 hover:px-3 hover:py-1 hover:rounded-full ${
-            active == "Shoes" ? "text-amber-300" : "text-slate-200"
-          }`}
-        >
-          <li>Shoes</li>
-        </button>
-        <button
-          onClick={() => filterItem("Bags")}
-          className={`text-lg font-semibold hover:bg-amber-300/10 hover:px-3 hover:py-1 hover:rounded-full ${
-            active == "Bags" ? "text-amber-300" : "text-slate-200"
-          }`}
-        >
-          <li>Bags</li>
-        </button>
-        <button
-          onClick={() => filterItem("Phones")}
-          className={`text-lg font-semibold  hover:bg-amber-300/10 hover:px-3 hover:py-1 hover:rounded-full ${
-            active == "Phones" ? "text-amber-300" : "text-slate-200"
-          }`}
-        >
-          <li>Phones</li>
-        </button>
-        <button
-          onClick={() => filterItem("Beauty")}
-          className={`text-lg font-semibold  hover:bg-amber-300/10 hover:px-3 hover:py-1 hover:rounded-full ${
-            active == "Beauty" ? "text-amber-300" : "text-slate-200"
-          }`}
-        >
-          <li>Beauty</li>
-        </button>
-      </ul>
+          {active === label && (
+            <motion.span
+              layoutId="filter-bg"
+              className="absolute inset-0 rounded-full bg-amber-400"
+              transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+            />
+          )}
+          <span className="relative z-10">{label}</span>
+        </motion.button>
+      ))}
     </div>
   );
 };

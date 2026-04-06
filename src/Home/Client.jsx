@@ -1,92 +1,153 @@
-import React from "react";
-import bgimg from "../assets/images/clients/bg.png";
-import Clients from "../assets/images/clients/01.jpg";
-import { Link } from "react-router-dom";
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+
+const testimonials = [
+  {
+    id: 1,
+    name: "Priya Sharma",
+    role: "Fashion Blogger · Mumbai",
+    avatar: "https://randomuser.me/api/portraits/women/44.jpg",
+    quote: "AVI Store completely changed how I shop online. The curation is incredible — every product feels thoughtfully selected. Delivery was same-day!",
+    rating: 5,
+    country: "🇮🇳",
+    purchase: "Aesthetic Tote Bag",
+  },
+  {
+    id: 2,
+    name: "Rahul Mehta",
+    role: "Tech Enthusiast · Bangalore",
+    avatar: "https://randomuser.me/api/portraits/men/32.jpg",
+    quote: "Got my Samsung S25 Ultra in 18 hours. The packaging was premium and the price was unbeatable. Already told all my friends about this store.",
+    rating: 5,
+    country: "🇮🇳",
+    purchase: "Samsung S25 Ultra",
+  },
+  {
+    id: 3,
+    name: "Ananya Singh",
+    role: "Beauty Creator · Delhi",
+    avatar: "https://randomuser.me/api/portraits/women/68.jpg",
+    quote: "The beauty section is a dream. Authentic products, fast delivery, and the return process was so easy when one item didn't work for me.",
+    rating: 5,
+    country: "🇮🇳",
+    purchase: "Glow Serum Kit",
+  },
+  {
+    id: 4,
+    name: "Kiran Patel",
+    role: "Entrepreneur · Ahmedabad",
+    avatar: "https://randomuser.me/api/portraits/men/61.jpg",
+    quote: "I became a merchant partner and my sales tripled in 3 months. The seller tools and analytics are top-notch. Best decision ever.",
+    rating: 5,
+    country: "🇮🇳",
+    purchase: "Merchant Partner",
+  },
+];
+
+const StarRating = ({ count }) => (
+  <div className="flex gap-0.5">
+    {Array.from({ length: count }).map((_, i) => (
+      <svg key={i} className="size-4 fill-amber-400 text-amber-400" viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
+      </svg>
+    ))}
+  </div>
+);
 
 const Client = () => {
+  const [active, setActive] = useState(0);
+
   return (
-    <div className="flex flex-col gap-7 justify-center items-center px-2 md:px-24 lg:px-56 py-16 md:mt-28 h-[55vh] md:h-[80vh] md:mb-64 text-white">
-      <div className="text-center flex flex-col gap-4 md:px-32">
-        <p className=" text-3xl md:text-5xl font-semibold">
-          More Than <span className="text-amber-300 font-bold">60,000</span>{" "}
+    <section className="py-20 px-2 md:px-8">
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.7 }}
+        className="text-center flex flex-col gap-3 mb-14"
+      >
+        <p className="text-amber-400 text-[11px] uppercase tracking-[0.4em] font-semibold">
+          — Customer Stories
+        </p>
+        <h2 className="font-serif text-4xl md:text-5xl text-white">
+          Loved by{" "}
+          <span className="italic text-white/40 font-light">60,000+</span>{" "}
           Customers
+        </h2>
+        <p className="text-white/40 text-sm max-w-md mx-auto">
+          Real stories from real shoppers across India
         </p>
-        <p className="text-slate-300 text-m md:text-lg">
-          Buy products on your any device with our app & enjoy your time what
-          you want. Just download & install & start to shopping
-        </p>
+      </motion.div>
+
+      {/* Testimonials grid */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 max-w-5xl mx-auto">
+        {testimonials.map((t, i) => (
+          <motion.div
+            key={t.id}
+            initial={{ opacity: 0, y: 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.2 }}
+            transition={{ duration: 0.6, delay: i * 0.1 }}
+            whileHover={{ y: -4, scale: 1.01 }}
+            onClick={() => setActive(i)}
+            className={`glass-panel rounded-2xl p-6 flex flex-col gap-4 cursor-pointer transition-all duration-300 ${
+              active === i ? "border-amber-400/30 shadow-amber-400/10 shadow-xl" : "border-white/5"
+            }`}
+          >
+            {/* Stars */}
+            <StarRating count={t.rating} />
+
+            {/* Quote */}
+            <p className="text-white/70 text-[14px] leading-relaxed italic">
+              "{t.quote}"
+            </p>
+
+            {/* Author */}
+            <div className="flex items-center justify-between mt-auto pt-3 border-t border-white/5">
+              <div className="flex items-center gap-3">
+                <img
+                  src={t.avatar}
+                  alt={t.name}
+                  className="size-11 rounded-full object-cover ring-2 ring-amber-400/20"
+                />
+                <div>
+                  <p className="text-white font-semibold text-[13px] flex items-center gap-1.5">
+                    {t.name} <span className="text-base">{t.country}</span>
+                  </p>
+                  <p className="text-white/35 text-[11px]">{t.role}</p>
+                </div>
+              </div>
+              <span className="text-[10px] uppercase tracking-wider text-amber-400/60 border border-amber-400/20 px-2.5 py-1 rounded-full">
+                Purchased: {t.purchase}
+              </span>
+            </div>
+          </motion.div>
+        ))}
       </div>
 
-      <div
-        className="relative w-full  h-[200px] sm:h-[300px] md:h-[450px] bg-contain bg-no-repeat bg-top "
-        style={{
-          backgroundImage: `url(${bgimg})`,
-        }}
+      {/* Bottom stat bar */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.4 }}
+        className="mt-14 glass-panel rounded-2xl p-6 max-w-3xl mx-auto"
       >
-        <div
-          className="relative w-full max-w-[1000px] aspect-[819/481] bg-contain bg-no-repeat bg-center
-  "
-          style={{ backgroundImage: `url(${bgimg})` }}
-        >
-          <Link to="/signup">
-            <button className="absolute top-[32%] left-[25%] bg-white/10 border border-white/20 p-2 rounded-full shadow group">
-              <img src={Clients} className="size-7 rounded-full" />
-              <div className="absolute -left-6 -translate-x-1/2 -top-8 bg-amber-300 text-slate-900 px-5 py-2 rounded-full opacity-0 group-hover:opacity-100 transition duration-200 whitespace-nowrap shadow-xl">
-                USA
-              </div>
-            </button>
-          </Link>
-          <Link to="/signup">
-            <button className="absolute top-[20%] left-[28%] bg-white/10 border border-white/20 p-2 rounded-full shadow group">
-              <img src={Clients} className="size-7 rounded-full" />
-              <div className="absolute -left-6 -translate-x-1/2 -top-8 bg-sky-500 text-white px-5 py-2 rounded-full opacity-0 group-hover:opacity-100 transition duration-200 whitespace-nowrap shadow-xl">
-                Canada
-              </div>
-            </button>
-          </Link>
-          <Link to="/signup">
-            <button className="absolute top-[25%] left-[48%] bg-white/10 border border-white/20 p-2 rounded-full shadow group">
-              <img src={Clients} className="size-7 rounded-full" />
-              <div className="absolute -left-6 -translate-x-1/2 -top-8 bg-pink-600 text-white px-5 py-2 rounded-full opacity-0 group-hover:opacity-100 transition duration-200 whitespace-nowrap shadow-xl">
-                UK
-              </div>
-            </button>
-          </Link>
-          <Link to="/signup">
-            <button className="absolute top-[45%] left-[62%] bg-white/10 border border-white/20 p-2 rounded-full shadow group">
-              <img src={Clients} className="size-7 rounded-full" />
-              <div className="absolute -left-6 -translate-x-1/2 -top-8 bg-yellow-600 text-white px-5 py-2 rounded-full opacity-0 group-hover:opacity-100 transition duration-200 whitespace-nowrap shadow-xl">
-                India
-              </div>
-            </button>
-          </Link>
-          <Link to="/signup">
-            <button className="absolute top-[65%] left-[75%] bg-white/10 border border-white/20 p-2 rounded-full shadow group">
-              <img src={Clients} className="size-7 rounded-full" />
-              <div className="absolute -left-6 -translate-x-1/2 -top-8 bg-green-600 text-white px-5 py-2 rounded-full opacity-0 group-hover:opacity-100 transition duration-200 whitespace-nowrap shadow-xl">
-                Australia
-              </div>
-            </button>
-          </Link>
-          <Link to="/signup">
-            <button className="absolute top-[52%] left-[50%] bg-white/10 border border-white/20 p-2 rounded-full shadow group">
-              <img src={Clients} className="size-7 rounded-full" />
-              <div className="absolute -left-6 -translate-x-1/2 -top-8 bg-cyan-600 text-white px-5 py-2 rounded-full opacity-0 group-hover:opacity-100 transition duration-200 whitespace-nowrap shadow-xl">
-                Africa
-              </div>
-            </button>
-          </Link>
-          <Link to="/signup">
-            <button className="absolute top-[58%] left-[33%] bg-white/10 border border-white/20 p-2 rounded-full shadow group">
-              <img src={Clients} className="size-7 rounded-full" />
-              <div className="absolute -left-6 -translate-x-1/2 -top-8 bg-rose-500 text-white px-5 py-2 rounded-full opacity-0 group-hover:opacity-100 transition duration-200 whitespace-nowrap shadow-xl">
-                Brazil
-              </div>
-            </button>
-          </Link>
+        <div className="grid grid-cols-3 gap-4 text-center">
+          {[
+            ["60,000+", "Verified Reviews"],
+            ["4.9 / 5", "Average Rating"],
+            ["98%", "Would Recommend"],
+          ].map(([num, label]) => (
+            <div key={label}>
+              <p className="text-amber-400 font-bold text-2xl md:text-3xl font-serif">{num}</p>
+              <p className="text-white/40 text-[11px] uppercase tracking-widest mt-1">{label}</p>
+            </div>
+          ))}
         </div>
-      </div>
-    </div>
+      </motion.div>
+    </section>
   );
 };
 

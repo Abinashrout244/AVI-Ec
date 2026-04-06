@@ -1,153 +1,232 @@
 import React, { useState } from "react";
-const title = "Our Products";
+import { motion, AnimatePresence } from "framer-motion";
 import CategoryShowcaseHeader from "./CategoryShowcaseHeader";
 import CategoryShowcaseCard from "./CategoryShowcaseCard";
+import { Link } from "react-router-dom";
+
 const ProductData = [
   {
-    imgUrl:
-      "https://tse3.mm.bing.net/th/id/OIP.3j_mj_z3PaG-Qudv9ZGG3wHaEc?pid=Api&P=0&h=180",
+    imgUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
     cate: "Shoes",
-    title: "Nike Premier X",
-    author: "assets/images/course/author/01.jpg",
+    title: "Nike Air Zoom X",
     brand: "Nike",
     price: "$199.00",
+    rating: 4.8,
+    reviews: 1240,
     id: 1,
+    badge: "Best Seller",
   },
   {
-    imgUrl:
-      "https://tse2.mm.bing.net/th/id/OIP.yR7KQqB_v06ezdU6sUl8RwHaHa?pid=Api&P=0&h=180",
+    imgUrl: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80",
     cate: "Bags",
-    title: "Asthetic Bags",
-    author: "assets/images/course/author/02.jpg",
+    title: "Aesthetic Tote Bag",
     brand: "D&J Bags",
-    price: "$199.00",
+    price: "$159.00",
+    rating: 4.6,
+    reviews: 832,
     id: 2,
+    badge: "New",
   },
   {
-    imgUrl:
-      "https://cellularkenya.co.ke/wp-content/uploads/2022/05/Apple-iPhone-12.jpg",
+    imgUrl: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&q=80",
     cate: "Phones",
-    title: "iPhone 12",
-    author: "src/assets/images/categoryTab/brand/apple.png",
+    title: "iPhone 15 Pro",
     brand: "Apple",
-    price: "$199.00",
+    price: "$999.00",
+    rating: 4.9,
+    reviews: 5420,
     id: 3,
+    badge: "Hot",
   },
   {
-    imgUrl:
-      "https://tse1.mm.bing.net/th/id/OIP.RhcgsGtTnuy_Mt5Hx1FEZgHaE0?pid=Api&P=0&h=180",
+    imgUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80",
     cate: "Bags",
-    title: "Hiking Bag 15 Nh100",
-    author: "assets/images/course/author/04.jpg",
-    brand: "Gucci",
-    price: "$199.00",
+    title: "Hiking Bag NH100",
+    brand: "Quechua",
+    price: "$249.00",
+    rating: 4.7,
+    reviews: 678,
     id: 4,
   },
   {
-    imgUrl:
-      "https://tse4.mm.bing.net/th/id/OIP.p_ddxU-XtchSauJgLpYh0QHaE5?pid=Api&P=0&h=180",
+    imgUrl: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600&q=80",
     cate: "Shoes",
-    title: "Outdoor Sports Shoes",
-    author: "assets/images/course/author/05.jpg",
-    brand: "Nike",
-    price: "$199.00",
+    title: "Outdoor Sport Shoes",
+    brand: "Adidas",
+    price: "$179.00",
+    rating: 4.5,
+    reviews: 921,
     id: 5,
+    badge: "Sale",
   },
   {
-    imgUrl:
-      "https://img.freepik.com/premium-photo/collection-beauty-products-stone-with-plants-dark-background_926968-60.jpg",
+    imgUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80",
     cate: "Beauty",
-    title: "COSRX Snail Mucin",
-    author: "assets/images/course/author/06.jpg",
-    brand: "Zaara",
-    price: "$199.00",
+    title: "Glow Serum Kit",
+    brand: "Zaara Beauty",
+    price: "$89.00",
+    rating: 4.8,
+    reviews: 2310,
     id: 6,
+    badge: "Trending",
   },
   {
-    imgUrl:
-      "https://tse4.mm.bing.net/th/id/OIP._-gzAX31VLInzuH2XuuZCQHaFF?pid=Api&P=0&h=180",
+    imgUrl: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&q=80",
     cate: "Bags",
-    title: "Look Less Chanel Bag ",
-    author: "assets/images/course/author/01.jpg",
+    title: "Mini Chanel Look",
     brand: "Gucci",
-    price: "$199.00",
+    price: "$329.00",
+    rating: 4.9,
+    reviews: 450,
     id: 7,
   },
   {
-    imgUrl:
-      "https://images.pexels.com/photos/1598505/pexels-photo-1598505.jpeg?auto=compress&cs=tinysrgb&dpr=3&h=750&w=1260",
+    imgUrl: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&q=80",
     cate: "Shoes",
     title: "Casual Sneakers",
-    author: "assets/images/course/author/02.jpg",
-    brand: "Bata",
-    price: "$199.00",
+    brand: "Puma",
+    price: "$129.00",
+    rating: 4.4,
+    reviews: 1876,
     id: 8,
   },
   {
-    imgUrl:
-      "https://tse1.mm.bing.net/th/id/OIP.HlFVZumCmO9aSI_w5x7tIgHaEK?pid=Api&P=0&h=180",
+    imgUrl: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80",
     cate: "Phones",
-    title: "IPhone 16",
-    author: "assets/images/course/author/02.jpg",
-    brand: "Iphone",
-    price: "$159.00",
+    title: "Galaxy S25 Ultra",
+    brand: "Samsung",
+    price: "$1199.00",
+    rating: 4.8,
+    reviews: 3240,
     id: 9,
+    badge: "New",
   },
   {
-    imgUrl:
-      "https://tse3.mm.bing.net/th/id/OIP.kHnkUX0mGo-AN6p48e2fUgHaEK?pid=Api&P=0&h=180",
-    cate: "Phones",
-    title: "Samsung S25 ultra",
-    author: "assets/images/course/author/02.jpg",
-    brand: "Samsung",
-    price: "$189.00",
+    imgUrl: "https://images.unsplash.com/photo-1614251056798-0a63eda2bb25?w=600&q=80",
+    cate: "Beauty",
+    title: "Cetaphil Glow Set",
+    brand: "Cetaphil",
+    price: "$59.00",
+    rating: 4.7,
+    reviews: 988,
     id: 10,
   },
   {
-    imgUrl:
-      "https://img.freepik.com/premium-photo/beauty-products-with-pink-flowers-soft-pink-background-cosmetic-skincare-products_656098-652.jpg?w=2000",
+    imgUrl: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&q=80",
     cate: "Beauty",
-    title: "Cetaphil",
-    author: "assets/images/course/author/06.jpg",
-    brand: "Zaara",
-    price: "$299.00",
+    title: "De-Construct Serum",
+    brand: "De-Construct",
+    price: "$79.00",
+    rating: 4.6,
+    reviews: 765,
     id: 11,
   },
   {
-    imgUrl:
-      "https://tse2.mm.bing.net/th/id/OIP.W1Sy7nr_h8Esct0U6-8t6gHaEq?pid=Api&P=0&h=180",
-    cate: "Beauty",
-    title: " De-construct",
-    author: "assets/images/course/author/06.jpg",
-    brand: "Zaraa",
-    price: "$259.00",
+    imgUrl: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&q=80",
+    cate: "Phones",
+    title: "iPhone 16",
+    brand: "Apple",
+    price: "$899.00",
+    rating: 4.9,
+    reviews: 4200,
     id: 12,
+    badge: "Hot",
   },
 ];
+
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.07 } },
+};
+
+const cardVariants = {
+  hidden: { opacity: 0, y: 28, scale: 0.95 },
+  visible: {
+    opacity: 1, y: 0, scale: 1,
+    transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
+  },
+  exit: {
+    opacity: 0, scale: 0.92, y: -10,
+    transition: { duration: 0.3 },
+  },
+};
+
 const CategoryShowcase = () => {
   const [data, setData] = useState(ProductData);
   const [active, setActive] = useState("All");
+
   const filterItem = (select) => {
     setActive(select);
-    if (select == "All") {
+    if (select === "All") {
       setData(ProductData);
-
-      return;
     } else {
-      const filterdata = ProductData.filter((item) => {
-        return item.cate == select;
-      });
-      setData(filterdata);
+      setData(ProductData.filter((item) => item.cate === select));
     }
   };
+
   return (
-    <div className=" md:px-22 pt-20 md:pt-32 pb-28 bg-transparent flex flex-col gap-16 ">
+    <div className="py-20 px-2 md:px-8 flex flex-col gap-10">
+      {/* Section Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 24 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.7 }}
+        className="text-center flex flex-col gap-3"
+      >
+        <p className="text-amber-400 text-[11px] uppercase tracking-[0.4em] font-semibold">
+          — Featured Products
+        </p>
+        <h2 className="font-serif text-4xl md:text-5xl text-white">
+          Our{" "}
+          <span className="italic text-white/40 font-light">Bestsellers</span>
+        </h2>
+        <p className="text-white/40 text-sm max-w-md mx-auto leading-relaxed">
+          Handpicked products loved by thousands of shoppers across India
+        </p>
+      </motion.div>
+
+      {/* Filter Header */}
       <CategoryShowcaseHeader filterItem={filterItem} active={active} />
-      <div className="grid grid-cols-1 md:grid-cols-4 px-2 gap-5 ">
-        {data.map((item) => {
-          return <CategoryShowcaseCard {...item} key={item.id} />;
-        })}
-      </div>
+
+      {/* Product Grid */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={active}
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+          exit="exit"
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+        >
+          {data.map((item) => (
+            <motion.div key={item.id} variants={cardVariants}>
+              <CategoryShowcaseCard {...item} />
+            </motion.div>
+          ))}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Bottom CTA */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="flex justify-center pt-4"
+      >
+        <Link to="/shop">
+          <motion.button
+            whileHover={{ scale: 1.04, y: -2 }}
+            whileTap={{ scale: 0.97 }}
+            className="group flex items-center gap-3 px-9 py-3.5 rounded-full border border-amber-400/30 text-amber-400 text-[12px] uppercase tracking-widest font-semibold hover:bg-amber-400 hover:text-slate-900 transition-all duration-300"
+          >
+            View All Products
+            <motion.span
+              className="group-hover:translate-x-1 transition-transform inline-block"
+            >→</motion.span>
+          </motion.button>
+        </Link>
+      </motion.div>
     </div>
   );
 };

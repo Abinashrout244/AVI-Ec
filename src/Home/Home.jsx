@@ -11,27 +11,49 @@ import MotionSection from "../components/MotionSection";
 
 const Home = () => {
   return (
-    <div className="space-y-20">
+    <div className="overflow-hidden">
+      {/* Hero - full bleed, no container padding */}
       <Banner />
-      <MotionSection className="px-4 md:px-16">
+
+      {/* Section separator */}
+      <div className="section-divider" />
+
+      {/* Categories */}
+      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
         <HomeCategory />
       </MotionSection>
-      <MotionSection className="px-4 md:px-16">
+
+      {/* Thin separator */}
+      <div className="h-px bg-white/5 mx-6 md:mx-20" />
+
+      {/* Products */}
+      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
         <CategoryShowcase />
       </MotionSection>
-      <MotionSection className="px-4 md:px-16">
+
+      {/* Register / Workshop CTA */}
+      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
         <Register />
       </MotionSection>
-      <MotionSection className="px-4 md:px-16">
+
+      {/* Client Testimonials */}
+      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
         <Client />
       </MotionSection>
-      <MotionSection className="px-4 md:px-16">
+
+      {/* Stats + Why Choose Us */}
+      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
         <AboutUs />
       </MotionSection>
-      <MotionSection className="px-4 md:px-16">
+
+      {/* App Download */}
+      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
         <AppStore />
       </MotionSection>
-      <MotionSection className="px-4 md:px-16">
+
+      {/* Brand logos */}
+      <div className="h-px bg-white/5 mx-6 md:mx-20 mb-8" />
+      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
         <Brand />
       </MotionSection>
     </div>

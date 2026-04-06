@@ -1,29 +1,76 @@
 import React from "react";
+import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 
-const CategoryCard = ({ imgUrl, imgAlt, title }) => {
+const CategoryCard = ({ imgUrl, imgAlt, title, count, emoji, accent }) => {
   return (
-    <div className=" brightness-75 hover:-translate-y-2 transition-all ease-in hover:opacity-75 rounded-sm   ">
-      <div>
-        <img
-          src={imgUrl}
-          alt={imgAlt}
-          className="w-full h-[290px] object-cover"
-        />
-      </div>
-      <div className="flex items-center fex-row gap-3 relative -top-12 left-4">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          height="30px"
-          viewBox="0 -960 960 960"
-          width="24px"
-          fill="#e3e3e3"
-          className="bg-rose-600 size-10 p-2 rounded-full"
+    <motion.div
+      whileHover="hover"
+      className="relative group overflow-hidden rounded-2xl cursor-pointer aspect-[3/4]"
+    >
+      {/* Image */}
+      <motion.img
+        src={imgUrl}
+        alt={imgAlt}
+        className="w-full h-full object-cover"
+        variants={{
+          hover: { scale: 1.08 },
+        }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+      />
+
+      {/* Gradient overlay */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+
+      {/* Colored glow on hover */}
+      <motion.div
+        className="absolute inset-0 opacity-0"
+        style={{ background: `radial-gradient(circle at bottom, ${accent}30, transparent 70%)` }}
+        variants={{ hover: { opacity: 1 } }}
+        transition={{ duration: 0.4 }}
+      />
+
+      {/* Content */}
+      <div className="absolute inset-0 p-5 flex flex-col justify-between">
+        {/* Emoji badge */}
+        <motion.div
+          className="self-start"
+          variants={{ hover: { scale: 1.15, y: -2 } }}
+          transition={{ duration: 0.3 }}
         >
-          <path d="M340-540H200q-33 0-56.5-23.5T120-620v-140q0-33 23.5-56.5T200-840h140q33 0 56.5 23.5T420-760v140q0 33-23.5 56.5T340-540Zm-140-80h140v-140H200v140Zm140 500H200q-33 0-56.5-23.5T120-200v-140q0-33 23.5-56.5T200-420h140q33 0 56.5 23.5T420-340v140q0 33-23.5 56.5T340-120Zm-140-80h140v-140H200v140Zm560-340H620q-33 0-56.5-23.5T540-620v-140q0-33 23.5-56.5T620-840h140q33 0 56.5 23.5T840-760v140q0 33-23.5 56.5T760-540Zm-140-80h140v-140H620v140Zm140 500H620q-33 0-56.5-23.5T540-200v-140q0-33 23.5-56.5T620-420h140q33 0 56.5 23.5T840-340v140q0 33-23.5 56.5T760-120Zm-140-80h140v-140H620v140ZM340-620Zm0 280Zm280-280Zm0 280Z" />
-        </svg>
-        <p className="font-semibold text-lg">{title}</p>
+          <span
+            className="text-2xl p-2.5 rounded-xl backdrop-blur-md block"
+            style={{ backgroundColor: `${accent}25`, border: `1px solid ${accent}40` }}
+          >
+            {emoji}
+          </span>
+        </motion.div>
+
+        {/* Bottom info */}
+        <div className="flex items-end justify-between">
+          <div>
+            <p className="text-white font-semibold text-base md:text-lg leading-tight">
+              {title}
+            </p>
+            <p className="text-white/50 text-[11px] mt-0.5 uppercase tracking-wider">
+              {count}
+            </p>
+          </div>
+
+          {/* Animated arrow */}
+          <motion.div
+            className="size-9 rounded-full flex items-center justify-center text-slate-900 font-bold flex-shrink-0"
+            style={{ backgroundColor: accent }}
+            variants={{
+              hover: { scale: 1.1, x: 2, y: -2 },
+            }}
+            transition={{ duration: 0.3 }}
+          >
+            →
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
