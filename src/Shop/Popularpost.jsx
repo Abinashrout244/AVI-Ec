@@ -38,20 +38,15 @@ const postList = [
 
 const Popularpost = () => {
   return (
-    <div className="w-[340px] md:w-full shadow bg-white shadow-gray-300 rounded-sm border border-slate-300 md:ml-2.5">
-      <h2 className="text-lg md:text-xl font-sans border-b border-b-slate-300 p-3">
+    <div className="w-[340px] md:w-full glass-panel rounded-2xl md:ml-2.5">
+      <h2 className="text-lg md:text-xl font-sans border-b border-white/10 p-3 text-white">
         Most Popular Posts
       </h2>
 
       <ul>
         {postList.map((item) => (
           <Link to={`/blog/${item.id}`} key={item.id}>
-            <li
-              className="flex items-center gap-3 
-                         p-2 md:p-3 
-                         border-b border-b-slate-300 
-                         hover:bg-black/10 transition"
-            >
+            <li className="flex items-center gap-3 p-2 md:p-3 border-b border-white/10 hover:bg-white/5 transition">
               <img
                 src={item.imgUrl}
                 alt={item.imgAlt}
@@ -59,10 +54,10 @@ const Popularpost = () => {
               />
 
               <div className="flex flex-col gap-1 flex-1">
-                <h2 className="text-base md:text-lg font-semibold line-clamp-2">
+                <h2 className="text-base md:text-lg font-semibold line-clamp-2 text-white">
                   {item.title}
                 </h2>
-                <p className="text-gray-400 text-sm md:text-base">
+                <p className="text-slate-400 text-sm md:text-base">
                   {item.date}
                 </p>
               </div>

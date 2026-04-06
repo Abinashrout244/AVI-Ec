@@ -2,7 +2,7 @@ import React from "react";
 
 const Select = (select) => {
   return (
-    <select className=" text-black outline-none px-3 py-2 h-10  transition-all ">
+    <select className="text-white bg-transparent outline-none px-3 py-2 h-10 transition-all border border-white/10 rounded-full">
       <option value="all">All Categories</option>
       <option value="electronics">Electronics</option>
       <option value="computer">Computer</option>

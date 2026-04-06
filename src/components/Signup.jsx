@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import React, { useState, useContext } from "react";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { HugeiconsIcon } from "@hugeicons/react";
 import {
   InstagramIcon,
@@ -9,8 +9,6 @@ import {
   Facebook01Icon,
 } from "@hugeicons/core-free-icons";
 import { AuthContext } from "../context/AuthProvider";
-import { useContext } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
 
 const Signup = () => {
   const [errMsg, setErrMsg] = useState("");
@@ -53,113 +51,108 @@ const Signup = () => {
   };
 
   return (
-    /* FIXED HEIGHT: h-screen + overflow-hidden prevents page scrolling */
-    <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-blue-50 p-4 overflow-hidden">
-      {/* COMPACT GLASS CARD: Reduced padding (p-6 to p-8) and max-width */}
-      <div className="max-w-md w-full backdrop-blur-2xl bg-white/60 border border-white/50 rounded-[2rem] shadow-2xl p-6 md:p-8 transition-all duration-500">
+    <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 overflow-hidden">
+      <div className="max-w-md w-full glass-panel rounded-[2rem] p-6 md:p-8 transition-all duration-500">
         <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300">
             Join Us
           </h2>
-          <p className="text-gray-400 text-sm font-medium">
+          <p className="text-slate-400 text-sm font-medium">
             Experience the excellence
           </p>
         </div>
 
         <form className="space-y-3.5" onSubmit={handleSignup}>
-          {/* Inputs with tighter vertical spacing */}
           <div className="space-y-1">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">
               Username
             </label>
             <input
               name="username"
               type="text"
               required
-              className="w-full bg-white/40 border border-gray-100 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white transition-all text-sm"
+              className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-amber-300 transition-all text-sm text-white placeholder:text-slate-500"
               placeholder="Display Name"
             />
           </div>
 
           <div className="space-y-1">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">
               Email
             </label>
             <input
               name="email"
               type="email"
               required
-              className="w-full bg-white/40 border border-gray-100 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white transition-all text-sm"
+              className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-amber-300 transition-all text-sm text-white placeholder:text-slate-500"
               placeholder="email@example.com"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">
                 Password
               </label>
               <input
                 name="password"
                 type="password"
                 required
-                className="w-full bg-white/40 border border-gray-100 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white transition-all text-sm"
-                placeholder="••••"
+                className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-amber-300 transition-all text-sm text-white placeholder:text-slate-500"
+                placeholder="********"
               />
             </div>
             <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">
+              <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">
                 Confirm
               </label>
               <input
                 name="confirmPassword"
                 type="password"
                 required
-                className="w-full bg-white/40 border border-gray-100 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white transition-all text-sm"
-                placeholder="••••"
+                className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-2.5 outline-none focus:ring-2 focus:ring-amber-300 transition-all text-sm text-white placeholder:text-slate-500"
+                placeholder="********"
               />
             </div>
           </div>
 
           {errMsg && (
-            <div className="text-red-500 text-[11px] font-semibold text-center animate-pulse">
+            <div className="text-rose-300 text-[11px] font-semibold text-center animate-pulse">
               {errMsg}
             </div>
           )}
 
           <button
             type="submit"
-            className="w-full py-3 mt-2 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-indigo-600 shadow-md transition-all active:scale-95"
+            className="w-full py-3 mt-2 rounded-xl bg-amber-300 text-slate-900 text-sm font-bold hover:bg-amber-200 shadow-md transition-all active:scale-95"
           >
             Create Account
           </button>
         </form>
 
         <div className="mt-4 text-center">
-          <p className="text-gray-500 text-sm">
+          <p className="text-slate-400 text-sm">
             Already a member?{" "}
             <Link
               to="/login"
-              className="text-indigo-600 font-semibold hover:underline underline-offset-4"
+              className="text-amber-300 font-semibold hover:underline underline-offset-4"
             >
               Log In
             </Link>
           </p>
         </div>
 
-        {/* COMPACT DIVIDER */}
         <div className="relative my-6">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-100"></div>
+            <div className="w-full border-t border-white/10"></div>
           </div>
           <div className="relative flex justify-center text-[10px] uppercase">
-            <span className="bg-white/50 px-3 py-0.5 rounded-full text-gray-400 font-bold border border-gray-50">
+            <span className="bg-white/10 px-3 py-0.5 rounded-full text-slate-400 font-bold border border-white/10">
               OR
             </span>
           </div>
         </div>
 
-        {/* SOCIAL BUTTONS: Slightly smaller icons for vertical fit */}
         <div className="flex items-center justify-center gap-3">
           {[
             { icon: GoogleIcon, color: "#EA4335", action: handleRegister },
@@ -171,13 +164,9 @@ const Signup = () => {
             <button
               key={idx}
               onClick={social.action}
-              className="p-2.5 rounded-xl bg-white/80 border border-white shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+              className="p-2.5 rounded-xl bg-white/10 border border-white/10 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
             >
-              <HugeiconsIcon
-                icon={social.icon}
-                color={social.color}
-                size={20}
-              />
+              <HugeiconsIcon icon={social.icon} color={social.color} size={20} />
             </button>
           ))}
         </div>

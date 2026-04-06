@@ -69,8 +69,10 @@ const Contact = () => {
   return (
     <div className="">
       <HeroBanner page={"Contact Us"} title={"Get In Touch With Us"} />
-      <div className="flex flex-col px-5  md:px-24 py-20 bg-yellow-50">
-        <p className="uppercase text-center">Get in touch with Contact us</p>
+      <div className="flex flex-col px-5 md:px-24 py-20 bg-transparent text-white">
+        <p className="uppercase text-center text-amber-200">
+          Get in touch with Contact us
+        </p>
         <h2 className="text-3xl font-semibold text-center">
           We're Always Eager To Hear From You!
         </h2>
@@ -90,7 +92,7 @@ const Contact = () => {
               return (
                 <li
                   key={index}
-                  className="bg-white py-3 px-5 flex flex-row gap-2 items-center"
+                  className="glass-panel rounded-2xl py-3 px-5 flex flex-row gap-2 items-center"
                 >
                   <img
                     src={item.imgUrl}
@@ -98,8 +100,10 @@ const Contact = () => {
                     className="size-16"
                   />
                   <div className="space-y-0.5">
-                    <h2 className="font-semibold text-xl">{item.title}</h2>
-                    <p>{item.desc}</p>
+                    <h2 className="font-semibold text-xl text-white">
+                      {item.title}
+                    </h2>
+                    <p className="text-slate-300">{item.desc}</p>
                   </div>
                 </li>
               );
@@ -107,8 +111,10 @@ const Contact = () => {
           </ul>
         </div>
       </div>
-      <div className="md:px-[300px] px-5 py-24 flex flex-col gap-2">
-        <h2 className="uppercase text-center ">Get in touch with Contact us</h2>
+      <div className="md:px-[300px] px-5 py-24 flex flex-col gap-2 text-white">
+        <h2 className="uppercase text-center text-amber-200">
+          Get in touch with Contact us
+        </h2>
         <p className=" text-2xl md:text-4xl text-center font-semibold">
           Fill The Form Below So We Can Get To Know You And Your Needs Better.
         </p>
@@ -121,7 +127,7 @@ const Contact = () => {
               id="name"
               required
               placeholder="Your Name*"
-              className="shadow shadow-slate-400 p-3 rounded-sm w-full"
+              className="border border-white/10 bg-transparent text-white placeholder:text-slate-400 p-3 rounded-full w-full"
             />
 
             <input
@@ -130,7 +136,7 @@ const Contact = () => {
               name="email"
               required
               placeholder="Your Email*"
-              className="shadow shadow-slate-400 p-3 rounded-sm w-full"
+              className="border border-white/10 bg-transparent text-white placeholder:text-slate-400 p-3 rounded-full w-full"
             />
 
             {/* Row 2 */}
@@ -140,7 +146,7 @@ const Contact = () => {
               id="number"
               required
               placeholder="Mobile Number*"
-              className="shadow shadow-slate-400 p-3 rounded-sm w-full"
+              className="border border-white/10 bg-transparent text-white placeholder:text-slate-400 p-3 rounded-full w-full"
             />
 
             <input
@@ -149,7 +155,7 @@ const Contact = () => {
               name="sub"
               required
               placeholder="Your Subject*"
-              className="shadow shadow-slate-400 p-3 rounded-sm w-full"
+              className="border border-white/10 bg-transparent text-white placeholder:text-slate-400 p-3 rounded-full w-full"
             />
           </div>
 
@@ -157,13 +163,13 @@ const Contact = () => {
           <div className="mt-4">
             <textarea
               placeholder="Your Message*"
-              className="shadow-sm shadow-slate-300 p-3 rounded-md w-full h-40"
+              className="border border-white/10 bg-transparent text-white placeholder:text-slate-400 p-3 rounded-2xl w-full h-40"
             ></textarea>
           </div>
           <div className="flex justify-center items-center pt-4">
             <button
               type="submit"
-              className="bg-blue-600 text-white px-16 py-2 rounded-md"
+              className="btn-primary px-16 py-2"
             >
               Submit
             </button>

@@ -46,23 +46,20 @@ const Login = () => {
   };
 
   return (
-    /* FULL SCREEN NO SCROLL */
-    <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-50 via-white to-indigo-50 p-4 overflow-hidden">
-      {/* LUXURY GLASS CARD */}
-      <div className="max-w-md w-full backdrop-blur-2xl bg-white/60 border border-white/50 rounded-[2rem] shadow-2xl p-6 md:p-10 transition-all duration-500">
+    <div className="h-screen w-full flex items-center justify-center bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 p-4 overflow-hidden">
+      <div className="max-w-md w-full glass-panel rounded-[2rem] p-6 md:p-10 transition-all duration-500">
         <div className="text-center mb-8">
-          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+          <h2 className="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-300">
             Welcome Back
           </h2>
-          <p className="text-gray-400 text-sm font-medium mt-1">
+          <p className="text-slate-400 text-sm font-medium mt-1">
             Please enter your details
           </p>
         </div>
 
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* Email */}
           <div className="space-y-1">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">
               Email Address
             </label>
             <input
@@ -70,14 +67,13 @@ const Login = () => {
               name="email"
               type="email"
               required
-              className="w-full bg-white/40 border border-gray-100 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white transition-all text-sm"
+              className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-amber-300 transition-all text-sm text-white placeholder:text-slate-500"
               placeholder="you@example.com"
             />
           </div>
 
-          {/* Password */}
           <div className="space-y-1">
-            <label className="text-[10px] font-bold uppercase tracking-widest text-gray-400 ml-1">
+            <label className="text-[10px] font-bold uppercase tracking-widest text-slate-400 ml-1">
               Password
             </label>
             <input
@@ -85,13 +81,13 @@ const Login = () => {
               name="password"
               type="password"
               required
-              className="w-full bg-white/40 border border-gray-100 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-indigo-400 focus:bg-white transition-all text-sm"
-              placeholder="••••••••"
+              className="w-full bg-transparent border border-white/10 rounded-xl px-4 py-3 outline-none focus:ring-2 focus:ring-amber-300 transition-all text-sm text-white placeholder:text-slate-500"
+              placeholder="********"
             />
           </div>
 
           {errMsg && (
-            <div className="text-red-500 text-[11px] font-semibold text-center animate-pulse">
+            <div className="text-rose-300 text-[11px] font-semibold text-center animate-pulse">
               {errMsg}
             </div>
           )}
@@ -102,15 +98,15 @@ const Login = () => {
                 type="checkbox"
                 checked={remember}
                 onChange={() => setRemember(!remember)}
-                className="h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 transition-all"
+                className="h-4 w-4 rounded border-white/20 text-amber-300 focus:ring-amber-300 transition-all"
               />
-              <span className="text-gray-500 group-hover:text-gray-700 transition-colors">
+              <span className="text-slate-400 group-hover:text-white transition-colors">
                 Remember me
               </span>
             </label>
             <a
               href="#"
-              className="text-indigo-600 font-semibold hover:underline underline-offset-4"
+              className="text-amber-300 font-semibold hover:underline underline-offset-4"
             >
               Forgot password?
             </a>
@@ -118,37 +114,35 @@ const Login = () => {
 
           <button
             type="submit"
-            className="w-full py-3.5 mt-2 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-indigo-600 shadow-lg shadow-gray-200 hover:shadow-indigo-200 transition-all active:scale-95"
+            className="w-full py-3.5 mt-2 rounded-xl bg-amber-300 text-slate-900 text-sm font-bold hover:bg-amber-200 shadow-lg shadow-amber-300/30 transition-all active:scale-95"
           >
             Sign In
           </button>
         </form>
 
         <div className="mt-6 text-center">
-          <p className="text-gray-500 text-sm">
+          <p className="text-slate-400 text-sm">
             New here?{" "}
             <Link
               to="/signup"
-              className="text-indigo-600 font-bold hover:underline underline-offset-4"
+              className="text-amber-300 font-bold hover:underline underline-offset-4"
             >
               Create Account
             </Link>
           </p>
         </div>
 
-        {/* COMPACT DIVIDER */}
         <div className="relative my-8">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-100"></div>
+            <div className="w-full border-t border-white/10"></div>
           </div>
           <div className="relative flex justify-center text-[10px] uppercase">
-            <span className="bg-white/50 px-4 py-1 rounded-full text-gray-400 font-bold border border-gray-50">
+            <span className="bg-white/10 px-4 py-1 rounded-full text-slate-400 font-bold border border-white/10">
               Quick Connect
             </span>
           </div>
         </div>
 
-        {/* SOCIAL CONNECT */}
         <div className="flex items-center justify-center gap-4">
           {[
             { icon: GoogleIcon, color: "#EA4335", action: handleRegister },
@@ -160,13 +154,9 @@ const Login = () => {
             <button
               key={idx}
               onClick={social.action}
-              className="p-3 rounded-2xl bg-white/80 border border-white shadow-sm hover:shadow-md hover:-translate-y-1 transition-all"
+              className="p-3 rounded-2xl bg-white/10 border border-white/10 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all"
             >
-              <HugeiconsIcon
-                icon={social.icon}
-                color={social.color}
-                size={20}
-              />
+              <HugeiconsIcon icon={social.icon} color={social.color} size={20} />
             </button>
           ))}
         </div>

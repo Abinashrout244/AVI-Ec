@@ -16,7 +16,7 @@ const sponsorList = [s1, s2, s3, s4, s5, s6];
 
 const Brand = () => {
   return (
-    <div className="py-2 px-10 md:px-28 bg-yellow-100/50">
+    <div className="py-2 px-10 md:px-28 bg-transparent">
       <Swiper
         loop={true}
         autoplay={{

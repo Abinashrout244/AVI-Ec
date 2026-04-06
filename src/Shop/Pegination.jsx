@@ -57,8 +57,8 @@ const Pegination = ({ productperpage, totalproducts, currPage, peginate }) => {
             transition-all
             ${
               currPage === num
-                ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-bold scale-105"
-                : "bg-white text-gray-800 border border-gray-300 hover:bg-gray-100"
+                ? "bg-gradient-to-r from-amber-300 to-yellow-200 text-slate-900 font-bold scale-105"
+                : "bg-white/5 text-slate-200 border border-white/10 hover:bg-white/10"
             }
           `}
             >

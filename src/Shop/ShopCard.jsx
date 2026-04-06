@@ -1,6 +1,7 @@
 import React from "react";
 import star from "../assets/icons/star.svg";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const ShopCard = ({ products, gridlist }) => {
   return (
@@ -12,28 +13,32 @@ const ShopCard = ({ products, gridlist }) => {
       `}
     >
       {products.map((item, i) => (
-        <div
+        <motion.div
           key={i}
           className={`relative flex 
             ${gridlist ? "flex-col" : "flex-row"} 
-            gap-5 sm:gap-10 w-full
+            gap-5 sm:gap-10 w-full lux-card p-4
           `}
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.2 }}
+          transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+          whileHover={{ y: -6 }}
         >
-          {/* IMAGE */}
-          <div className="relative w-40 h-40 sm:w-64 sm:h-64 md:overflow-hidden mx-auto">
+          <div className="relative w-40 h-40 sm:w-64 sm:h-64 md:overflow-hidden mx-auto rounded-2xl">
             <Link to={`/shop/${item.id}`}>
-              <img
+              <motion.img
                 src={item.img}
                 alt={item.name}
-                className="w-full h-full object-cover hover:scale-110 hover:opacity-80 transition-all"
+                className="w-full h-full object-cover transition-all rounded-2xl"
+                whileHover={{ scale: 1.08 }}
               />
             </Link>
 
-            {/* BUTTONS */}
-            <div className="absolute bottom-2  -right-12 md:right-2 flex flex-col gap-2">
+            <div className="absolute bottom-2 -right-12 md:right-2 flex flex-col gap-2">
               <Link
                 to="/cart-page"
-                className="bg-black/80 text-white text-xs px-3 py-2 rounded-md hover:bg-black transition"
+                className="bg-white/10 text-white text-xs px-3 py-2 rounded-full border border-white/10 hover:bg-white/20 transition"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -49,7 +54,7 @@ const ShopCard = ({ products, gridlist }) => {
 
               <Link
                 to={`/shop/${item.id}`}
-                className="bg-yellow-500 text-black text-xs px-3 py-2 rounded-md hover:bg-yellow-600 transition"
+                className="bg-amber-300 text-slate-900 text-xs px-3 py-2 rounded-full hover:bg-amber-200 transition"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +72,7 @@ const ShopCard = ({ products, gridlist }) => {
                 </svg>
               </Link>
 
-              <button className="bg-white text-black text-xs px-3 py-2 rounded-md border hover:bg-gray-200 transition">
+              <button className="bg-white/10 text-white text-xs px-3 py-2 rounded-full border border-white/10 hover:bg-white/20 transition">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -82,10 +87,11 @@ const ShopCard = ({ products, gridlist }) => {
             </div>
           </div>
 
-          {/* TEXT */}
           <div className="p-4 flex flex-col justify-center items-center text-center gap-2 w-full">
             <Link to={`/shop/${item.id}`}>
-              <h2 className="text-lg font-semibold">{item.name}</h2>
+              <h2 className="text-lg font-semibold text-white">
+                {item.name}
+              </h2>
             </Link>
 
             <div className="flex flex-row gap-1">
@@ -94,9 +100,11 @@ const ShopCard = ({ products, gridlist }) => {
               ))}
             </div>
 
-            <p className="text-xl font-bold text-gray-800">₹{item.price}</p>
+            <p className="text-xl font-bold text-amber-200">
+              INR {item.price}
+            </p>
           </div>
-        </div>
+        </motion.div>
       ))}
     </div>
   );

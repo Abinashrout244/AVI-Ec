@@ -54,11 +54,11 @@ const AboutUs = () => {
     },
   ];
   return (
-    <section className="grid grid-cols-1 md:grid-cols-3  items-center justify-between bg-linear-to-r from-gray-900 to-yellow-400 text-white h-screen md:h-[85vh]  p-8 md:py-20 md:pl-56">
+    <section className="grid grid-cols-1 md:grid-cols-3 items-center justify-between bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-white h-screen md:h-[85vh] p-8 md:py-20 md:pl-56">
       <div className="flex flex-col gap-6 md:w-1/2">
         {countList.map((item, index) => {
           return (
-            <div className="flex flex-row gap-10 items-center " key={index}>
+            <div className="flex flex-row gap-10 items-center" key={index}>
               <div className="shrink-0">{item.iconName}</div>
 
               <div className="space-y-1">
@@ -76,18 +76,16 @@ const AboutUs = () => {
       </div>
 
       <div className="flex flex-col gap-4 col-span-2 md:pl-40  pl-3 md:pt-0 ">
-        <p className="tex-xl md:text-sm">Why Choose Us</p>
-        <h1 className="text-3xl md:text-5xl font-semibold text-black">
+        <p className="tex-xl md:text-sm text-amber-200">Why Choose Us</p>
+        <h1 className="text-3xl md:text-5xl font-semibold text-white">
           Become a Marchant
         </h1>
-        <p className="md:text-lg text-[16px] text-slate-100 md:text-slate-800">
+        <p className="md:text-lg text-[16px] text-slate-300">
           Take courses on your any device with our app & learn all about
           business what you want. Just download & install & start to learn
         </p>
         <Link to="/signup">
-          <button className="px-4 py-2 w-[150px] bg-white rounded-sm text-black  text-center items-center font-semibold hover:bg-transparent hover:text-white hover:border-2 hover:border-white">
-            Apply Now
-          </button>
+          <button className="btn-primary w-[150px]">Apply Now</button>
         </Link>
       </div>
     </section>

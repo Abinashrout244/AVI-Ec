@@ -24,11 +24,11 @@ const BlogPage = () => {
   console.log(filterBlog[0]);
 
   return (
-    <div className=" bg-yellow-50">
+    <div className="bg-transparent">
       <HeroBanner title={"Single Blog Pages"} page={"Blog  / BlogDetails"} />
       <div className="grid grid-cols-1 md:grid-cols-3 px-2 md:px-36 py-32 gap-5">
         {/* leftside */}
-        <div className="col-span-2 bg-white  shadow shadow-gray-300 ">
+        <div className="col-span-2 glass-panel rounded-3xl">
           {filterBlog.map((item) => {
             return (
               <div key={item.id} className="rounded-t-sm \ overflow-hidden">
@@ -39,11 +39,11 @@ const BlogPage = () => {
                 />
 
                 <div className="p-6 space-y-6">
-                  <h2 className="text-3xl md:text-4xl font-semibold">
+                  <h2 className="text-3xl md:text-4xl font-semibold text-white">
                     {item?.title}
                   </h2>
 
-                  <div className="flex flex-col md:flex-row gap-5 text-gray-600 text-sm">
+                  <div className="flex flex-col md:flex-row gap-5 text-slate-300 text-sm">
                     <div className="flex flex-row items-center gap-2">
                       <span>
                         <HugeiconsIcon icon={PrisonGuardIcon} />
@@ -83,7 +83,7 @@ const BlogPage = () => {
                     never was greater artst
                   </p>
 
-                  <div className="bg-orange-600 text-white p-5 flex flex-col gap-4">
+                  <div className="bg-amber-300/90 text-slate-900 p-5 rounded-2xl flex flex-col gap-4">
                     <p className="pl-3 md:pl-10">
                       Dynamically recaptiualize distributed technologies is
                       wherease turnkey channels and onotonectally provide access
@@ -115,11 +115,11 @@ const BlogPage = () => {
                       target="_blank"
                       className="absolute inset-0 flex items-center justify-center"
                     >
-                      <div className="bg-white/80 p-4 rounded-full shadow-lg">
+                      <div className="bg-white/10 p-4 rounded-full shadow-lg border border-white/10">
                         <HugeiconsIcon
                           icon={PlayIcon}
                           size={34}
-                          color="orange"
+                          color="#f8d77b"
                         />
                       </div>
                     </a>
@@ -138,15 +138,15 @@ const BlogPage = () => {
                   </p>
 
                   {/*  Bottom section  */}
-                  <div className="flex flex-col gap-4 md:gap-0 md:flex-row justify-center items-center md:justify-between pt-6 mt-6 border-t border-gray-300">
+                  <div className="flex flex-col gap-4 md:gap-0 md:flex-row justify-center items-center md:justify-between pt-6 mt-6 border-t border-white/10">
                     <div className="flex flex-row gap-3">
-                      <button className="py-1.5 hover:-translate-y-1 transition-all ease-in-out px-5 border border-slate-200 font-semibold text-slate-500">
+                      <button className="py-1.5 hover:-translate-y-1 transition-all ease-in-out px-5 border border-white/10 font-semibold text-slate-300 rounded-full">
                         Agency
                       </button>
-                      <button className="py-1.5 hover:-translate-y-1 transition-all ease-in-out px-5 border border-slate-200 font-semibold text-slate-500">
+                      <button className="py-1.5 hover:-translate-y-1 transition-all ease-in-out px-5 border border-white/10 font-semibold text-slate-300 rounded-full">
                         Business
                       </button>
-                      <button className="py-1.5 hover:-translate-y-1 transition-all ease-in-out px-5 border border-slate-200 font-semibold text-slate-500">
+                      <button className="py-1.5 hover:-translate-y-1 transition-all ease-in-out px-5 border border-white/10 font-semibold text-slate-300 rounded-full">
                         Personal
                       </button>
                     </div>
@@ -156,7 +156,7 @@ const BlogPage = () => {
                         icon={Facebook01Icon}
                         size={34}
                         color="white"
-                        className="bg-slate-700 rounded-full p-2 hover:-translate-y-1 transition-all ease-in-out"
+                        className="bg-white/10 border border-white/10 rounded-full p-2 hover:-translate-y-1 transition-all ease-in-out"
                       />
                       <HugeiconsIcon
                         icon={InstagramIcon}

@@ -1,7 +1,7 @@
 import React, { useState } from "react";
-import star from "../assets/icons/star.svg";
 import img from "../assets/images/shop/01.jpg";
-let ReviewList = [
+
+const ReviewList = [
   {
     imgUrl:
       "https://tse1.mm.bing.net/th/id/OIP.jQc294WED8p75DlIKBgMNAHaE8?pid=Api&P=0&h=180",
@@ -31,18 +31,19 @@ let ReviewList = [
     imgAlt: "Client thumb",
     name: "AVi",
     date: "Posted on Jun 10, 2022 at 6:57 am",
-    desc: "The Author!! build innovativ initiatives before lonterm high-impact awesome theme seo psd porta monetize covalent leadership after without resource.",
+    desc: "The Author! build innovativ initiatives before lonterm high-impact awesome theme seo psd porta monetize covalent leadership after without resource.",
   },
 ];
+
 const ReviewListpage = () => {
   const [active, setActive] = useState("desc");
 
   return (
-    <div className="bg-white pt-2 shadow shadow-slate-400">
+    <div className="glass-panel rounded-3xl pt-2">
       <ul className="flex flex-row justify-start gap-5 p-2">
         <li
-          className={` text-white px-4 py-2 text-center hover:cursor-pointer w-[120px] ${
-            active === "desc" ? " bg-orange-600" : "bg-blue-950"
+          className={`text-white px-4 py-2 text-center hover:cursor-pointer w-[120px] rounded-full ${
+            active === "desc" ? "bg-amber-300 text-slate-900" : "bg-white/10"
           }`}
           onClick={() => {
             setActive("desc");
@@ -51,8 +52,8 @@ const ReviewListpage = () => {
           Description
         </li>
         <li
-          className={` text-white px-4 py-2 text-center w-[120px] hover:cursor-pointer ${
-            active === "review" ? " bg-orange-600" : "bg-blue-950"
+          className={`text-white px-4 py-2 text-center w-[120px] hover:cursor-pointer rounded-full ${
+            active === "review" ? "bg-amber-300 text-slate-900" : "bg-white/10"
           }`}
           onClick={() => {
             setActive("review");
@@ -63,32 +64,32 @@ const ReviewListpage = () => {
       </ul>
 
       {active === "review" && (
-        <ul className=" py-3">
+        <ul className="py-3">
           {ReviewList.map((item, index) => {
             return (
               <li
                 key={index}
-                className="flex flex-row gap-4 hover:brightness-90 hover:cursor-pointer items-start p-4 bg-white border-b border-b-slate-200  "
+                className="flex flex-row gap-4 hover:brightness-110 hover:cursor-pointer items-start p-4 border-b border-white/10"
               >
                 <img
                   src={item.imgUrl}
-                  className="w-16 h-16 object-cover rounded-full border"
+                  className="w-16 h-16 object-cover rounded-full border border-white/10"
                   alt={item.imgAlt}
                 />
 
                 <div className="flex flex-col w-full gap-2">
                   <div className="flex flex-row justify-between items-start">
                     <div className="flex flex-col">
-                      <p className="font-semibold text-gray-900">{item.name}</p>
-                      <p className="text-sm text-gray-500">{item.date}</p>
+                      <p className="font-semibold text-white">{item.name}</p>
+                      <p className="text-sm text-slate-400">{item.date}</p>
                     </div>
 
-                    <div className="text-orange-600 font-bold text-lg">
-                      ★★★★☆
+                    <div className="text-amber-300 font-bold text-lg">
+                      *****
                     </div>
                   </div>
 
-                  <p className="text-gray-700 leading-relaxed">{item.desc}</p>
+                  <p className="text-slate-300 leading-relaxed">{item.desc}</p>
                 </div>
               </li>
             );
@@ -96,51 +97,36 @@ const ReviewListpage = () => {
         </ul>
       )}
       {active === "desc" && (
-        <div className="flex flex-col gap-10 p-5">
+        <div className="flex flex-col gap-10 p-5 text-slate-300">
           <p>
-            LOremEmmet Abbreviation Lorem ipsum dolor sit amet consectetur
-            adipisicing elit. Illum assumenda vitae iusto ea ut veritatis
-            deserunt ullam optio perspiciatis velit aut exercitationem nam, quas
-            aperiam asperiores consectetur nobis dignissimos accusantium?
-            deserunt ullam optio perspiciatis velit aut exercitationem nam, quas
-            aperiam asperiores consectetur nobis dignissimos accusantium?
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum
+            assumenda vitae iusto ea ut veritatis deserunt ullam optio
+            perspiciatis velit aut exercitationem nam, quas aperiam asperiores
+            consectetur nobis dignissimos accusantium?
           </p>
           <div className="flex flex-col gap-6 md:gap-0 md:flex-row justify-around">
             <ul>
-              <li className="flex flex-row gap-1 items-center">
-                <span className="text-orange-600 text-3xl">☆</span>Lorem ipsum
-                dolor sit amet, consectetur adipisicing elit
-              </li>
-              <li className="flex flex-row gap-1 items-center">
-                <span className="text-orange-600 text-3xl">☆</span>Lorem ipsum
-                dolor sit amet, consectetur adipisicing elit
-              </li>
-              <li className="flex flex-row gap-1 items-center">
-                <span className="text-orange-600 text-3xl">☆</span>Lorem ipsum
-                dolor sit amet, consectetur elit
-              </li>
-              <li className="flex flex-row gap-1 items-center">
-                <span className="text-orange-600 text-3xl">☆</span>Lorem ipsum
-                dolor sit amet, adipisicing elit
-              </li>
-              <li className="flex flex-row gap-1 items-center">
-                <span className="text-orange-600 text-3xl">☆</span>Lorem ipsum
-                dolor sit adipisicing elit
-              </li>
-              <li className="flex flex-row gap-1 items-center">
-                <span className="text-orange-600 text-3xl">☆</span>Lorem ipsum
-                dolor sit amet, consectetur .
-              </li>
+              {[
+                "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+                "Lorem ipsum dolor sit amet, consectetur adipisicing elit",
+                "Lorem ipsum dolor sit amet, consectetur elit",
+                "Lorem ipsum dolor sit amet, adipisicing elit",
+                "Lorem ipsum dolor sit adipisicing elit",
+                "Lorem ipsum dolor sit amet, consectetur",
+              ].map((line, idx) => (
+                <li key={idx} className="flex flex-row gap-1 items-center">
+                  <span className="text-amber-300 text-3xl">*</span>
+                  {line}
+                </li>
+              ))}
             </ul>
-            <img src={img} />
+            <img src={img} alt="product review" />
           </div>
           <p>
-            LOremEmmet Abbreviation Lorem ipsum dolor sit amet consectetur
-            adipisicing elit. Illum assumenda vitae iusto ea ut veritatis
-            deserunt ullam optio perspiciatis velit aut exercitationem nam, quas
-            aperiam asperiores consectetur nobis dignissimos accusantium?
-            deserunt ullam optio perspiciatis velit aut exercitationem nam, quas
-            aperiam asperiores consectetur nobis dignissimos accusantium?
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Illum
+            assumenda vitae iusto ea ut veritatis deserunt ullam optio
+            perspiciatis velit aut exercitationem nam, quas aperiam asperiores
+            consectetur nobis dignissimos accusantium?
           </p>
         </div>
       )}

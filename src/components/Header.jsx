@@ -1,82 +1,85 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
+import { motion, useMotionValueEvent, useScroll } from "framer-motion";
 import Logo from "../assets/images/logo/logo.png";
 import { AuthContext } from "../context/AuthProvider";
 import profile from "../assets/images/profileimage/avi.jpg";
 
 const Header = () => {
   const [hedaerPos, setHedaerPos] = useState(false);
+  const [hidden, setHidden] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
+  const [profileDrop, setProfileDrop] = useState(false);
   const mneuopen = () => setToggleMenu((prev) => !prev);
   const { user, logOut } = useContext(AuthContext);
-  console.log(user);
-  const [profileDrop, setProfileDrop] = useState(false);
+  const { scrollY } = useScroll();
+  const lastScrollY = useRef(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setHedaerPos(true);
-      } else {
-        setHedaerPos(false);
-      }
+      setHedaerPos(window.scrollY > 50);
     };
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
+
+  useMotionValueEvent(scrollY, "change", (latest) => {
+    const prev = lastScrollY.current;
+    if (latest > prev && latest > 120) {
+      setHidden(true);
+    } else {
+      setHidden(false);
+    }
+    lastScrollY.current = latest;
+  });
+
   return (
-    <header
-      className={` px-2 md:px-24  text-black font-semibold  w-full z-20 ${
+    <motion.header
+      initial={false}
+      animate={{ y: hidden ? -96 : 0 }}
+      transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      className={`px-2 md:px-20 font-semibold w-full z-40 ${
         hedaerPos
-          ? "fixed top-0 left-0 bg-white shadow-md text-gray-800 py-2"
-          : "absolute top-0 left-0 bg-transparent text-white py-6"
+          ? "fixed top-0 left-0 glass-panel py-3"
+          : "absolute top-0 left-0 bg-transparent py-6"
       }`}
     >
-      <div></div>
-      {/* nav items */}
-      <div className="flex flex-row justify-between ">
-        {/* Logo area */}
-        <div className="logo ">
-          <Link to={"/"}>
+      <div className="flex flex-row justify-between items-center">
+        <div className="logo">
+          <Link to="/">
             <img src={Logo} className="h-full w-[150px] md:w-full" />
           </Link>
         </div>
-        {/* menuarea */}
-        <div className=" hidden md:flex flex-row gap-20 items-center justify-around ">
-          <ul className="flex flex-row justify-around gap-10 text-black">
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/shop">Shop</Link>
-            </li>
-            <li>
-              <Link to="/blog">Blog</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-            <li>
-              <Link to="/contact">Contact</Link>
-            </li>
+
+        <div className="hidden md:flex flex-row gap-20 items-center justify-around">
+          <ul className="flex flex-row justify-around gap-10 text-white/80">
+            {[
+              { label: "Home", link: "/" },
+              { label: "Shop", link: "/shop" },
+              { label: "Blog", link: "/blog" },
+              { label: "About", link: "/about" },
+              { label: "Contact", link: "/contact" },
+            ].map((item) => (
+              <li key={item.label}>
+                <Link className="hover:text-white transition" to={item.link}>
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
-          {/* If NOT logged in */}
+
           {!user && (
             <div className="flex flex-row gap-3">
               <Link to="/signup">
-                <button className="bg-blue-500 py-2 text-white font-semibold px-3.5 rounded-lg">
-                  Create Account
-                </button>
+                <button className="btn-ghost">Create Account</button>
               </Link>
               <Link to="/login">
-                <button className="bg-orange-500 py-2 text-white font-semibold px-3.5 rounded-lg">
-                  Login
-                </button>
+                <button className="btn-primary">Login</button>
               </Link>
             </div>
           )}
 
-          {/* If logged in */}
           {user && (
             <div className="relative">
               <button
@@ -86,17 +89,17 @@ const Header = () => {
                 <div className="flex items-center">
                   <img
                     src={profile}
-                    className="size-12 rounded-full object-cover ring-2 ring-white shadow-md hover:ring-blue-400 transition-all duration-200"
+                    className="size-12 rounded-full object-cover ring-2 ring-white/70 shadow-md hover:ring-amber-300 transition-all duration-200"
                     alt="profile"
                   />
                 </div>
               </button>
 
               {profileDrop && (
-                <div className="absolute right-0 mt-2 bg-white shadow-lg text-black rounded-lg w-40 py-2">
+                <div className="absolute right-0 mt-3 glass-panel text-white rounded-2xl w-44 py-2">
                   <Link
                     to="/cart-page"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    className="block px-4 py-2 hover:bg-white/10"
                     onClick={() => setProfileDrop(false)}
                   >
                     Cart Page
@@ -104,14 +107,14 @@ const Header = () => {
 
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 hover:bg-gray-100"
+                    className="block px-4 py-2 hover:bg-white/10"
                     onClick={() => setProfileDrop(false)}
                   >
                     Profile
                   </Link>
 
                   <button
-                    className="w-full text-left px-4 py-2 hover:bg-gray-100"
+                    className="w-full text-left px-4 py-2 hover:bg-white/10"
                     onClick={logOut}
                   >
                     Logout
@@ -122,19 +125,16 @@ const Header = () => {
           )}
         </div>
 
-        {/* mobile menu */}
-        {/* MOBILE RIGHT SECTION (Visible only on mobile) */}
         <div className="flex items-center gap-4 md:hidden">
-          {/* MOBILE AUTH BUTTONS */}
           {!user ? (
             <div className="flex items-center gap-2">
               <Link to="/login">
-                <button className="bg-orange-500 text-white py-1 px-3 rounded-md text-sm">
+                <button className="btn-primary px-3 py-1.5 text-xs">
                   Login
                 </button>
               </Link>
               <Link to="/signup">
-                <button className="bg-blue-500 text-white py-1 px-3 rounded-md text-sm">
+                <button className="btn-ghost px-3 py-1.5 text-xs">
                   Sign Up
                 </button>
               </Link>
@@ -143,63 +143,58 @@ const Header = () => {
             <button onClick={() => setProfileDrop(!profileDrop)}>
               <img
                 src={profile}
-                className="size-10 rounded-full object-cover ring-2 ring-white"
+                className="size-10 rounded-full object-cover ring-2 ring-white/70"
                 alt="profile"
               />
             </button>
           )}
 
-          {/* MENU ICON */}
           <button
-            className="text-3xl font-semibold items-center"
+            className="text-xs font-semibold items-center border border-white/20 rounded-full px-3 py-1 text-white/80"
             onClick={() => setToggleMenu(!toggleMenu)}
           >
-            {toggleMenu ? "❌" : "☰"}
+            {toggleMenu ? "Close" : "Menu"}
           </button>
         </div>
 
-        {/* MOBILE DROPDOWN — ONLY NAV LINKS */}
         {toggleMenu && (
-          <div className="absolute bg-blue-300 top-full left-0 w-full flex flex-col items-center gap-4 py-6 md:hidden">
-            <ul className="flex flex-col gap-6 text-lg font-medium text-black">
-              <li onClick={mneuopen}>
-                <Link to="/">Home</Link>
-              </li>
-              <li onClick={mneuopen}>
-                <Link to="/shop">Shop</Link>
-              </li>
-              <li onClick={mneuopen}>
-                <Link to="/blog">Blog</Link>
-              </li>
-              <li onClick={mneuopen}>
-                <Link to="/about">About</Link>
-              </li>
-              <li onClick={mneuopen}>
-                <Link to="/contact">Contact</Link>
-              </li>
+          <div className="absolute glass-panel top-full left-4 right-4 rounded-2xl flex flex-col items-center gap-4 py-6 md:hidden">
+            <ul className="flex flex-col gap-6 text-base font-medium text-white/80">
+              {[
+                { label: "Home", link: "/" },
+                { label: "Shop", link: "/shop" },
+                { label: "Blog", link: "/blog" },
+                { label: "About", link: "/about" },
+                { label: "Contact", link: "/contact" },
+              ].map((item) => (
+                <li key={item.label} onClick={mneuopen}>
+                  <Link className="hover:text-white transition" to={item.link}>
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
         )}
 
-        {/* MOBILE PROFILE DROPDOWN */}
         {profileDrop && user && (
-          <div className="absolute -right-5 top-20 bg-white shadow-lg text-black rounded-lg w-40 py-2 md:hidden">
+          <div className="absolute -right-2 top-20 glass-panel text-white rounded-2xl w-40 py-2 md:hidden">
             <Link
               to="/cart-page"
-              className="block px-4 py-2 hover:bg-gray-100"
+              className="block px-4 py-2 hover:bg-white/10"
               onClick={() => setProfileDrop(false)}
             >
               Cart Page
             </Link>
             <Link
               to="/profile"
-              className="block px-4 py-2 hover:bg-gray-100"
+              className="block px-4 py-2 hover:bg-white/10"
               onClick={() => setProfileDrop(false)}
             >
               Profile
             </Link>
             <button
-              className="w-full text-left px-4 py-2 hover:bg-gray-100"
+              className="w-full text-left px-4 py-2 hover:bg-white/10"
               onClick={logOut}
             >
               Logout
@@ -207,7 +202,7 @@ const Header = () => {
           </div>
         )}
       </div>
-    </header>
+    </motion.header>
   );
 };
 

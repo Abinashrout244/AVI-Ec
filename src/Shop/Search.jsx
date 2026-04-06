@@ -10,14 +10,14 @@ const Search = ({ products, search, setSearch }) => {
           type="text"
           name="search"
           placeholder="Search..."
-          className="border border-gray-300 rounded-l-full px-4 py-2 w-full outline-none text-slate-700"
+          className="border border-white/10 rounded-l-full px-4 py-2 w-full outline-none text-white bg-transparent placeholder:text-slate-400"
           value={search}
           onChange={(e) => {
             setSearch(e.target.value);
           }}
         />
 
-        <button className="px-4 py-2 border border-gray-300 rounded-r-full">
+        <button className="px-4 py-2 border border-white/10 rounded-r-full bg-white/10 hover:bg-white/20 transition">
           <img src={icon_search} alt="search_logo" className="size-6" />
         </button>
       </div>

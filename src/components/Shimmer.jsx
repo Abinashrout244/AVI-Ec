@@ -4,15 +4,15 @@ const Shimmer = () => {
       {Array(9)
         .fill("")
         .map((_, i) => (
-          <div key={i} className="bg-white rounded-xl shadow p-4 animate-pulse">
+          <div key={i} className="lux-card p-4 animate-pulse">
             {/* Image */}
-            <div className="h-40 bg-gray-300 rounded-lg" />
+            <div className="h-40 bg-white/10 rounded-lg" />
 
             {/* Title */}
-            <div className="h-4 bg-gray-300 rounded mt-4 w-3/4" />
+            <div className="h-4 bg-white/10 rounded mt-4 w-3/4" />
 
             {/* Subtitle */}
-            <div className="h-3 bg-gray-300 rounded mt-2 w-1/2" />
+            <div className="h-3 bg-white/10 rounded mt-2 w-1/2" />
           </div>
         ))}
     </div>

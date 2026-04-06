@@ -4,6 +4,7 @@ import search from "../assets/icons/search-2.svg";
 import Select from "../components/Select";
 import Product from "../products.json";
 import { Link } from "react-router-dom";
+import { motion } from "framer-motion";
 
 const Banner = () => {
   const description = "We have the Largest collections of products";
@@ -24,19 +25,37 @@ const Banner = () => {
 
   return (
     <>
-      <div
-        className="relative bg-cover bg-center bg-no-repeat h-screen flex flex-col items-center justify-center text-white"
-        style={{
-          backgroundImage: `url(${bg})`,
-        }}
-      >
-        <div className="text-center px-4 md:px-96 space-y-3">
-          <h1 className="text-3xl md:text-5xl font-semibold mb-4">
-            Search your One from Thousands of Products
-          </h1>
+      <section className="relative h-[92vh] md:h-[88vh] flex items-center justify-center overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
+          style={{
+            backgroundImage: `url(${bg})`,
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-slate-950/90" />
 
-          <div className="relative w-full md:w-[600px] mx-auto">
-            <div className="flex md:flex-row flex-col items-center gap-2 bg-white shadow-md shadow-slate-600 rounded-md md:rounded-full px-6 py-2 w-full">
+        <motion.div
+          initial={{ opacity: 0, y: 24 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
+          className="relative z-10 text-center px-4 md:px-32 space-y-6"
+        >
+          <motion.h1
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 0.1 }}
+            className="text-4xl md:text-6xl font-semibold leading-tight"
+          >
+            Search your One from Thousands of Products
+          </motion.h1>
+
+          <motion.div
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            className="relative w-full md:w-[640px] mx-auto"
+          >
+            <div className="glass-panel rounded-2xl px-4 py-3 flex md:flex-row flex-col items-center gap-2">
               <Select select={"all"} />
 
               <div className="flex flex-row flex-1">
@@ -44,46 +63,44 @@ const Banner = () => {
                   type="text"
                   name="search"
                   value={searchText}
-                  placeholder="Search..."
-                  className="border border-gray-300 rounded-l-full px-4 py-2 w-full outline-none text-slate-700"
+                  placeholder="Search premium collections"
+                  className="bg-transparent border border-white/10 rounded-l-full px-4 py-2 w-full outline-none text-slate-100 placeholder:text-slate-400"
                   onChange={(e) => setSearchText(e.target.value)}
                 />
 
-                <button className="px-4 py-2 border border-gray-300 rounded-r-full">
+                <button className="px-4 py-2 border border-white/10 rounded-r-full bg-white/10 hover:bg-white/20 transition">
                   <img src={search} alt="search_logo" className="size-6" />
                 </button>
               </div>
             </div>
 
             {searchText && (
-              <ul
-                className="absolute left-0 right-0 top-full mt-2 bg-gray-200
-                rounded-xl shadow-xl border border-gray-200 
-               max-h-40 md:max-h-64 overflow-y-auto z-10"
-              >
+              <ul className="absolute left-0 right-0 top-full mt-3 glass-panel rounded-2xl max-h-40 md:max-h-64 overflow-y-auto z-10">
                 {filterProducts.length > 0 ? (
                   filterProducts.map((item) => (
                     <Link to={`/shop/${item.id}`} key={item.id}>
-                      {" "}
-                      <li
-                        className="px-4 py-3 text-gray-700 cursor-pointer 
-                      hover:bg-slate-600/50 active:bg-slate-500
-                      transition-colors"
-                      >
+                      <li className="px-4 py-3 text-slate-100 cursor-pointer hover:bg-white/10 transition-colors">
                         {item.name}
                       </li>
                     </Link>
                   ))
                 ) : (
-                  <li className="px-4 py-3 text-gray-500">No results found</li>
+                  <li className="px-4 py-3 text-slate-400">No results found</li>
                 )}
               </ul>
             )}
-          </div>
+          </motion.div>
 
-          <p className="text-lg mb-6">{description}</p>
-        </div>
-      </div>
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.3 }}
+            className="text-lg text-slate-200"
+          >
+            {description}
+          </motion.p>
+        </motion.div>
+      </section>
     </>
   );
 };

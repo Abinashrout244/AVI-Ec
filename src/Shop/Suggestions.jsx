@@ -7,9 +7,9 @@ const Suggestions = ({ filteredsearchproducts, search }) => {
         filteredsearchproducts.map((prod) => {
           return (
             <Link to={`/shop/${prod.id}`} key={prod.id}>
-              <div className="flex flex-row gap-2 items-center bg-gray-300/50 rounded-md p-2">
+              <div className="flex flex-row gap-2 items-center bg-white/5 rounded-2xl p-2 border border-white/10">
                 <img src={prod.img} className="object-cover size-12" />
-                <h2>{prod.name}</h2>
+                <h2 className="text-white">{prod.name}</h2>
               </div>
             </Link>
           );

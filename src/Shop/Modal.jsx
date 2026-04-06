@@ -7,12 +7,12 @@ const Modal = ({ isOpen, onClose, children }) => {
     <div className="fixed inset-0 z-50 flex justify-center items-center">
       {/* Dark Overlay */}
       <div
-        className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+        className="absolute inset-0 bg-black/70 backdrop-blur-sm"
         onClick={onClose}
       ></div>
 
       {/* Modal Box */}
-      <div className="relative bg-white w-[90%] max-w-[500px] max-h-[80vh] overflow-y-auto rounded-lg shadow-lg p-5">
+      <div className="relative glass-panel w-[92%] max-w-[560px] max-h-[80vh] overflow-y-auto rounded-3xl shadow-lg p-6">
         {children}
       </div>
     </div>

@@ -31,15 +31,15 @@ const aboutList = [
 
 const About = () => {
   return (
-    <div className="bg-yellow-50">
+    <div className="bg-transparent">
       <HeroBanner title={"About Our Brand"} page={"About"} />
       <div className="grid grid-cols-1 md:grid-cols-2 px-2 md:px-36 pt-35 pb-5 gap-14">
         {/* left */}
         <div>
-          <div className="bg-white p-2 w-fit relative">
+          <div className="glass-panel p-2 w-fit relative rounded-2xl">
             <img src={img1} />
 
-            <div className="bg-orange-600 flex flex-col justify-center items-center w-[100px] p-2 h-[120px] border-8 border-white absolute bottom-0 left-0">
+            <div className="bg-amber-300 flex flex-col justify-center items-center w-[100px] p-2 h-[120px] border-8 border-slate-900/60 absolute bottom-0 left-0 rounded-tr-2xl">
               <p className="text-4xl text-center text-white font-semibold">
                 30+
               </p>
@@ -47,17 +47,17 @@ const About = () => {
             </div>
           </div>
 
-          <div className="bg-white p-2 md:w-fit relative md:-right-[340px] md:-top-[250px] mt-3 md:mt-0">
+          <div className="glass-panel p-2 md:w-fit relative md:-right-[340px] md:-top-[250px] mt-3 md:mt-0 rounded-2xl">
             <img src={img2} className="w-full" />
           </div>
         </div>
         {/* right */}
-        <div className="flex flex-col gap-3">
-          <h2 className="text-xl">ABOUT OUR BRAND</h2>
+        <div className="flex flex-col gap-3 text-white">
+          <h2 className="text-xl text-amber-200">ABOUT OUR BRAND</h2>
           <p className="text-2xl md:text-3xl font-semibold">
             Good Qualification Services And Better Expriences
           </p>
-          <p>{desc}</p>
+          <p className="text-slate-300">{desc}</p>
           <ul className="flex flex-col gap-5 mt-6">
             {aboutList.map((item, index) => {
               return (
@@ -68,8 +68,10 @@ const About = () => {
                     className="rounded-full size-16"
                   />
                   <div className="flex flex-col gap-1.5">
-                    <h2 className="text-xl font-semibold">{item.title}</h2>
-                    <p>{item.desc}</p>
+                    <h2 className="text-xl font-semibold text-white">
+                      {item.title}
+                    </h2>
+                    <p className="text-slate-300">{item.desc}</p>
                   </div>
                 </li>
               );

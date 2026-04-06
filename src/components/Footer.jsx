@@ -232,31 +232,15 @@ const tweetList = [
   },
 ];
 
-const footerbottomList = [
-  {
-    text: "Faculty",
-    link: "#",
-  },
-  {
-    text: "Staff",
-    link: "#",
-  },
-  {
-    text: "Students",
-    link: "#",
-  },
-  {
-    text: "Alumni",
-    link: "#",
-  },
-];
 const Footer = () => {
   return (
-    <footer className="bg-black text-white py-16 px-6 md:px-12">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
+    <footer className="mt-20 px-6 md:px-12 pb-14">
+      <div className="glass-panel rounded-[28px] px-6 md:px-12 py-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-12">
         <div>
-          <h2 className="text-xl font-semibold mb-4">About ShopCart</h2>
-          <p className="text-gray-300 leading-relaxed mb-5">
+          <h2 className="text-xl font-semibold mb-4 text-white">
+            About ShopCart
+          </h2>
+          <p className="text-slate-300 leading-relaxed mb-5">
             Eduaid theme number one world class university in the world There
             are student are studing always in this university for all time.
           </p>
@@ -264,8 +248,8 @@ const Footer = () => {
           <div className="space-y-3 mb-6">
             {addressList.map((item, i) => (
               <div key={i} className="flex items-start gap-3">
-                <span className="text-yellow-400">{item.iconName}</span>
-                <p className="text-gray-300">{item.text}</p>
+                <span className="text-amber-300">{item.iconName}</span>
+                <p className="text-slate-300">{item.text}</p>
               </div>
             ))}
           </div>
@@ -275,7 +259,7 @@ const Footer = () => {
               <a
                 key={i}
                 href={item.siteLink}
-                className="p-2 rounded-full bg-gray-800 hover:bg-yellow-500 transition"
+                className="p-2 rounded-full bg-white/10 hover:bg-amber-300 hover:text-slate-900 transition"
               >
                 {item.iconName}
               </a>
@@ -284,13 +268,13 @@ const Footer = () => {
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold mb-4">Categories</h2>
+          <h2 className="text-xl font-semibold mb-4 text-white">Categories</h2>
           <div className="space-y-2">
             {ItemList.map((item, i) => (
               <Link
                 key={i}
                 to={item.link}
-                className="block text-gray-300 hover:text-yellow-400 transition"
+                className="block text-slate-300 hover:text-amber-300 transition"
               >
                 {item.text}
               </Link>
@@ -299,13 +283,13 @@ const Footer = () => {
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold mb-4">Quick Links</h2>
+          <h2 className="text-xl font-semibold mb-4 text-white">Quick Links</h2>
           <div className="space-y-2">
             {quickList.map((item, i) => (
               <Link
                 key={i}
                 href={item.link}
-                className="block text-gray-300 hover:text-yellow-400 transition"
+                className="block text-slate-300 hover:text-amber-300 transition"
               >
                 {item.text}
               </Link>
@@ -314,22 +298,24 @@ const Footer = () => {
         </div>
 
         <div>
-          <h2 className="text-xl font-semibold mb-4">Recent Tweets</h2>
+          <h2 className="text-xl font-semibold mb-4 text-white">
+            Recent Tweets
+          </h2>
           <div className="space-y-4">
             {tweetList.map((item, i) => (
               <div key={i} className="flex gap-3">
-                <span className="text-blue-500 mt-1">{item.iconName}</span>
-                <h2 className="text-gray-300 leading-relaxed">{item.desc}</h2>
+                <span className="text-sky-400 mt-1">{item.iconName}</span>
+                <h2 className="text-slate-300 leading-relaxed">{item.desc}</h2>
               </div>
             ))}
           </div>
         </div>
       </div>
 
-      <div className="border-t border-gray-700 mt-14 pt-6 text-center">
-        <p className="text-gray-400 text-sm">
-          © {new Date().getFullYear()} <Link to="/">ShopCart</Link>. All Rights
-          Reserved.
+      <div className="mt-10 text-center">
+        <p className="text-slate-400 text-sm">
+          (c) {new Date().getFullYear()} <Link to="/">ShopCart</Link>. All
+          Rights Reserved.
         </p>
       </div>
     </footer>

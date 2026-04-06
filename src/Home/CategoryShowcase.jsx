@@ -141,7 +141,7 @@ const CategoryShowcase = () => {
     }
   };
   return (
-    <div className=" md:px-22 pt-20 md:pt-32 pb-28 bg-gray-200 flex flex-col gap-16 ">
+    <div className=" md:px-22 pt-20 md:pt-32 pb-28 bg-transparent flex flex-col gap-16 ">
       <CategoryShowcaseHeader filterItem={filterItem} active={active} />
       <div className="grid grid-cols-1 md:grid-cols-4 px-2 gap-5 ">
         {data.map((item) => {

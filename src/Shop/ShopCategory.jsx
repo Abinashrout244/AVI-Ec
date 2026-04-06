@@ -12,8 +12,8 @@ const categoies = [
 ];
 const ShopCategory = ({ filterCtaegory, selectCategory }) => {
   return (
-    <div className="mt-3 pl-2  ">
-      <h2 className="text-lg font-sans">ShopCategory</h2>
+    <div className="mt-3 pl-2">
+      <h2 className="text-lg font-sans text-white">Shop Category</h2>
       <div className="flex flex-row flex-wrap gap-5 mt-4 py-3">
         {categoies.map((cat, index) => {
           return (
@@ -22,10 +22,10 @@ const ShopCategory = ({ filterCtaegory, selectCategory }) => {
               onClick={() => {
                 filterCtaegory(cat);
               }}
-              className={`p-2 bg-gray-300/50 rounded-md text-black ${
+              className={`p-2 rounded-full text-sm border border-white/10 text-slate-200 ${
                 selectCategory === cat
-                  ? "bg-rose-600 text-white"
-                  : "bg-gray-300/50 "
+                  ? "bg-amber-300 text-slate-900"
+                  : "bg-white/5 hover:bg-white/10"
               }`}
             >
               {cat}
