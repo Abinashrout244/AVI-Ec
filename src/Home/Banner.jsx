@@ -1,107 +1,127 @@
-import React, { useEffect, useState } from "react";
-import bg from "../assets/images/bg-banner/bg-banner.jpg";
-import search from "../assets/icons/search-2.svg";
+import React, { useEffect, useState, useRef } from "react";
+import searchIcon from "../assets/icons/search-2.svg";
 import Select from "../components/Select";
 import Product from "../products.json";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 
 const Banner = () => {
-  const description = "We have the Largest collections of products";
   const [searchText, setSearchText] = useState("");
   const [filterProducts, setFilterProducts] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const data = Product;
+  const dropdownRef = useRef(null);
 
   useEffect(() => {
-    handlefilter();
-  }, [searchText]);
+    // Filter logic
+    if (searchText.trim() === "") {
+      setFilterProducts([]);
+      setShowDropdown(false);
+    } else {
+      const filter = data.filter((prod) =>
+        prod.name.toLowerCase().includes(searchText.toLowerCase()),
+      );
+      setFilterProducts(filter);
+      setShowDropdown(true);
+    }
+  }, [searchText, data]);
 
-  const handlefilter = () => {
-    const filter = data.filter((prod) =>
-      prod.name.toLowerCase().includes(searchText.toLowerCase())
-    );
-    setFilterProducts(filter);
+  // Handle clicking a suggestion
+  const handleSelectProduct = (name) => {
+    setSearchText(name); // This prints the name into the input
+    setShowDropdown(false); // Close dropdown after selection
   };
 
   return (
-    <>
-      <section className="relative h-[92vh] md:h-[88vh] flex items-center justify-center overflow-hidden">
-        <div
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url(${bg})`,
-          }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/40 to-slate-950/90" />
+    <section className="relative min-h-[90vh] flex items-center justify-center bg-[#050505]">
+      {/* Background stays the same - Minimalist Luxury */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-amber-500/5 blur-[120px]" />
+        <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-blue-600/5 blur-[120px]" />
+      </div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-          className="relative z-10 text-center px-4 md:px-32 space-y-6"
-        >
-          <motion.h1
-            initial={{ opacity: 0, y: 18 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="text-4xl md:text-6xl font-semibold leading-tight"
-          >
-            Search your One from Thousands of Products
-          </motion.h1>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+        className="relative z-20 w-full max-w-7xl mx-auto px-6 text-center"
+      >
+        <motion.span className="inline-block text-[10px] uppercase tracking-[0.5em] text-amber-500/60 mb-6 font-medium">
+          The Curated Selection
+        </motion.span>
 
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="relative w-full md:w-[640px] mx-auto"
-          >
-            <div className="glass-panel rounded-2xl px-4 py-3 flex md:flex-row flex-col items-center gap-2">
+        <motion.h1 className="text-5xl md:text-8xl font-serif text-white leading-[1.1] mb-10 tracking-tight">
+          Exquisite Finds <br />
+          <span className="italic text-white/40 font-light text-4xl md:text-7xl">
+            For the Collector
+          </span>
+        </motion.h1>
+
+        {/* --- LUXURY SEARCH BAR --- */}
+        <div className="relative max-w-2xl mx-auto">
+          <div className="relative flex items-center bg-white/[0.03] backdrop-blur-3xl border border-white/10 rounded-full p-1.5 transition-all duration-500 focus-within:border-white/30 shadow-2xl">
+            <div className="hidden md:block pl-4 pr-2 border-r border-white/10">
               <Select select={"all"} />
-
-              <div className="flex flex-row flex-1">
-                <input
-                  type="text"
-                  name="search"
-                  value={searchText}
-                  placeholder="Search premium collections"
-                  className="bg-transparent border border-white/10 rounded-l-full px-4 py-2 w-full outline-none text-slate-100 placeholder:text-slate-400"
-                  onChange={(e) => setSearchText(e.target.value)}
-                />
-
-                <button className="px-4 py-2 border border-white/10 rounded-r-full bg-white/10 hover:bg-white/20 transition">
-                  <img src={search} alt="search_logo" className="size-6" />
-                </button>
-              </div>
             </div>
 
-            {searchText && (
-              <ul className="absolute left-0 right-0 top-full mt-3 glass-panel rounded-2xl max-h-40 md:max-h-64 overflow-y-auto z-10">
+            <input
+              type="text"
+              value={searchText}
+              onChange={(e) => setSearchText(e.target.value)}
+              placeholder="Search masterpieces..."
+              className="flex-1 bg-transparent px-6 py-3 outline-none text-white font-light tracking-wide placeholder:text-white/20 text-sm md:text-base"
+            />
+
+            <button className="bg-white p-3 rounded-full hover:bg-amber-400 transition-all duration-500">
+              <img src={searchIcon} alt="search" className="size-5 invert" />
+            </button>
+          </div>
+
+          {/* --- RESULTS DROPDOWN (Fixed Logic) --- */}
+          <AnimatePresence>
+            {showDropdown && (
+              <motion.ul
+                ref={dropdownRef}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -10 }}
+                // This z-index and absolute positioning ensures it shows over the content
+                className="absolute left-0 right-0 mt-4 bg-zinc-900/95 backdrop-blur-3xl border border-white/10 rounded-2xl overflow-hidden shadow-[0_30px_60px_rgba(0,0,0,0.8)] z-[100] max-h-[300px] overflow-y-auto custom-scrollbar"
+              >
                 {filterProducts.length > 0 ? (
                   filterProducts.map((item) => (
-                    <Link to={`/shop/${item.id}`} key={item.id}>
-                      <li className="px-4 py-3 text-slate-100 cursor-pointer hover:bg-white/10 transition-colors">
-                        {item.name}
-                      </li>
-                    </Link>
+                    <li
+                      key={item.id}
+                      onClick={() => handleSelectProduct(item.name)}
+                      className="group px-8 py-4 text-left flex justify-between items-center hover:bg-white/[0.05] cursor-pointer transition-all border-b border-white/5 last:border-none"
+                    >
+                      <div className="flex flex-col">
+                        <span className="text-white text-sm font-light group-hover:text-amber-400 transition-colors">
+                          {item.name}
+                        </span>
+                        <span className="text-[10px] text-white/30 uppercase tracking-widest">
+                          {item.category || "Collection"}
+                        </span>
+                      </div>
+                      <Link
+                        to={`/shop/${item.id}`}
+                        className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-amber-500 uppercase tracking-tighter"
+                      >
+                        Details →
+                      </Link>
+                    </li>
                   ))
                 ) : (
-                  <li className="px-4 py-3 text-slate-400">No results found</li>
+                  <li className="px-8 py-6 text-white/30 text-sm italic">
+                    No pieces found in our vault.
+                  </li>
                 )}
-              </ul>
+              </motion.ul>
             )}
-          </motion.div>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="text-lg text-slate-200"
-          >
-            {description}
-          </motion.p>
-        </motion.div>
-      </section>
-    </>
+          </AnimatePresence>
+        </div>
+      </motion.div>
+    </section>
   );
 };
 
