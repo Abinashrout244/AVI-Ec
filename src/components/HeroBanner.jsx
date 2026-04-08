@@ -33,6 +33,13 @@ const pageConfig = {
     sub: "We'd love to hear from you",
     tag: "Get in Touch",
   },
+  "Contact Us": {
+    accent: "#f0abfc",
+    accentRgb: "240,171,252",
+    glow: "#86198f",
+    sub: "We'd love to hear from you",
+    tag: "Get in Touch",
+  },
   Default: {
     accent: "#fbbf24",
     accentRgb: "251,191,36",
