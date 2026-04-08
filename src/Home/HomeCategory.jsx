@@ -6,7 +6,8 @@ import icon from "../assets/icons/cube.svg";
 
 const categoryList = [
   {
-    imgUrl: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=600&q=80",
     imgAlt: "DSLR Camera",
     iconName: icon,
     title: "DSLR Camera",
@@ -15,7 +16,8 @@ const categoryList = [
     accent: "#818cf8",
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
     imgAlt: "Shoes",
     iconName: icon,
     title: "Shoes",
@@ -24,7 +26,8 @@ const categoryList = [
     accent: "#34d399",
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1591154669695-5f2a8d20c089?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1756705533779-105bf34e0722?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     imgAlt: "Photography",
     iconName: icon,
     title: "Photography",
@@ -33,7 +36,8 @@ const categoryList = [
     accent: "#f59e0b",
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1594938298603-c8148c4cbb76?w=600&q=80",
+    imgUrl:
+      "https://i.pinimg.com/736x/40/f8/e0/40f8e031add6ee1019966446130bc235.jpg",
     imgAlt: "Formal Dress",
     iconName: icon,
     title: "Formal Dress",
@@ -42,7 +46,8 @@ const categoryList = [
     accent: "#38bdf8",
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80",
+    imgUrl:
+      "http://www.galaxybags.com.pk/cdn/shop/files/IMG_1844.jpg?v=1714918713",
     imgAlt: "Colorful Bags",
     iconName: icon,
     title: "Colorful Bags",
@@ -51,7 +56,8 @@ const categoryList = [
     accent: "#f472b6",
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=600&q=80",
+    imgUrl:
+      "https://www.hello-hayley.com/wp-content/uploads/2024/08/funky-living-room-ideas-1-683x1024.jpg",
     imgAlt: "Home Decor",
     iconName: icon,
     title: "Home Decor",
