@@ -33,6 +33,13 @@ const pageConfig = {
     sub: "We'd love to hear from you",
     tag: "Get in Touch",
   },
+  "Like Page": {
+    accent: "#fda4af",
+    accentRgb: "253,164,175",
+    glow: "#be123c",
+    sub: "Your saved favorites in one place",
+    tag: "Wishlist",
+  },
   "Contact Us": {
     accent: "#f0abfc",
     accentRgb: "240,171,252",

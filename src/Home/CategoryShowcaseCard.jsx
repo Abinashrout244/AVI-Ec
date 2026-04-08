@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React from "react";
 import { motion } from "framer-motion";
-import { Link } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem } from "../utilis/CartSlice";
+import { toggleWishlist } from "../utilis/WishlistSlice";
+import { addToast } from "../utilis/ToastSlice";
 
 const StarRating = ({ rating }) => {
   return (
@@ -26,9 +29,46 @@ const BADGE_COLORS = {
   "Trending": "bg-violet-400/15 text-violet-400 border-violet-400/30",
 };
 
-const CategoryShowcaseCard = ({ imgUrl, cate, title, brand, price, rating, reviews, badge }) => {
-  const [wishlist, setWishlist] = useState(false);
+const CategoryShowcaseCard = ({ imgUrl, cate, title, brand, price, rating, reviews, badge, id }) => {
+  const dispatch = useDispatch();
+  const wishlistItems = useSelector((store) => store?.wishlist?.items || []);
+  const isWishlisted = wishlistItems.some((item) => item.id === id);
+  const numericPrice = Number(String(price || "").replace(/[^0-9.]/g, "")) || 0;
   const formattedPrice = price ? String(price).replace("$", "₹") : "₹00.00";
+
+  const handleAddToCart = () => {
+    dispatch(
+      addItem({
+        id,
+        name: title,
+        img: imgUrl,
+        price: numericPrice,
+        seller: brand,
+        size: "Standard",
+        color: "Default",
+      }),
+    );
+    dispatch(addToast({ type: "success", message: "Added to cart" }));
+  };
+
+  const handleToggleWishlist = () => {
+    dispatch(
+      toggleWishlist({
+        id,
+        name: title,
+        img: imgUrl,
+        price: numericPrice,
+        category: cate,
+        seller: brand,
+      }),
+    );
+    dispatch(
+      addToast({
+        type: isWishlisted ? "info" : "success",
+        message: isWishlisted ? "Removed from likes" : "Added to likes",
+      }),
+    );
+  };
 
   return (
     <motion.div
@@ -54,14 +94,14 @@ const CategoryShowcaseCard = ({ imgUrl, cate, title, brand, price, rating, revie
 
         {/* Wishlist button */}
         <motion.button
-          onClick={() => setWishlist(!wishlist)}
+          onClick={handleToggleWishlist}
           whileHover={{ scale: 1.15 }}
           whileTap={{ scale: 0.9 }}
           className="absolute top-3 right-3 size-9 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center transition-all hover:bg-black/60"
           aria-label="Add to wishlist"
         >
           <svg
-            className={`size-4 transition-colors ${wishlist ? "fill-red-400 text-red-400" : "fill-none text-white/60"}`}
+            className={`size-4 transition-colors ${isWishlisted ? "fill-red-400 text-red-400" : "fill-none text-white/60"}`}
             stroke="currentColor"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
@@ -78,6 +118,7 @@ const CategoryShowcaseCard = ({ imgUrl, cate, title, brand, price, rating, revie
           transition={{ duration: 0.3 }}
         >
           <motion.button
+            onClick={handleAddToCart}
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.97 }}
             className="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold text-[11px] uppercase tracking-[0.15em] shadow-lg shadow-amber-400/30 hover:bg-amber-300 transition-colors flex items-center justify-center gap-2"

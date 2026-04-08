@@ -1,6 +1,10 @@
-import React, { useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
+import { useDispatch, useSelector } from "react-redux";
+import { addItem } from "../utilis/CartSlice";
+import { toggleWishlist } from "../utilis/WishlistSlice";
+import { addToast } from "../utilis/ToastSlice";
 
 const StarRating = ({ rating = 4.5 }) => (
   <div className="flex items-center gap-0.5">
@@ -30,10 +34,43 @@ const cardVariants = {
 };
 
 const ShopCard = ({ products, gridlist }) => {
-  const [wishlist, setWishlist] = useState({});
+  const dispatch = useDispatch();
+  const wishlistItems = useSelector((store) => store?.wishlist?.items || []);
 
-  const toggleWishlist = (id) =>
-    setWishlist((prev) => ({ ...prev, [id]: !prev[id] }));
+  const handleAddToCart = (item) => {
+    dispatch(
+      addItem({
+        id: item.id,
+        name: item.name,
+        img: item.img,
+        price: item.price,
+        seller: item.seller,
+        size: "Standard",
+        color: "Default",
+      }),
+    );
+    dispatch(addToast({ type: "success", message: "Added to cart" }));
+  };
+
+  const handleToggleWishlist = (item) => {
+    const isLiked = wishlistItems.some((wish) => wish.id === item.id);
+    dispatch(
+      toggleWishlist({
+        id: item.id,
+        name: item.name,
+        img: item.img,
+        price: item.price,
+        category: item.category,
+        seller: item.seller,
+      }),
+    );
+    dispatch(
+      addToast({
+        type: isLiked ? "info" : "success",
+        message: isLiked ? "Removed from likes" : "Added to likes",
+      }),
+    );
+  };
 
   return (
     <motion.div
@@ -80,29 +117,28 @@ const ShopCard = ({ products, gridlist }) => {
                   👁
                 </motion.button>
               </Link>
-              <Link to="/cart-page">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="size-10 rounded-full bg-amber-400 text-slate-900 flex items-center justify-center shadow-lg"
-                  title="Add to Cart"
-                >
-                  <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-                  </svg>
-                </motion.button>
-              </Link>
+              <motion.button
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                onClick={() => handleAddToCart(item)}
+                className="size-10 rounded-full bg-amber-400 text-slate-900 flex items-center justify-center shadow-lg"
+                title="Add to Cart"
+              >
+                <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                </svg>
+              </motion.button>
             </motion.div>
 
             {/* Wishlist btn */}
             <motion.button
               whileHover={{ scale: 1.15 }}
               whileTap={{ scale: 0.87 }}
-              onClick={() => toggleWishlist(item.id)}
+              onClick={() => handleToggleWishlist(item)}
               className="absolute top-3 right-3 size-8 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center"
             >
               <svg
-                className={`size-3.5 transition-colors ${wishlist[item.id] ? "fill-red-400 text-red-400" : "fill-none text-white/60"}`}
+                className={`size-3.5 transition-colors ${wishlistItems.some((wish) => wish.id === item.id) ? "fill-red-400 text-red-400" : "fill-none text-white/60"}`}
                 stroke="currentColor"
                 viewBox="0 0 24 24"
                 strokeWidth={1.5}

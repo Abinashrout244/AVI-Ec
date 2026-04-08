@@ -3,6 +3,7 @@ import { useDispatch } from "react-redux";
 import { addItem, deleteItem, removeItem } from "../utilis/CartSlice";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { addToast } from "../utilis/ToastSlice";
 
 const CartProduct = ({ id, seller, name, price, img, size, color, quantity }) => {
   const total = quantity * price;
@@ -10,14 +11,22 @@ const CartProduct = ({ id, seller, name, price, img, size, color, quantity }) =>
 
   const increment = () => {
     dispatch(addItem({ id, name, img, price, size, color }));
+    dispatch(addToast({ type: "success", message: "Quantity increased" }));
   };
 
   const decrement = () => {
     dispatch(removeItem({ id, size, color }));
+    dispatch(
+      addToast({
+        type: quantity > 1 ? "info" : "warning",
+        message: quantity > 1 ? "Quantity decreased" : "Removed from cart",
+      }),
+    );
   };
 
   const handleRemove = () => {
     dispatch(deleteItem({ id, size, color }));
+    dispatch(addToast({ type: "warning", message: "Removed from cart" }));
   };
 
   return (

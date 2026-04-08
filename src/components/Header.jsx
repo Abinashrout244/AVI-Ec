@@ -9,6 +9,7 @@ import {
 import Logo from "../assets/images/logo/logo.png";
 import { AuthContext } from "../context/AuthProvider";
 import profile from "../assets/images/profileimage/avi.jpg";
+import { useSelector } from "react-redux";
 
 const Header = () => {
   const [headerPos, setHeaderPos] = useState(false);
@@ -16,7 +17,10 @@ const Header = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [profileDrop, setProfileDrop] = useState(false);
   const [showAnnouncementBar, setShowAnnouncementBar] = useState(true);
-  const [cartCount] = useState(3);
+  const cartItems = useSelector((store) => store?.cart?.items || []);
+  const wishlistItems = useSelector((store) => store?.wishlist?.items || []);
+  const cartCount = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  const wishlistCount = wishlistItems.length;
 
   const location = useLocation();
   const { user, logOut } = useContext(AuthContext);
@@ -183,11 +187,20 @@ const Header = () => {
             </Link>
 
             {/* Wishlist */}
-            <button className="text-white/50 hover:text-red-400 transition-colors" aria-label="Wishlist">
+            <Link to="/like-page" className="relative text-white/50 hover:text-red-400 transition-colors" aria-label="Wishlist">
               <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
               </svg>
-            </button>
+              {wishlistCount > 0 && (
+                <motion.span
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  className="absolute -top-2 -right-2 bg-rose-400 text-slate-900 text-[10px] font-bold rounded-full size-4 flex items-center justify-center leading-none"
+                >
+                  {wishlistCount}
+                </motion.span>
+              )}
+            </Link>
 
             {/* Auth */}
             {!user ? (
@@ -263,6 +276,18 @@ const Header = () => {
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-amber-400 text-slate-900 text-[9px] font-bold rounded-full size-4 flex items-center justify-center">
                   {cartCount}
+                </span>
+              )}
+            </Link>
+
+            {/* Mobile Wishlist */}
+            <Link to="/like-page" className="relative text-white/60" aria-label="Wishlist">
+              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+              </svg>
+              {wishlistCount > 0 && (
+                <span className="absolute -top-2 -right-2 bg-rose-400 text-slate-900 text-[9px] font-bold rounded-full size-4 flex items-center justify-center">
+                  {wishlistCount}
                 </span>
               )}
             </Link>

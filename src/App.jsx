@@ -3,6 +3,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Header from "./components/Header";
 import Footer from "./components/Footer";
 import { useEffect } from "react";
+import ToastContainer from "./components/ToastContainer";
 
 // Scroll to top on every route change
 function ScrollToTop() {
@@ -20,6 +21,7 @@ function App() {
     <div className="min-h-screen text-slate-100">
       <ScrollToTop />
       <Header />
+      <ToastContainer />
       {/* <AnimatePresence mode="wait" initial={false}>
         <motion.main
           key={location.pathname}

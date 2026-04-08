@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { addItem, removeItem } from "../utilis/CartSlice";
+import { addToast } from "../utilis/ToastSlice";
 
 const ProductCarDisplay = ({ product }) => {
   const [size, setSize] = useState("");
@@ -12,6 +13,7 @@ const ProductCarDisplay = ({ product }) => {
 
   const handleAddItem = () => {
     dispatch(addItem({ id, seller, name, price, img, size, color }));
+    dispatch(addToast({ type: "success", message: "Added to cart" }));
   };
   const increment = () => {
     dispatch(addItem({ id, name, img, price, size, color }));

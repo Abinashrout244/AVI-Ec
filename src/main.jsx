@@ -11,6 +11,7 @@ import Singleproduct from "./Shop/Singleproduct.jsx";
 import { Provider } from "react-redux";
 import Store from "./utilis/Store.jsx";
 import CartPage from "./Shop/CartPage.jsx";
+import LikePage from "./Shop/LikePage.jsx";
 import BlogPage from "./Blog/BlogPage.jsx";
 import About from "./components/About.jsx";
 import Contact from "./Contact/Contact.jsx";
@@ -44,6 +45,14 @@ const approuter = createBrowserRouter([
         element: (
           <PrivateRoute>
             <CartPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/like-page",
+        element: (
+          <PrivateRoute>
+            <LikePage />
           </PrivateRoute>
         ),
       },
