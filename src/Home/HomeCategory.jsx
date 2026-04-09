@@ -11,6 +11,7 @@ const categoryList = [
     imgAlt: "DSLR Camera",
     iconName: icon,
     title: "DSLR Camera",
+    categoryKey: "DSLR Camera",
     count: "240+ Items",
     emoji: "📷",
     accent: "#818cf8",
@@ -21,6 +22,7 @@ const categoryList = [
     imgAlt: "Shoes",
     iconName: icon,
     title: "Shoes",
+    categoryKey: "Shoes",
     count: "1.2k+ Items",
     emoji: "👟",
     accent: "#34d399",
@@ -31,6 +33,7 @@ const categoryList = [
     imgAlt: "Photography",
     iconName: icon,
     title: "Photography",
+    categoryKey: "Photography",
     count: "180+ Items",
     emoji: "🎞️",
     accent: "#f59e0b",
@@ -41,6 +44,7 @@ const categoryList = [
     imgAlt: "Formal Dress",
     iconName: icon,
     title: "Formal Dress",
+    categoryKey: "Formal Dress",
     count: "560+ Items",
     emoji: "👔",
     accent: "#38bdf8",
@@ -51,6 +55,7 @@ const categoryList = [
     imgAlt: "Colorful Bags",
     iconName: icon,
     title: "Colorful Bags",
+    categoryKey: "Bags",
     count: "390+ Items",
     emoji: "👜",
     accent: "#f472b6",
@@ -61,6 +66,7 @@ const categoryList = [
     imgAlt: "Home Decor",
     iconName: icon,
     title: "Home Decor",
+    categoryKey: "Home Decor",
     count: "820+ Items",
     emoji: "🛋️",
     accent: "#fb923c",
@@ -127,7 +133,7 @@ const HomeCategory = () => {
       >
         {categoryList.map((item, index) => (
           <motion.div key={index} variants={itemVariants}>
-            <Link to="/shop">
+            <Link to={`/shop?category=${encodeURIComponent(item.categoryKey)}`}>
               <CategoryCard {...item} />
             </Link>
           </motion.div>

@@ -1,5 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "../utilis/CartSlice";
 import { toggleWishlist } from "../utilis/WishlistSlice";
@@ -77,13 +78,15 @@ const CategoryShowcaseCard = ({ imgUrl, cate, title, brand, price, rating, revie
     >
       {/* Image container */}
       <div className="relative overflow-hidden aspect-[4/3]">
-        <motion.img
-          src={imgUrl}
-          alt={title}
-          className="w-full h-full object-cover"
-          variants={{ hover: { scale: 1.07 } }}
-          transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-        />
+        <Link to={`/shop/${id}`} className="block">
+          <motion.img
+            src={imgUrl}
+            alt={title}
+            className="w-full h-full object-cover"
+            variants={{ hover: { scale: 1.07 } }}
+            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+          />
+        </Link>
 
         {/* Badge */}
         {badge && (
@@ -139,9 +142,11 @@ const CategoryShowcaseCard = ({ imgUrl, cate, title, brand, price, rating, revie
         </span>
 
         {/* Title */}
-        <h3 className="text-white font-semibold text-[15px] leading-snug line-clamp-2 group-hover:text-amber-400 transition-colors duration-300">
-          {title}
-        </h3>
+        <Link to={`/shop/${id}`}>
+          <h3 className="text-white font-semibold text-[15px] leading-snug line-clamp-2 group-hover:text-amber-400 transition-colors duration-300">
+            {title}
+          </h3>
+        </Link>
 
         {/* Brand + Rating row */}
         <div className="flex items-center justify-between gap-2">
@@ -160,15 +165,17 @@ const CategoryShowcaseCard = ({ imgUrl, cate, title, brand, price, rating, revie
               {formattedPrice.replace("₹", "₹").replace(/\d+/, (n) => Math.round(n * 1.3))}
             </p>
           </div>
-          <motion.button
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.95 }}
-            className="size-9 rounded-full bg-white/5 hover:bg-amber-400/20 border border-white/10 hover:border-amber-400/40 flex items-center justify-center transition-all duration-300 text-white/60 hover:text-amber-400"
-          >
-            <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-            </svg>
-          </motion.button>
+          <Link to={`/shop/${id}`}>
+            <motion.button
+              whileHover={{ scale: 1.08 }}
+              whileTap={{ scale: 0.95 }}
+              className="size-9 rounded-full bg-white/5 hover:bg-amber-400/20 border border-white/10 hover:border-amber-400/40 flex items-center justify-center transition-all duration-300 text-white/60 hover:text-amber-400"
+            >
+              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+              </svg>
+            </motion.button>
+          </Link>
         </div>
       </div>
     </motion.div>
