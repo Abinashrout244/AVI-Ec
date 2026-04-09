@@ -10,6 +10,7 @@ import Logo from "../assets/images/logo/logo.png";
 import { AuthContext } from "../context/AuthProvider";
 import profile from "../assets/images/profileimage/avi.jpg";
 import { useSelector } from "react-redux";
+import Product from "../products.json";
 
 const Header = () => {
   const [headerPos, setHeaderPos] = useState(false);
@@ -17,6 +18,10 @@ const Header = () => {
   const [toggleMenu, setToggleMenu] = useState(false);
   const [profileDrop, setProfileDrop] = useState(false);
   const [showAnnouncementBar, setShowAnnouncementBar] = useState(true);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchText, setSearchText] = useState("");
+  const [filterProducts, setFilterProducts] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
   const cartItems = useSelector((store) => store?.cart?.items || []);
   const wishlistItems = useSelector((store) => store?.wishlist?.items || []);
   const cartCount = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
@@ -26,17 +31,47 @@ const Header = () => {
   const { user, logOut } = useContext(AuthContext);
   const { scrollY } = useScroll();
   const lastScrollY = useRef(0);
+  const searchRef = useRef(null);
+  const data = Product;
 
   // Close mobile menu on route change
   useEffect(() => {
     setToggleMenu(false);
     setProfileDrop(false);
+    setSearchOpen(false);
+    setShowDropdown(false);
   }, [location]);
 
   useEffect(() => {
     const handleScroll = () => setHeaderPos(window.scrollY > 50);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  // Search filter
+  useEffect(() => {
+    if (searchText.trim() === "") {
+      setFilterProducts([]);
+      setShowDropdown(false);
+    } else {
+      const filter = data.filter((prod) =>
+        prod.name.toLowerCase().includes(searchText.toLowerCase())
+      );
+      setFilterProducts(filter);
+      setShowDropdown(true);
+    }
+  }, [searchText, data]);
+
+  // Close search on outside click
+  useEffect(() => {
+    const handler = (e) => {
+      if (searchRef.current && !searchRef.current.contains(e.target)) {
+        setSearchOpen(false);
+        setShowDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handler);
+    return () => document.removeEventListener("mousedown", handler);
   }, []);
 
   useMotionValueEvent(scrollY, "change", (latest) => {
@@ -164,11 +199,91 @@ const Header = () => {
           {/* Desktop Right Actions */}
           <div className="hidden md:flex items-center gap-5 border-l border-white/10 pl-6">
             {/* Search icon */}
-            <button className="text-white/50 hover:text-white transition-colors" aria-label="Search">
-              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
-              </svg>
-            </button>
+            <div className="relative" ref={searchRef}>
+              <button
+                onClick={() => setSearchOpen((v) => !v)}
+                className={`transition-colors ${searchOpen ? "text-white" : "text-white/50 hover:text-white"}`}
+                aria-label="Search"
+              >
+                <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+                </svg>
+              </button>
+
+              <AnimatePresence>
+                {searchOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -8, scale: 0.98 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-4 w-[360px] bg-[#0a0e1c]/98 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_30px_80px_rgba(0,0,0,0.7)] p-3 z-[60]"
+                  >
+                    <div className="flex items-center gap-3 bg-white/[0.04] border border-white/10 rounded-full px-4 py-2">
+                      <svg className="size-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+                      </svg>
+                      <input
+                        type="text"
+                        value={searchText}
+                        onChange={(e) => setSearchText(e.target.value)}
+                        placeholder="Search products..."
+                        className="flex-1 bg-transparent outline-none text-white text-sm placeholder:text-white/30"
+                        autoFocus
+                      />
+                    </div>
+
+                    <AnimatePresence>
+                      {showDropdown && (
+                        <motion.ul
+                          initial={{ opacity: 0, y: -6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: -6 }}
+                          className="mt-3 max-h-[280px] overflow-y-auto custom-scrollbar"
+                        >
+                          {filterProducts.length > 0 ? (
+                            filterProducts.slice(0, 6).map((item) => (
+                              <li key={item.id}>
+                                <Link
+                                  to={`/shop/${item.id}`}
+                                  onClick={() => {
+                                    setSearchText(item.name);
+                                    setSearchOpen(false);
+                                    setShowDropdown(false);
+                                  }}
+                                  className="group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition"
+                                >
+                                  <div className="size-9 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
+                                    {item.img && (
+                                      <img src={item.img} alt={item.name} className="size-full object-cover" />
+                                    )}
+                                  </div>
+                                  <div className="flex-1">
+                                    <p className="text-white text-sm font-medium group-hover:text-amber-400 transition-colors">
+                                      {item.name}
+                                    </p>
+                                    <p className="text-[10px] text-white/35 uppercase tracking-widest">
+                                      {item.category || "Collection"}
+                                    </p>
+                                  </div>
+                                  <span className="text-[10px] text-amber-400/80 uppercase tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+                                    View
+                                  </span>
+                                </Link>
+                              </li>
+                            ))
+                          ) : (
+                            <li className="px-4 py-6 text-center text-white/40 text-sm">
+                              No products found for "{searchText}"
+                            </li>
+                          )}
+                        </motion.ul>
+                      )}
+                    </AnimatePresence>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
 
             {/* Cart */}
             <Link to="/cart-page" className="relative text-white/50 hover:text-white transition-colors group" aria-label="Cart">
