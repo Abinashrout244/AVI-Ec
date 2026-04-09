@@ -2,15 +2,26 @@ import React from "react";
 import { motion } from "framer-motion";
 
 const CATEGORIES = [
-  { label: "All", emoji: "🛍️" },
-  { label: "Men's Pants", emoji: "👖" },
-  { label: "Men's Boot", emoji: "👢" },
-  { label: "Bag", emoji: "👜" },
-  { label: "Cap", emoji: "🧢" },
-  { label: "Men's Sneaker", emoji: "👟" },
-  { label: "Earphones", emoji: "🎧" },
-  { label: "Bottle", emoji: "🍶" },
+  { label: "All", emoji: "\uD83D\uDECD\uFE0F" },
+  { label: "Shoes", emoji: "\uD83D\uDC5F" },
+  { label: "Bags", emoji: "\uD83D\uDC5C" },
+  { label: "Phones", emoji: "\uD83D\uDCF1" },
+  { label: "Beauty", emoji: "\u2728" },
+  { label: "DSLR Camera", emoji: "\uD83D\uDCF7" },
+  { label: "Photography", emoji: "\uD83C\uDF9E\uFE0F" },
+  { label: "Formal Dress", emoji: "\uD83D\uDC54" },
+  { label: "Home Decor", emoji: "\uD83D\uDECB\uFE0F" },
+  { label: "Men's Pants", emoji: "\uD83D\uDC56" },
+  { label: "Men's Boot", emoji: "\uD83D\uDC62" },
+  { label: "Bag", emoji: "\uD83D\uDC5C" },
+  { label: "Cap", emoji: "\uD83E\uDDE2" },
+  { label: "Men's Sneaker", emoji: "\uD83D\uDC5F" },
+  { label: "Earphones", emoji: "\uD83C\uDFA7" },
+  { label: "Bottle", emoji: "\uD83C\uDF76" },
 ];
+
+
+
 
 const ShopCategory = ({ filterCategory, selectCategory }) => {
   return (

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import HeroBanner from "../components/HeroBanner";
 import Info from "../products.json";
@@ -9,6 +9,7 @@ import ShopCategory from "./ShopCategory";
 import Suggestions from "./Suggestions";
 import Popularpost from "./Popularpost";
 import TagList from "./TagList";
+import { useLocation } from "react-router-dom";
 
 const SORT_OPTIONS = [
   { label: "Newest First", value: "newest" },
@@ -26,16 +27,29 @@ const Shop = () => {
   const [sortBy, setSortBy] = useState("newest");
   const [showFilters, setShowFilters] = useState(false);
   const productperpage = 9;
+  const location = useLocation();
+
+  const categoryAliases = useMemo(
+    () => ({
+      Bags: ["Bag", "Bags", "Colorful Bags"],
+      Shoes: ["Shoes", "Men's Sneaker", "Men's Boot"],
+    }),
+    [],
+  );
+
+  const matchesCategory = (itemCategory, selected) => {
+    if (selected === "All") return true;
+    const aliases = categoryAliases[selected];
+    if (aliases) return aliases.includes(itemCategory);
+    return itemCategory === selected;
+  };
 
   // Filter
   const filterCategory = (select) => {
     setSelectCategory(select);
     setCurrPage(1);
-    if (select === "All") {
-      setBaseProducts(Info);
-    } else {
-      setBaseProducts(Info.filter((item) => item.category === select));
-    }
+    if (select === "All") setBaseProducts(Info);
+    else setBaseProducts(Info.filter((item) => matchesCategory(item.category, select)));
   };
 
   // Sort
@@ -65,6 +79,15 @@ const Shop = () => {
   const filteredsearchproducts = baseProducts.filter((item) =>
     item.name.toLowerCase().includes(search.toLowerCase())
   );
+
+  // Apply category from query param (e.g. /shop?category=Shoes)
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const category = params.get("category");
+    if (category) {
+      filterCategory(category);
+    }
+  }, [location.search]);
 
   return (
     <div className="min-h-screen">
