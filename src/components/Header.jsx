@@ -160,12 +160,19 @@ const Header = () => {
       >
         <div className="max-w-screen-2xl mx-auto flex flex-row justify-between items-center gap-6">
           {/* Logo */}
-          <Link to="/" className="z-50 flex-shrink-0">
-            <img
-              src={Logo}
-              className="h-8 md:h-9 w-auto object-contain brightness-110"
-              alt="AVI Logo"
-            />
+          <Link to="/" className="z-50 flex-shrink-0 flex items-center gap-3 group">
+            <div className="relative flex items-center justify-center size-8 md:size-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_0_20px_rgba(251,191,36,0.3)] group-hover:shadow-[0_0_25px_rgba(251,191,36,0.6)] group-hover:-translate-y-0.5 transition-all duration-300">
+              <span className="text-slate-900 font-black text-xl italic tracking-tighter pr-1">A</span>
+              <div className="absolute inset-0 rounded-xl ring-1 ring-white/30 group-hover:ring-white/50 transition-colors"></div>
+            </div>
+            <div className="hidden sm:flex flex-col">
+              <span className="text-white font-extrabold text-base md:text-lg tracking-[0.2em] uppercase leading-none group-hover:text-amber-400 transition-colors duration-300">
+                AVI
+              </span>
+              <span className="text-white/50 text-[9px] md:text-[10px] tracking-[0.4em] uppercase mt-1.5 leading-none font-semibold">
+                Elements
+              </span>
+            </div>
           </Link>
 
           {/* Desktop Navigation */}

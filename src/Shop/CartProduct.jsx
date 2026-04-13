@@ -43,11 +43,11 @@ const CartProduct = ({ id, seller, name, price, img, size, color, quantity, onCl
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
-      onClick={onClickProduct}
+      
     >
       {/* Product Image and Name */}
       <div className="flex items-center gap-4 justify-start pr-8 md:pr-0" >
-        <button  className="flex items-center gap-4 text-left hover:opacity-80 transition cursor-pointer outline-none">
+        <button onClick={onClickProduct} className="flex items-center gap-4 text-left hover:opacity-80 transition cursor-pointer outline-none">
           <img src={img} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg bg-white/5 flex-shrink-0 border border-white/5" />
           <div className="flex flex-col md:hidden">
             <p className="font-bold text-sm text-white line-clamp-2 leading-tight">{name}</p>
