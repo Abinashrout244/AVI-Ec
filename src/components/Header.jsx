@@ -24,7 +24,10 @@ const Header = () => {
   const [showDropdown, setShowDropdown] = useState(false);
   const cartItems = useSelector((store) => store?.cart?.items || []);
   const wishlistItems = useSelector((store) => store?.wishlist?.items || []);
-  const cartCount = cartItems.reduce((sum, item) => sum + (item.quantity || 0), 0);
+  const cartCount = cartItems.reduce(
+    (sum, item) => sum + (item.quantity || 0),
+    0,
+  );
   const wishlistCount = wishlistItems.length;
 
   const location = useLocation();
@@ -55,7 +58,7 @@ const Header = () => {
       setShowDropdown(false);
     } else {
       const filter = data.filter((prod) =>
-        prod.name.toLowerCase().includes(searchText.toLowerCase())
+        prod.name.toLowerCase().includes(searchText.toLowerCase()),
       );
       setFilterProducts(filter);
       setShowDropdown(true);
@@ -135,8 +138,18 @@ const Header = () => {
                 className="ml-4 text-slate-800 hover:text-slate-900 transition-colors flex-shrink-0"
                 aria-label="Close announcement"
               >
-                <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="size-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -155,14 +168,21 @@ const Header = () => {
         }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         className={`w-full transition-all duration-500 ${
-          headerPos ? "py-3 backdrop-blur-2xl border-b border-white/8 shadow-2xl" : "py-6"
+          headerPos
+            ? "py-3 backdrop-blur-2xl border-b border-white/8 shadow-2xl"
+            : "py-6"
         } px-6 md:px-16`}
       >
         <div className="max-w-screen-2xl mx-auto flex flex-row justify-between items-center gap-6">
           {/* Logo */}
-          <Link to="/" className="z-50 flex-shrink-0 flex items-center gap-3 group">
+          <Link
+            to="/"
+            className="z-50 flex-shrink-0 flex items-center gap-3 group"
+          >
             <div className="relative flex items-center justify-center size-8 md:size-10 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 shadow-[0_0_20px_rgba(251,191,36,0.3)] group-hover:shadow-[0_0_25px_rgba(251,191,36,0.6)] group-hover:-translate-y-0.5 transition-all duration-300">
-              <span className="text-slate-900 font-black text-xl italic tracking-tighter pr-1">A</span>
+              <span className="text-slate-900 font-black text-xl italic tracking-tighter pr-1">
+                A
+              </span>
               <div className="absolute inset-0 rounded-xl ring-1 ring-white/30 group-hover:ring-white/50 transition-colors"></div>
             </div>
             <div className="hidden sm:flex flex-col">
@@ -185,7 +205,9 @@ const Header = () => {
                     <Link
                       to={item.link}
                       className={`relative px-4 py-2 text-[12px] uppercase tracking-[0.18em] font-semibold transition-colors duration-300 ${
-                        isActive ? "text-amber-400" : "text-white/60 hover:text-white"
+                        isActive
+                          ? "text-amber-400"
+                          : "text-white/60 hover:text-white"
                       }`}
                     >
                       {item.label}
@@ -193,7 +215,11 @@ const Header = () => {
                         <motion.span
                           layoutId="nav-indicator"
                           className="absolute bottom-0 left-0 right-0 h-[2px] bg-amber-400 rounded-full"
-                          transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                          transition={{
+                            type: "spring",
+                            bounce: 0.2,
+                            duration: 0.5,
+                          }}
                         />
                       )}
                     </Link>
@@ -212,8 +238,18 @@ const Header = () => {
                 className={`transition-colors ${searchOpen ? "text-white" : "text-white/50 hover:text-white"}`}
                 aria-label="Search"
               >
-                <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+                <svg
+                  className="size-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={1.5}
+                    d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"
+                  />
                 </svg>
               </button>
 
@@ -227,8 +263,18 @@ const Header = () => {
                     className="absolute right-0 mt-4 w-[360px] bg-[#0a0e1c]/98 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_30px_80px_rgba(0,0,0,0.7)] p-3 z-[60]"
                   >
                     <div className="flex items-center gap-3 bg-white/[0.04] border border-white/10 rounded-full px-4 py-2">
-                      <svg className="size-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z" />
+                      <svg
+                        className="size-4 text-white/40"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={1.5}
+                          d="M21 21l-4.35-4.35M17 11A6 6 0 115 11a6 6 0 0112 0z"
+                        />
                       </svg>
                       <input
                         type="text"
@@ -262,7 +308,11 @@ const Header = () => {
                                 >
                                   <div className="size-9 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
                                     {item.img && (
-                                      <img src={item.img} alt={item.name} className="size-full object-cover" />
+                                      <img
+                                        src={item.img}
+                                        alt={item.name}
+                                        className="size-full object-cover"
+                                      />
                                     )}
                                   </div>
                                   <div className="flex-1">
@@ -293,9 +343,23 @@ const Header = () => {
             </div>
 
             {/* Cart */}
-            <Link to="/cart-page" className="relative text-white/50 hover:text-white transition-colors group" aria-label="Cart">
-              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zm0 0h12M16 10a4 4 0 01-8 0" />
+            <Link
+              to="/cart-page"
+              className="relative text-white/50 hover:text-white transition-colors group"
+              aria-label="Cart"
+            >
+              <svg
+                className="size-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zm0 0h12M16 10a4 4 0 01-8 0"
+                />
               </svg>
               {cartCount > 0 && (
                 <motion.span
@@ -309,9 +373,23 @@ const Header = () => {
             </Link>
 
             {/* Wishlist */}
-            <Link to="/like-page" className="relative text-white/50 hover:text-red-400 transition-colors" aria-label="Wishlist">
-              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            <Link
+              to="/like-page"
+              className="relative text-white/50 hover:text-red-400 transition-colors"
+              aria-label="Wishlist"
+            >
+              <svg
+                className="size-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
               </svg>
               {wishlistCount > 0 && (
                 <motion.span
@@ -391,9 +469,23 @@ const Header = () => {
           {/* Mobile Controls */}
           <div className="flex items-center gap-4 md:hidden z-50">
             {/* Mobile Cart */}
-            <Link to="/cart-page" className="relative text-white/60" aria-label="Cart">
-              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zm0 0h12M16 10a4 4 0 01-8 0" />
+            <Link
+              to="/cart-page"
+              className="relative text-white/60"
+              aria-label="Cart"
+            >
+              <svg
+                className="size-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zm0 0h12M16 10a4 4 0 01-8 0"
+                />
               </svg>
               {cartCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-amber-400 text-slate-900 text-[9px] font-bold rounded-full size-4 flex items-center justify-center">
@@ -403,9 +495,23 @@ const Header = () => {
             </Link>
 
             {/* Mobile Wishlist */}
-            <Link to="/like-page" className="relative text-white/60" aria-label="Wishlist">
-              <svg className="size-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            <Link
+              to="/like-page"
+              className="relative text-white/60"
+              aria-label="Wishlist"
+            >
+              <svg
+                className="size-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={1.5}
+                  d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                />
               </svg>
               {wishlistCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-rose-400 text-slate-900 text-[9px] font-bold rounded-full size-4 flex items-center justify-center">
@@ -414,10 +520,6 @@ const Header = () => {
               )}
             </Link>
 
-            {user && (
-              <img src={profile} className="size-8 rounded-full ring-1 ring-white/20" alt="profile" />
-            )}
-
             {/* Hamburger */}
             <button
               onClick={() => setToggleMenu(!toggleMenu)}
@@ -425,17 +527,27 @@ const Header = () => {
               aria-label="Menu"
             >
               <motion.span
-                animate={toggleMenu ? { rotate: 45, y: 7, width: "100%" } : { rotate: 0, y: 0, width: "100%" }}
+                animate={
+                  toggleMenu
+                    ? { rotate: 45, y: 7, width: "100%" }
+                    : { rotate: 0, y: 0, width: "100%" }
+                }
                 className="h-[1.5px] bg-white block rounded-full"
                 style={{ width: "100%" }}
               />
               <motion.span
-                animate={toggleMenu ? { opacity: 0, x: 10 } : { opacity: 1, x: 0 }}
+                animate={
+                  toggleMenu ? { opacity: 0, x: 10 } : { opacity: 1, x: 0 }
+                }
                 className="h-[1.5px] bg-white block rounded-full"
                 style={{ width: "66%" }}
               />
               <motion.span
-                animate={toggleMenu ? { rotate: -45, y: -7, width: "100%" } : { rotate: 0, y: 0, width: "83%" }}
+                animate={
+                  toggleMenu
+                    ? { rotate: -45, y: -7, width: "100%" }
+                    : { rotate: 0, y: 0, width: "83%" }
+                }
                 className="h-[1.5px] bg-white block rounded-full"
               />
             </button>
@@ -465,12 +577,17 @@ const Header = () => {
                   key={item.label}
                   initial={{ opacity: 0, y: 30 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 + i * 0.08, ease: [0.16, 1, 0.3, 1] }}
+                  transition={{
+                    delay: 0.1 + i * 0.08,
+                    ease: [0.16, 1, 0.3, 1],
+                  }}
                 >
                   <Link
                     onClick={() => setToggleMenu(false)}
                     className={`text-4xl font-serif tracking-tight transition ${
-                      location.pathname === item.link ? "text-amber-400" : "text-white hover:text-amber-400"
+                      location.pathname === item.link
+                        ? "text-amber-400"
+                        : "text-white hover:text-amber-400"
                     }`}
                     to={item.link}
                   >
@@ -520,7 +637,9 @@ const Header = () => {
                   </button>
                 </div>
               )}
-              <p className="text-white/20 text-[10px] tracking-widest uppercase">© 2025 AVI Store</p>
+              <p className="text-white/20 text-[10px] tracking-widest uppercase">
+                © 2025 AVI Store
+              </p>
             </motion.div>
           </motion.div>
         )}
