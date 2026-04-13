@@ -8,9 +8,10 @@ import ReviewListpage from "./ReviewListpage";
 
 // Swiper for mobile
 import { Swiper, SwiperSlide } from "swiper/react";
-import { Pagination } from "swiper/modules";
+import { Pagination, Navigation } from "swiper/modules";
 import "swiper/css";
 import "swiper/css/pagination";
+import "swiper/css/navigation";
 
 export default function Singleproduct() {
   const { id } = useParams();
@@ -83,19 +84,21 @@ export default function Singleproduct() {
               </div>
 
               {/* Main Image Container */}
-              <div className="relative w-full aspect-square md:aspect-auto md:h-[500px] rounded-2xl overflow-hidden bg-white/5 flex items-center justify-center">
+              <div className="relative w-full aspect-square md:aspect-auto md:h-[500px] rounded-2xl overflow-hidden bg-white flex items-center justify-center">
                 {/* Mobile Swiper */}
-                <div className="md:hidden w-full h-full pb-8">
+                <div className="md:hidden w-full h-[350px] mb-8 group relative">
                   <Swiper
-                    modules={[Pagination]}
+                    modules={[Pagination, Navigation]}
                     pagination={{ clickable: true }}
-                    className="w-full h-full"
-                    onSlideChange={(swiper) => setActiveImage(images[swiper.activeIndex])}
+                    navigation={true}
+                    loop={true}
+                    className="w-full h-full pb-10 [&_.swiper-button-next]:text-slate-900 [&_.swiper-button-prev]:text-slate-900 [&_.swiper-button-next]:bg-amber-400 hover:[&_.swiper-button-next]:bg-amber-300 [&_.swiper-button-prev]:bg-amber-400 hover:[&_.swiper-button-prev]:bg-amber-300 [&_.swiper-button-next]:w-10 [&_.swiper-button-prev]:w-10 [&_.swiper-button-next]:h-10 [&_.swiper-button-prev]:h-10 [&_.swiper-button-next]:rounded-full [&_.swiper-button-prev]:rounded-full [&_.swiper-button-next]:shadow-[0_4px_15px_rgba(251,191,36,0.4)] [&_.swiper-button-prev]:shadow-[0_4px_15px_rgba(251,191,36,0.4)] [&_.swiper-button-next:after]:text-[16px] [&_.swiper-button-next:after]:font-black [&_.swiper-button-prev:after]:text-[16px] [&_.swiper-button-prev:after]:font-black transition-all"
+                    onSlideChange={(swiper) => setActiveImage(images[swiper.realIndex])}
                   >
                     {images.map((imgUrl, idx) => (
                       <SwiperSlide key={idx}>
                         <div className="w-full h-full p-4 flex items-center justify-center">
-                            <img src={imgUrl} alt="Product" className="max-w-full max-h-full object-contain" />
+                            <img src={imgUrl} alt="Product" className="max-w-full max-h-[300px] object-contain drop-shadow-xl" />
                         </div>
                       </SwiperSlide>
                     ))}

@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { addToast } from "../utilis/ToastSlice";
 
-const CartProduct = ({ id, seller, name, price, img, size, color, quantity }) => {
+const CartProduct = ({ id, seller, name, price, img, size, color, quantity, onClickProduct }) => {
   const total = quantity * price;
   const dispatch = useDispatch();
 
@@ -32,59 +32,72 @@ const CartProduct = ({ id, seller, name, price, img, size, color, quantity }) =>
   return (
     <motion.div
       className="
-        grid grid-cols-1 sm:grid-cols-3 md:grid-cols-5
-        gap-4 sm:gap-6 
-        py-4 px-3
-        items-center text-center
+        grid grid-cols-1 md:grid-cols-5
+        gap-y-4 md:gap-x-6 
+        py-5 md:py-4 px-4 md:px-3
+        items-center md:text-center
         lux-card
+        relative
+        border border-white/5
       "
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35 }}
+      onClick={onClickProduct}
     >
-      <Link to="/shop" className="flex items-center gap-4 justify-center">
-        <img src={img} className="w-20 h-20 object-cover rounded" />
-        <p className="font-semibold text-sm sm:text-base text-white">{name}</p>
-      </Link>
+      {/* Product Image and Name */}
+      <div className="flex items-center gap-4 justify-start pr-8 md:pr-0" >
+        <button  className="flex items-center gap-4 text-left hover:opacity-80 transition cursor-pointer outline-none">
+          <img src={img} className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-lg bg-white/5 flex-shrink-0 border border-white/5" />
+          <div className="flex flex-col md:hidden">
+            <p className="font-bold text-sm text-white line-clamp-2 leading-tight">{name}</p>
+            <p className="text-xs text-amber-200/80 mt-1 font-medium">INR {price}</p>
+          </div>
+          <p className="hidden md:block font-bold text-sm md:text-base text-white">{name}</p>
+        </button>
+      </div>
 
-      <p className="text-sm sm:text-base font-medium text-slate-200">
+      {/* Desktop Price */}
+      <p className="hidden md:block text-sm sm:text-base font-medium text-slate-200">
         INR {price}
       </p>
 
-      <div className="flex justify-center">
-        <div className="inline-flex items-center justify-center border border-white/10 rounded-full">
-          <button
-            onClick={decrement}
-            className="px-3 py-2 bg-white/10 hover:bg-amber-300 hover:text-slate-900 text-lg rounded-full transition"
-          >
-            -
-          </button>
-
-          <span className="px-4 text-sm sm:text-base text-white">
-            {quantity}
-          </span>
-
-          <button
-            onClick={increment}
-            className="px-3 py-2 bg-white/10 hover:bg-amber-300 hover:text-slate-900 text-lg rounded-full transition"
-          >
-            +
-          </button>
+      {/* Mobile container for Quantity and Total using contents on desktop */}
+      <div className="flex items-center justify-between md:contents w-full mt-2 md:mt-0">
+        <div className="flex justify-center">
+          <div className="inline-flex items-center justify-center border border-white/10 rounded-full bg-slate-900/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.2)]">
+            <button
+              onClick={decrement}
+              className="px-3.5 py-1.5 hover:bg-amber-400 hover:text-slate-900 text-lg rounded-full transition-all"
+            >
+              -
+            </button>
+            <span className="px-4 font-bold text-sm sm:text-base text-white">
+              {quantity}
+            </span>
+            <button
+              onClick={increment}
+              className="px-3.5 py-1.5 hover:bg-amber-400 hover:text-slate-900 text-lg rounded-full transition-all"
+            >
+              +
+            </button>
+          </div>
         </div>
+
+        <p className="font-black text-lg md:text-base text-amber-300 md:text-amber-200">
+          INR {total}
+        </p>
       </div>
 
-      <p className="font-semibold text-sm sm:text-base text-amber-200">
-        INR {total}
-      </p>
-
+      {/* Remove Button */}
       <button
         onClick={handleRemove}
-        className="text-rose-300 flex justify-center items-center hover:text-rose-200 transition"
+        className="absolute top-4 right-4 md:static md:flex text-slate-500 hover:text-rose-400 transition justify-center items-center p-2 md:p-0"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
-          width="23"
-          height="23"
+          width="18"
+          height="18"
           fill="currentColor"
           className="bi bi-trash3-fill"
           viewBox="0 0 16 16"

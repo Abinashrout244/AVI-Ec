@@ -358,7 +358,7 @@ const Header = () => {
                       transition={{ duration: 0.2 }}
                       className="absolute right-0 mt-3 w-52 bg-[#0a0d18]/95 backdrop-blur-2xl border border-white/10 rounded-2xl p-2 shadow-2xl overflow-hidden"
                     >
-                      {["Profile", "Cart Page"].map((label) => (
+                      {["Profile", "Orders", "Cart Page"].map((label) => (
                         <Link
                           key={label}
                           to={`/${label.toLowerCase().replace(" ", "-")}`}
@@ -497,12 +497,21 @@ const Header = () => {
                   </Link>
                 </div>
               ) : (
-                <button
-                  onClick={logOut}
-                  className="text-amber-500 uppercase tracking-widest text-xs"
-                >
-                  Sign Out
-                </button>
+                <div className="flex flex-col items-center gap-4">
+                  <Link
+                    to="/orders"
+                    onClick={() => setToggleMenu(false)}
+                    className="text-white uppercase tracking-widest text-xs hover:text-amber-400 font-bold"
+                  >
+                    My Orders
+                  </Link>
+                  <button
+                    onClick={logOut}
+                    className="text-amber-500 uppercase tracking-widest text-xs font-bold"
+                  >
+                    Sign Out
+                  </button>
+                </div>
               )}
               <p className="text-white/20 text-[10px] tracking-widest uppercase">© 2025 AVI Store</p>
             </motion.div>

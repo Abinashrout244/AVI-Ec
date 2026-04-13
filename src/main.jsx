@@ -19,6 +19,9 @@ import AuthProvider from "./context/AuthProvider.jsx";
 import PrivateRoute from "./privateRoute/PrivateRoute.jsx";
 import Login from "./components/Login.jsx";
 import Signup from "./components/Signup.jsx";
+import Checkout from "./Shop/Checkout.jsx";
+import OrderSuccess from "./Shop/OrderSuccess.jsx";
+import OrdersPage from "./Shop/OrdersPage.jsx";
 
 const Shop = lazy(() => import("./Shop/Shop.jsx"));
 import Shimmer from "./components/Shimmer.jsx";
@@ -58,7 +61,32 @@ const approuter = createBrowserRouter([
       },
       { path: "/about", element: <About /> },
       { path: "/contact", element: <Contact /> },
+      {
+        path: "/checkout",
+        element: (
+          <PrivateRoute>
+            <Checkout />
+          </PrivateRoute>
+        ),
+      },
+
+      {
+        path: "/orders",
+        element: (
+          <PrivateRoute>
+            <OrdersPage />
+          </PrivateRoute>
+        ),
+      },
     ],
+  },
+  {
+    path: "/order-success",
+    element: (
+      <PrivateRoute>
+        <OrderSuccess />
+      </PrivateRoute>
+    ),
   },
   {
     path: "/login",

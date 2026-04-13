@@ -5,6 +5,7 @@ import HeroBanner from "../components/HeroBanner";
 import { Link, useNavigate } from "react-router-dom";
 import Modal from "./Modal";
 import { clearCart } from "../utilis/CartSlice";
+import items from "../products.json";
 
 const CartPage = () => {
   const CartItem = useSelector((store) => store?.cart?.items);
@@ -12,30 +13,13 @@ const CartPage = () => {
   const totalOrder = CartItem.reduce((acc, curr) => {
     return acc + curr.price * curr.quantity;
   }, 0);
-  const [open, setOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("visa");
-  const [name, setName] = useState("");
-  const [num, setNum] = useState("");
-  const [cvv, setCvv] = useState("");
-  const [date, setDate] = useState("");
 
-  const [email, setEmail] = useState("");
-  const [userName, setUserName] = useState("");
-  const [info, setInfo] = useState("");
+  const [selectedItem, setSelectedItem] = useState(null);
+  const selectedProduct = selectedItem ? items.find((p) => String(p.id) === String(selectedItem.id)) : null;
 
   const navigate = useNavigate();
 
-  const handleLocation = () => {
-    alert("Your Order is Placed Succesfully..");
-    setCvv("");
-    setDate("");
-    setNum("");
-    setName("");
-    dispatch(clearCart());
-    setTimeout(() => {
-      navigate("/");
-    }, 500);
-  };
+
 
   return (
     <div className="space-y-10">
@@ -53,28 +37,20 @@ const CartPage = () => {
       ) : (
         <div
           className={`px-3 md:px-14 mt-8 md:mt-16 pb-10 ${
-            open === true ? "brightness-75" : ""
+            selectedItem ? "brightness-75" : ""
           }`}
         >
-          <div className="hidden md:grid grid-cols-5 font-semibold text-sm p-3 glass-panel text-white items-center text-center rounded-2xl">
-            <h2 className="text-start pl-2">Product</h2>
+          <div className="hidden md:grid grid-cols-5 font-semibold text-sm p-3 glass-panel text-white items-center text-center rounded-2xl shadow-lg">
+            <h2 className="text-start pl-8">Product</h2>
             <h2>Price</h2>
             <h2>Quantity</h2>
             <h2>Total</h2>
             <h2>Edit</h2>
           </div>
 
-          <div className="grid grid-cols-5 font-semibold text-xs p-2 glass-panel text-white text-center md:hidden rounded-2xl">
-            <p>Product</p>
-            <p>Price</p>
-            <p>Qty</p>
-            <p>Total</p>
-            <p>Edit</p>
-          </div>
-
           <div className="mt-4 flex flex-col gap-4">
-            {CartItem.map((item) => {
-              return <CartProduct {...item} key={item.id} />;
+            {CartItem.map((item, idx) => {
+              return <CartProduct {...item} key={idx} onClickProduct={() => setSelectedItem(item)} />;
             })}
           </div>
         </div>
@@ -82,7 +58,7 @@ const CartPage = () => {
 
       <div
         className={`px-3 md:px-14 pb-16 ${
-          open === true ? "brightness-75" : ""
+          selectedItem ? "brightness-75 transition-all" : "transition-all"
         }`}
       >
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -127,15 +103,15 @@ const CartPage = () => {
           </div>
 
           <div className="glass-panel rounded-3xl p-6 flex flex-col gap-6">
-            <div className="flex flex-row gap-4 justify-end items-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-end items-center">
+              <button className="btn-ghost w-full sm:w-auto">Update cart</button>
+
               <button
-                onClick={() => setOpen(true)}
-                className="btn-primary"
+                onClick={() => navigate("/checkout")}
+                className="btn-primary w-full sm:w-auto"
               >
                 Proceed to Checkout
               </button>
-
-              <button className="btn-ghost">Update cart</button>
             </div>
 
             <div className="flex flex-col gap-4">
@@ -163,176 +139,71 @@ const CartPage = () => {
         </div>
       </div>
 
-      <Modal isOpen={open} onClose={() => setOpen(false)}>
-        <div className="flex flex-col w-full max-w-[600px] mx-auto text-white">
-          <div className="flex flex-row justify-between items-center px-2 pb-3">
-            <h2 className="text-xl font-semibold items-start">
-              Select Your payment Method
-            </h2>
-            <button
-              onClick={() => setOpen(false)}
-              className="text-white/70 hover:text-white transition"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="16"
-                height="16"
-                fill="currentColor"
-                className="bi bi-x-lg"
-                viewBox="0 0 16 16"
-              >
-                <path d="M2.146 2.854a.5.5 0 1 1 .708-.708L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8z" />
-              </svg>
-            </button>
-          </div>
-
-          <div className="border-y border-white/10 flex flex-col rounded-2xl px-1 pt-3">
-            <div className="flex gap-6 mb-4 border-b border-white/10 px-2 pb-3">
-              <button
-                onClick={() => setActiveTab("visa")}
-                className={`px-4 py-2 rounded-full ${
-                  activeTab === "visa"
-                    ? "bg-white/10 border border-white/20"
-                    : "border border-transparent"
-                }`}
-              >
-                <img
-                  src="https://tse4.mm.bing.net/th/id/OIP.VOMO352OP4axk11dPRMX2AHaB2?pid=Api&P=0&h=180"
-                  alt="Visa"
-                  className="h-6"
-                />
-              </button>
-
-              <button
-                onClick={() => setActiveTab("payout")}
-                className={`px-4 py-2 rounded-full ${
-                  activeTab === "payout"
-                    ? "bg-white/10 border border-white/20"
-                    : "border border-transparent"
-                }`}
-              >
-                <img
-                  src="https://tse2.mm.bing.net/th/id/OIP.E1H7K1pGXLYUVUvedgFMHwHaBy?pid=Api&P=0&h=180"
-                  alt="Payout"
-                  className="h-6"
-                />
-              </button>
+      {/* Product Details Modal */}
+      <Modal isOpen={!!selectedItem} onClose={() => setSelectedItem(null)} maxWidth="max-w-[800px]">
+        {selectedProduct && selectedItem && (
+          <div className="flex flex-col md:flex-row gap-6 lg:gap-8 w-full text-white">
+            {/* Image Section */}
+            <div className="w-full md:w-1/2 bg-white/5 rounded-2xl p-4 md:p-8 flex items-center justify-center border border-white/10">
+              <img src={selectedProduct.img} alt={selectedProduct.name} className="max-w-full max-h-[250px] md:max-h-[350px] object-contain drop-shadow-2xl" />
             </div>
 
-            <div className="w-full px-3 py-3 items-center">
-              {activeTab === "visa" && (
-                <div className="flex flex-col w-full gap-4">
-                  <h2 className="text-xl font-semibold text-center">
-                    Credit Card
-                  </h2>
+            {/* Details Section */}
+            <div className="w-full md:w-1/2 flex flex-col justify-center gap-4">
+               <div>
+                 <span className="inline-block bg-amber-400/10 border border-amber-400/20 text-amber-400 font-bold tracking-widest text-xs px-2.5 py-1 rounded-full uppercase mb-3 shadow-[0_0_10px_rgba(251,191,36,0.1)]">
+                   {selectedProduct.seller}
+                 </span>
+                 <h2 className="text-2xl md:text-3xl font-extrabold leading-tight text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-100 to-slate-400">
+                   {selectedProduct.name}
+                 </h2>
+               </div>
+               
+               <div className="flex items-center gap-3 mt-1">
+                 <span className="text-3xl md:text-4xl font-black tracking-tight">₹{selectedProduct.price}</span>
+                 {selectedProduct.ratings && (
+                   <div className="flex items-center bg-amber-400/20 border border-amber-400/30 px-2 py-1 rounded text-amber-400 text-xs font-bold ml-2">
+                     {selectedProduct.ratings} <svg className="w-3 h-3 ml-1 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.572-.955L10 0l2.94 5.955 6.572.955-4.756 4.635 1.122 6.545z"/></svg>
+                   </div>
+                 )}
+               </div>
 
-                  <div className="flex flex-col gap-4">
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      placeholder="Cardholder Name"
-                      className="w-full block text-white px-2 py-2 border-b border-white/15 outline-none bg-transparent placeholder:text-slate-400"
-                    />
-                    <input
-                      type="text"
-                      value={num}
-                      onChange={(e) => setNum(e.target.value)}
-                      placeholder="Card Number"
-                      className="w-full block text-white px-2 py-2 border-b border-white/15 outline-none bg-transparent placeholder:text-slate-400"
-                    />
-                    <div className="flex flex-row gap-2">
-                      <input
-                        type="text"
-                        value={date}
-                        onChange={(e) => setDate(e.target.value)}
-                        placeholder="Expiry Date (MM/YY)"
-                        className="w-full block text-white px-2 py-2 border-b border-white/15 outline-none bg-transparent placeholder:text-slate-400"
-                      />
-                      <input
-                        type="text"
-                        value={cvv}
-                        onChange={(e) => setCvv(e.target.value)}
-                        placeholder="CVV"
-                        className="w-full block text-white px-2 py-2 border-b border-white/15 outline-none bg-transparent placeholder:text-slate-400"
-                      />
-                    </div>
-                  </div>
+               {/* Size and Color Selection */}
+               {(selectedItem.size || selectedItem.color) && (
+                 <div className="flex gap-4 mt-2">
+                   {selectedItem.size && (
+                     <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 flex flex-col shadow-inner">
+                       <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-0.5">Size</span>
+                       <span className="text-base font-black text-white">{selectedItem.size}</span>
+                     </div>
+                   )}
+                   {selectedItem.color && (
+                     <div className="bg-white/5 border border-white/10 rounded-xl px-4 py-2 flex flex-col shadow-inner">
+                       <span className="text-[10px] text-slate-400 uppercase tracking-widest font-bold mb-0.5">Color</span>
+                       <span className="text-base font-black text-white">{selectedItem.color}</span>
+                     </div>
+                   )}
+                 </div>
+               )}
 
-                  <button
-                    onClick={() => {
-                      setOpen(false), handleLocation();
-                    }}
-                    className={`btn-primary w-[120px] ${
-                      !name || !num || !cvv || !date
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                    disabled={!name || !num || !cvv || !date}
-                  >
-                    Add Card
-                  </button>
-
-                  <p className="text-slate-400 text-sm">
-                    Payment disclaimer: in no event shall payment or partial
-                    payment by Owner for any material or service.
+               <div className="h-px w-full bg-white/10 my-1" />
+               
+               <div className="flex flex-col gap-1.5">
+                  <h3 className="text-sm font-semibold text-slate-300">Description</h3>
+                  <p className="text-sm text-slate-400 leading-relaxed max-h-[120px] overflow-y-auto custom-scrollbar pr-2">
+                    {selectedProduct.description || "Experience top-tier quality with this premium product from our exclusive collection. Crafted for durability and style, it perfectly meets your everyday needs."}
                   </p>
-                </div>
-              )}
-
-              {activeTab === "payout" && (
-                <div className="flex flex-col w-full gap-4">
-                  <h2 className="text-xl font-semibold text-center">
-                    Paypal Account Info
-                  </h2>
-
-                  <div className="flex flex-col gap-4">
-                    <input
-                      type="text"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="Enter Your Email"
-                      className="w-full block text-white px-2 py-2 border-b border-white/15 outline-none bg-transparent placeholder:text-slate-400"
-                    />
-                    <input
-                      type="text"
-                      value={userName}
-                      onChange={(e) => setUserName(e.target.value)}
-                      placeholder="Your Name"
-                      className="w-full block text-white px-2 py-2 border-b border-white/15 outline-none bg-transparent placeholder:text-slate-400"
-                    />
-                    <input
-                      type="text"
-                      value={info}
-                      onChange={(e) => setInfo(e.target.value)}
-                      placeholder="Extra Info"
-                      className="w-full block text-white px-2 py-2 border-b border-white/15 outline-none bg-transparent placeholder:text-slate-400"
-                    />
-                  </div>
-
-                  <button
-                    onClick={() => {
-                      setOpen(false), handleLocation();
-                    }}
-                    className={`btn-ghost w-[120px] ${
-                      !email || !userName || !info
-                        ? "opacity-50 cursor-not-allowed"
-                        : ""
-                    }`}
-                    disabled={!email || !userName || !info}
-                  >
-                    Add PayPal
-                  </button>
-
-                  <p className="text-slate-400 text-sm">
-                    Payment disclaimer: in no event shall payment or partial
-                    payment by Owner for any material or service.
-                  </p>
-                </div>
-              )}
+               </div>
+               
+               <div className="mt-4 flex gap-4 w-full">
+                 <button onClick={() => setSelectedItem(null)} className="btn-ghost flex-1 py-3.5 border-white/20 hover:bg-white/10">Close</button>
+                 <Link to={`/shop/${selectedProduct.id}`} className="btn-primary flex-1 text-center py-3.5 bg-gradient-to-r from-amber-400 to-amber-500 text-slate-900 border-none shadow-[0_0_15px_rgba(251,191,36,0.3)] hover:shadow-[0_0_25px_rgba(251,191,36,0.5)]">
+                   View Full Page
+                 </Link>
+               </div>
             </div>
           </div>
-        </div>
+        )}
       </Modal>
     </div>
   );
