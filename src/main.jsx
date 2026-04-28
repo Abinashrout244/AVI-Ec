@@ -22,6 +22,7 @@ import Signup from "./components/Signup.jsx";
 import Checkout from "./Shop/Checkout.jsx";
 import OrderSuccess from "./Shop/OrderSuccess.jsx";
 import OrdersPage from "./Shop/OrdersPage.jsx";
+import ProfilePage from "./Shop/ProfilePage.jsx";
 
 const Shop = lazy(() => import("./Shop/Shop.jsx"));
 import Shimmer from "./components/Shimmer.jsx";
@@ -75,6 +76,22 @@ const approuter = createBrowserRouter([
         element: (
           <PrivateRoute>
             <OrdersPage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <PrivateRoute>
+            <ProfilePage />
+          </PrivateRoute>
+        ),
+      },
+      {
+        path: "/profile",
+        element: (
+          <PrivateRoute>
+            <ProfilePage />
           </PrivateRoute>
         ),
       },

@@ -8,7 +8,7 @@ import {
 } from "framer-motion";
 import Logo from "../assets/images/logo/logo.png";
 import { AuthContext } from "../context/AuthProvider";
-import profile from "../assets/images/profileimage/avi.jpg";
+import UserAvatar from "./UserAvatar";
 import { useSelector } from "react-redux";
 import Product from "../products.json";
 
@@ -427,11 +427,7 @@ const Header = () => {
                   onClick={() => setProfileDrop(!profileDrop)}
                   className="flex items-center gap-3 group"
                 >
-                  <img
-                    src={profile}
-                    className="size-9 rounded-full object-cover ring-2 ring-amber-400/30 group-hover:ring-amber-400 transition-all duration-500"
-                    alt="profile"
-                  />
+                <UserAvatar user={user} size="sm" />
                 </button>
 
                 <AnimatePresence>

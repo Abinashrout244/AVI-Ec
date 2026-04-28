@@ -1,6 +1,6 @@
 # React + Vite
 
-![Screenshot](./src/assets/images/profileimage/ss.png)
+![Home](screenshots/ss.png)
 
 🛒 Shopping Cart Website
 
