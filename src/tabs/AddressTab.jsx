@@ -21,8 +21,6 @@ const AddressTab = ({ activeTab, mockAddresses, setMockAddresses }) => {
 
   const handleDelete = (id) => {
     const updated = mockAddresses.filter((a) => a.id !== id);
-    // If we deleted the default address and there are others, we could assign a new default.
-    // For simplicity, we just delete it here.
     setMockAddresses(updated);
   };
 

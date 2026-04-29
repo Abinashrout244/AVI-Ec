@@ -1,3 +1,4 @@
+/* eslint react-refresh/only-export-components: "off" */
 import React, { createContext, useEffect, useState } from "react";
 import app from "../firebase/Firebase.config";
 import {
@@ -9,10 +10,11 @@ import {
   signInWithPopup,
   signOut,
   updateProfile,
+  sendPasswordResetEmail,
 } from "firebase/auth";
 
 export const AuthContext = createContext();
-const auth = getAuth();
+const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 const AuthProvider = ({ children }) => {
@@ -46,6 +48,10 @@ const AuthProvider = ({ children }) => {
     });
   };
 
+  const resetPassword = (email) => {
+    return sendPasswordResetEmail(auth, email.trim());
+  };
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
@@ -63,6 +69,7 @@ const AuthProvider = ({ children }) => {
     login,
     logOut,
     updateUserProfile,
+    resetPassword,
   };
   return (
     <AuthContext.Provider value={authInfo}>{children}</AuthContext.Provider>

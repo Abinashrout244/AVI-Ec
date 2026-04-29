@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import HeroBanner from "../components/HeroBanner";
 import Modal from "./Modal";
+import { useContext } from "react";
+import { AuthContext } from "../context/AuthProvider";
+import { getStorageKey } from "../utilis/Persistence";
 
 const OrderTimeline = ({ status }) => {
   const steps = ["Ordered", "Processed", "Shipped", "Delivered"];
@@ -45,11 +48,13 @@ const OrderTimeline = ({ status }) => {
 const OrdersPage = () => {
    const [selectedOrder, setSelectedOrder] = useState(null);
    const [mockOrders, setMockOrders] = useState([]);
+   const { user } = useContext(AuthContext);
 
    React.useEffect(() => {
-     const stored = JSON.parse(localStorage.getItem("avi_orders") || "[]");
+     const orderKey = getStorageKey("avi_orders", user);
+     const stored = JSON.parse(localStorage.getItem(orderKey) || "[]");
      setMockOrders(stored);
-   }, []);
+   }, [user]);
 
    return (
       <div className="space-y-10 min-h-screen">

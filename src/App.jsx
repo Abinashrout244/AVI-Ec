@@ -5,6 +5,11 @@ import Footer from "./components/Footer";
 import { useEffect } from "react";
 import ToastContainer from "./components/ToastContainer";
 import MobileBottomNav from "./components/MobileBottomNav";
+import { useContext } from "react";
+import { AuthContext } from "./context/AuthProvider";
+import { useDispatch } from "react-redux";
+import { setUserId } from "./utilis/CartSlice";
+import { setWishlistUserId } from "./utilis/WishlistSlice";
 
 // Scroll to top on every route change
 function ScrollToTop() {
@@ -17,6 +22,18 @@ function ScrollToTop() {
 
 function App() {
   const location = useLocation();
+  const { user } = useContext(AuthContext);
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (user) {
+      dispatch(setUserId(user.uid));
+      dispatch(setWishlistUserId(user.uid));
+    } else {
+      dispatch(setUserId(null));
+      dispatch(setWishlistUserId(null));
+    }
+  }, [user, dispatch]);
 
   return (
     <div className="min-h-screen text-slate-100">

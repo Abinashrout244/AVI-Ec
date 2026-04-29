@@ -3,11 +3,15 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { clearCart } from "../utilis/CartSlice";
+import { AuthContext } from "../context/AuthProvider";
+import { useContext } from "react";
+import { getStorageKey } from "../utilis/Persistence";
 
 const Checkout = () => {
   const CartItem = useSelector((store) => store?.cart?.items || []);
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const { user } = useContext(AuthContext);
 
   const totalOrder = CartItem.reduce((acc, curr) => acc + curr.price * curr.quantity, 0);
 
@@ -36,8 +40,9 @@ const Checkout = () => {
       items: CartItem.map(i => ({ name: i.name, qty: i.quantity, price: i.price }))
     };
 
-    const existingOrders = JSON.parse(localStorage.getItem("avi_orders") || "[]");
-    localStorage.setItem("avi_orders", JSON.stringify([newOrder, ...existingOrders]));
+    const orderKey = getStorageKey("avi_orders", user);
+    const existingOrders = JSON.parse(localStorage.getItem(orderKey) || "[]");
+    localStorage.setItem(orderKey, JSON.stringify([newOrder, ...existingOrders]));
 
     dispatch(clearCart());
     navigate("/order-success");

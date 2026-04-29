@@ -7,6 +7,11 @@ import { clearCart } from "../utilis/CartSlice";
 import { clearWishlist } from "../utilis/WishlistSlice";
 import { addToast } from "../utilis/ToastSlice";
 import UserAvatar from "../components/UserAvatar";
+import AddressTab from "../tabs/AddressTab";
+import OrdersTab from "../tabs/OrdersTab";
+import SettingsTab from "../tabs/SettingsTab";
+import PaymentTab from "../tabs/PaymentTab";
+import OverView from "../tabs/OverView";
 import { 
   ShoppingBag, 
   Heart, 
@@ -36,13 +41,41 @@ const ProfilePage = () => {
   const wishlistCount = wishlistItems.length;
 
   const [isUpdating, setIsUpdating] = useState(false);
-  const [newName, setNewName] = useState(user?.displayName || "");
+  const [newName, setNewName] = useState("");
+  const [activeTab, setActiveTab] = useState("overview");
+
+  // User-Specific Keys
+  const addressKey = user ? `avi_addresses_${user.uid}` : "avi_addresses_guest";
+  const profileKey = user ? `avi_user_profile_${user.uid}` : "avi_user_profile_guest";
+  const ordersKey = user ? `avi_orders_${user.uid}` : "avi_orders_guest";
+
+  // Address Persistence
+  const [mockAddresses, setMockAddresses] = useState([]);
 
   useEffect(() => {
     if (user) {
-      setNewName(user.displayName || "");
+      // Load Profile Name
+      const savedProfile = localStorage.getItem(profileKey);
+      if (savedProfile) {
+        const data = JSON.parse(savedProfile);
+        setNewName(`${data.firstName} ${data.lastName}`.trim());
+      } else {
+        setNewName(user.displayName || "");
+      }
+
+      // Load Addresses
+      const savedAddresses = localStorage.getItem(addressKey);
+      setMockAddresses(savedAddresses ? JSON.parse(savedAddresses) : [
+        { id: 1, type: "Home", address: "123 Galaxy Way, Star City, NY 10001", default: true },
+      ]);
     }
-  }, [user]);
+  }, [user, addressKey, profileKey]);
+
+  useEffect(() => {
+    if (user && mockAddresses.length > 0) {
+      localStorage.setItem(addressKey, JSON.stringify(mockAddresses));
+    }
+  }, [mockAddresses, addressKey, user]);
 
   const handleLogout = async () => {
     try {
@@ -60,6 +93,18 @@ const ProfilePage = () => {
     setIsUpdating(true);
     try {
       await updateUserProfile(newName, user.photoURL);
+      
+      const names = newName.split(" ");
+      const firstName = names[0] || "";
+      const lastName = names.slice(1).join(" ") || "";
+      
+      localStorage.setItem(profileKey, JSON.stringify({
+        firstName,
+        lastName,
+        email: user.email,
+        phone: JSON.parse(localStorage.getItem(profileKey) || "{}").phone || ""
+      }));
+
       dispatch(addToast({ message: "Profile updated successfully!", type: "success" }));
     } catch (error) {
       console.error("Update profile error:", error);
@@ -128,7 +173,7 @@ const ProfilePage = () => {
                     <ShieldCheck size={14} /> VIP Member
                   </h4>
                   <h1 className="text-4xl md:text-5xl font-black tracking-tight">
-                    Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">{user?.displayName || "Valued Customer"}</span>
+                    Welcome back, <span className="text-transparent bg-clip-text bg-gradient-to-r from-white to-white/60">{newName || user?.displayName || "Valued Customer"}</span>
                   </h1>
                 </div>
                 
@@ -166,7 +211,7 @@ const ProfilePage = () => {
             <StatCard 
               icon={<ShoppingBag className="text-[#e0b96a]" />} 
               label="Active Orders" 
-              value="02" 
+              value={JSON.parse(localStorage.getItem(ordersKey) || "[]").length < 10 ? `0${JSON.parse(localStorage.getItem(ordersKey) || "[]").length}` : JSON.parse(localStorage.getItem(ordersKey) || "[]").length} 
               subValue={`${cartCount} Items in Cart`} 
             />
             <StatCard 
@@ -218,7 +263,7 @@ const ProfilePage = () => {
                       <div className="space-y-1">
                         <p className="text-[10px] uppercase tracking-[0.2em] font-bold text-[#0a0603]/60">Card Holder</p>
                         <p className="text-lg font-bold text-[#0a0603] uppercase tracking-wider truncate max-w-[180px]">
-                          {user?.displayName || "SHOPCART USER"}
+                          {newName || user?.displayName || "SHOPCART USER"}
                         </p>
                       </div>
                       <p className="text-[#0a0603] font-mono text-sm">•••• 2025</p>
@@ -228,45 +273,85 @@ const ProfilePage = () => {
               </div>
             </motion.div>
 
-            {/* Information & Quick Actions - Right Side */}
-            <motion.div variants={itemVariants} className="lg:col-span-2 space-y-10">
-              {/* Information Grid */}
-              <div>
-                <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-                  <div className="w-1.5 h-6 bg-[#e0b96a] rounded-full" />
-                  Account Details
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <InfoItem icon={<Mail size={18} />} label="Contact Email" value={user?.email || "N/A"} />
-                  <InfoItem icon={<LogIn size={18} />} label="Last Login" value={user?.metadata?.lastSignInTime ? new Date(user.metadata.lastSignInTime).toLocaleString() : 'N/A'} />
+              {/* Tabs Content */}
+              <div className="lg:col-span-2">
+                <AnimatePresence mode="wait">
+                  {activeTab === "overview" && (
+                    <motion.div
+                      key="overview-content"
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      exit={{ opacity: 0, x: -20 }}
+                      className="space-y-10"
+                    >
+                      {/* Information Grid */}
+                      <div>
+                        <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+                          <div className="w-1.5 h-6 bg-[#e0b96a] rounded-full" />
+                          Account Details
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <InfoItem icon={<Mail size={18} />} label="Contact Email" value={user?.email || "N/A"} />
+                          <InfoItem icon={<LogIn size={18} />} label="Last Login" value={user?.metadata?.lastSignInTime ? new Date(user.metadata.lastSignInTime).toLocaleString() : 'N/A'} />
+                        </div>
+                      </div>
+
+                      {/* Quick Actions */}
+                      <div>
+                        <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+                          <div className="w-1.5 h-6 bg-[#e0b96a] rounded-full" />
+                          Quick Actions
+                        </h3>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <ActionRow icon={<ShoppingBag size={20} />} label="My Orders" onClick={() => setActiveTab('orders')} />
+                          <ActionRow icon={<MapPin size={20} />} label="Shipping Address" onClick={() => setActiveTab('address')} />
+                          <ActionRow icon={<CreditCard size={20} />} label="Payment Methods" onClick={() => setActiveTab('payment')} />
+                          <ActionRow icon={<Settings size={20} />} label="Account Settings" onClick={() => setActiveTab('settings')} />
+                        </div>
+                      </div>
+                    </motion.div>
+                  )}
+
+                  {activeTab === "address" && (
+                    <div key="address-tab">
+                      <button onClick={() => setActiveTab('overview')} className="text-[#e0b96a] text-xs font-bold uppercase tracking-widest mb-4 hover:underline">← Back to Overview</button>
+                      <AddressTab mockAddresses={mockAddresses} setMockAddresses={setMockAddresses} />
+                    </div>
+                  )}
+
+                  {activeTab === "orders" && (
+                    <div key="orders-tab">
+                      <button onClick={() => setActiveTab('overview')} className="text-[#e0b96a] text-xs font-bold uppercase tracking-widest mb-4 hover:underline">← Back to Overview</button>
+                      <OrdersTab mockOrders={JSON.parse(localStorage.getItem(ordersKey) || "[]")} />
+                    </div>
+                  )}
+
+                  {activeTab === "settings" && (
+                    <div key="settings-tab">
+                      <button onClick={() => setActiveTab('overview')} className="text-[#e0b96a] text-xs font-bold uppercase tracking-widest mb-4 hover:underline">← Back to Overview</button>
+                      <SettingsTab user={user} />
+                    </div>
+                  )}
+
+                  {activeTab === "payment" && (
+                    <div key="payment-tab">
+                      <button onClick={() => setActiveTab('overview')} className="text-[#e0b96a] text-xs font-bold uppercase tracking-widest mb-4 hover:underline">← Back to Overview</button>
+                      <PaymentTab />
+                    </div>
+                  )}
+                </AnimatePresence>
+
+                {/* Logout Button */}
+                <div className="pt-10">
+                  <button 
+                    onClick={handleLogout}
+                    className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 py-4 rounded-2xl text-red-400 font-bold transition-all group"
+                  >
+                    <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
+                    Logout Session
+                  </button>
                 </div>
               </div>
-
-              {/* Quick Actions */}
-              <div>
-                <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-                  <div className="w-1.5 h-6 bg-[#e0b96a] rounded-full" />
-                  Quick Actions
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <ActionRow icon={<ShoppingBag size={20} />} label="My Orders" onClick={() => navigate('/orders')} />
-                  <ActionRow icon={<MapPin size={20} />} label="Shipping Address" onClick={() => {}} />
-                  <ActionRow icon={<CreditCard size={20} />} label="Payment Methods" onClick={() => {}} />
-                  <ActionRow icon={<Settings size={20} />} label="Account Settings" onClick={() => {}} />
-                </div>
-              </div>
-
-              {/* Logout Button */}
-              <div className="pt-6">
-                <button 
-                  onClick={handleLogout}
-                  className="w-full flex items-center justify-center gap-3 bg-white/5 hover:bg-red-500/10 border border-white/10 hover:border-red-500/20 py-4 rounded-2xl text-red-400 font-bold transition-all group"
-                >
-                  <LogOut size={20} className="group-hover:-translate-x-1 transition-transform" />
-                  Logout Session
-                </button>
-              </div>
-            </motion.div>
           </div>
 
         </motion.div>

@@ -173,19 +173,17 @@ const Shop = () => {
         <div className="flex flex-col md:flex-row gap-8">
           {/* Sidebar */}
           <AnimatePresence>
-            {(showFilters || true) && (
-              <motion.aside
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className={`w-full md:w-72 flex-shrink-0 flex-col gap-5 ${showFilters ? "flex" : "hidden md:flex"}`}
-              >
-                <Search setSearch={setSearch} search={search} />
-                <ShopCategory filterCategory={filterCategory} selectCategory={selectCategory} />
-                <Suggestions search={search} filteredsearchproducts={filteredsearchproducts} />
-                <Popularpost />
-                <TagList />
-              </motion.aside>
-            )}
+            <motion.aside
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className={`w-full md:w-72 flex-shrink-0 flex-col gap-5 ${showFilters ? "flex" : "hidden md:flex"}`}
+            >
+              <Search setSearch={setSearch} search={search} />
+              <ShopCategory filterCategory={filterCategory} selectCategory={selectCategory} />
+              <Suggestions search={search} filteredsearchproducts={filteredsearchproducts} />
+              <Popularpost />
+              <TagList />
+            </motion.aside>
           </AnimatePresence>
 
           {/* Main Products */}
