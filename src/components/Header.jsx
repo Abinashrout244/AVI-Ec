@@ -11,6 +11,7 @@ import { AuthContext } from "../context/AuthProvider";
 import UserAvatar from "./UserAvatar";
 import { useSelector } from "react-redux";
 import Product from "../products.json";
+import { X, ArrowRight } from "lucide-react";
 
 const Header = () => {
   const [headerPos, setHeaderPos] = useState(false);
@@ -37,7 +38,6 @@ const Header = () => {
   const searchRef = useRef(null);
   const data = Product;
 
-  // Close mobile menu on route change
   useEffect(() => {
     setToggleMenu(false);
     setProfileDrop(false);
@@ -51,7 +51,6 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Search filter
   useEffect(() => {
     if (searchText.trim() === "") {
       setFilterProducts([]);
@@ -65,7 +64,6 @@ const Header = () => {
     }
   }, [searchText, data]);
 
-  // Close search on outside click
   useEffect(() => {
     const handler = (e) => {
       if (searchRef.current && !searchRef.current.contains(e.target)) {
@@ -83,6 +81,14 @@ const Header = () => {
     else setHidden(false);
     lastScrollY.current = latest;
   });
+
+  // Lock body scroll when menu is open
+  useEffect(() => {
+    document.body.style.overflow = toggleMenu ? "hidden" : "";
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [toggleMenu]);
 
   const navLinks = [
     { label: "Home", link: "/" },
@@ -108,7 +114,7 @@ const Header = () => {
 
   return (
     <div className="fixed top-0 left-0 w-full z-50">
-      {/* Announcement Bar */}
+      {/* ── Announcement Bar ── */}
       <AnimatePresence>
         {showAnnouncementBar && (
           <motion.div
@@ -157,7 +163,7 @@ const Header = () => {
         )}
       </AnimatePresence>
 
-      {/* Main Header */}
+      {/* ── Main Header ── */}
       <motion.header
         initial={false}
         animate={{
@@ -183,7 +189,7 @@ const Header = () => {
               <span className="text-slate-900 font-black text-xl italic tracking-tighter pr-1">
                 A
               </span>
-              <div className="absolute inset-0 rounded-xl ring-1 ring-white/30 group-hover:ring-white/50 transition-colors"></div>
+              <div className="absolute inset-0 rounded-xl ring-1 ring-white/30 group-hover:ring-white/50 transition-colors" />
             </div>
             <div className="hidden sm:flex flex-col">
               <span className="text-white font-extrabold text-base md:text-lg tracking-[0.2em] uppercase leading-none group-hover:text-amber-400 transition-colors duration-300">
@@ -231,7 +237,7 @@ const Header = () => {
 
           {/* Desktop Right Actions */}
           <div className="hidden md:flex items-center gap-5 border-l border-white/10 pl-6">
-            {/* Search icon */}
+            {/* Search */}
             <div className="relative" ref={searchRef}>
               <button
                 onClick={() => setSearchOpen((v) => !v)}
@@ -427,7 +433,7 @@ const Header = () => {
                   onClick={() => setProfileDrop(!profileDrop)}
                   className="flex items-center gap-3 group"
                 >
-                <UserAvatar user={user} size="sm" />
+                  <UserAvatar user={user} size="sm" />
                 </button>
 
                 <AnimatePresence>
@@ -516,7 +522,7 @@ const Header = () => {
               )}
             </Link>
 
-            {/* Hamburger */}
+            {/* Animated Hamburger */}
             <button
               onClick={() => setToggleMenu(!toggleMenu)}
               className="flex flex-col gap-1.5 justify-center items-end w-8 h-8"
@@ -551,7 +557,7 @@ const Header = () => {
         </div>
       </motion.header>
 
-      {/* Mobile Fullscreen Overlay */}
+      {/* ── Premium Mobile Fullscreen Menu ── */}
       <AnimatePresence>
         {toggleMenu && (
           <motion.div
@@ -559,82 +565,200 @@ const Header = () => {
             animate={{ clipPath: "inset(0 0 0% 0)" }}
             exit={{ clipPath: "inset(0 0 100% 0)" }}
             transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 bg-[#060810] z-40 flex flex-col justify-center items-center md:hidden"
+            className="fixed inset-0 z-50 flex flex-col md:hidden"
+            style={{ background: "#080b12" }}
           >
-            {/* Decorative blobs */}
-            <div className="absolute inset-0 overflow-hidden pointer-events-none">
-              <div className="absolute top-1/4 left-1/4 w-64 h-64 rounded-full bg-amber-500/5 blur-[80px]" />
-              <div className="absolute bottom-1/4 right-1/4 w-64 h-64 rounded-full bg-blue-600/5 blur-[80px]" />
+            {/* Ambient glow blobs */}
+            <div className="pointer-events-none absolute inset-0 select-none overflow-hidden">
+              <div
+                className="absolute left-1/2 top-1/4 h-52 w-52 -translate-x-1/2 rounded-full"
+                style={{
+                  background: "rgba(234,175,49,0.04)",
+                  filter: "blur(60px)",
+                }}
+              />
+              <div
+                className="absolute bottom-1/4 left-1/2 h-60 w-60 -translate-x-1/2 rounded-full"
+                style={{
+                  background: "rgba(59,99,202,0.04)",
+                  filter: "blur(70px)",
+                }}
+              />
             </div>
 
-            <motion.ul className="text-center space-y-6 relative z-10">
-              {navLinks.map((item, i) => (
-                <motion.li
-                  key={item.label}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{
-                    delay: 0.1 + i * 0.08,
-                    ease: [0.16, 1, 0.3, 1],
-                  }}
+            {/* Top bar */}
+            <div className="relative z-10 flex items-center justify-between px-6 pb-3 pt-5">
+              <div className="flex items-center gap-1.5">
+                <span
+                  className="text-[15px] font-medium tracking-wide"
+                  style={{ color: "rgba(255,255,255,0.92)" }}
                 >
-                  <Link
-                    onClick={() => setToggleMenu(false)}
-                    className={`text-4xl font-serif tracking-tight transition ${
-                      location.pathname === item.link
-                        ? "text-amber-400"
-                        : "text-white hover:text-amber-400"
-                    }`}
-                    to={item.link}
-                  >
-                    {item.label}
-                  </Link>
-                </motion.li>
-              ))}
-            </motion.ul>
+                  AVI
+                </span>
+                <span
+                  className="h-1 w-1 rounded-full"
+                  style={{ background: "#eaaf31" }}
+                />
+                <span
+                  className="text-[11px] font-normal uppercase tracking-[0.12em]"
+                  style={{ color: "rgba(255,255,255,0.3)" }}
+                >
+                  Store
+                </span>
+              </div>
 
+              <button
+                onClick={() => setToggleMenu(false)}
+                className="flex h-[30px] w-[30px] items-center justify-center rounded-full"
+                style={{ border: "0.5px solid rgba(255,255,255,0.12)" }}
+                aria-label="Close menu"
+              >
+                <X size={14} style={{ color: "rgba(255,255,255,0.5)" }} />
+              </button>
+            </div>
+
+            {/* Gold feather divider */}
+            <div className="mx-6">
+              <div
+                className="h-px w-full"
+                style={{
+                  background:
+                    "linear-gradient(90deg, transparent, rgba(234,175,49,0.25) 40%, rgba(234,175,49,0.25) 60%, transparent)",
+                }}
+              />
+            </div>
+
+            {/* Nav links */}
+            <nav className="relative z-10 my-auto flex flex-col gap-1 px-7 py-8">
+              {navLinks.map((item, i) => {
+                const isActive = location.pathname === item.link;
+                return (
+                  <motion.div
+                    key={item.label}
+                    initial={{ opacity: 0, y: 18 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{
+                      delay: 0.08 + i * 0.055,
+                      ease: [0.16, 1, 0.3, 1],
+                      duration: 0.5,
+                    }}
+                  >
+                    <Link
+                      to={item.link}
+                      onClick={() => setToggleMenu(false)}
+                      className="flex items-center justify-between px-4 py-[13px] transition-colors duration-200"
+                      style={{
+                        borderRadius: 14,
+                        border: isActive
+                          ? "0.5px solid rgba(234,175,49,0.18)"
+                          : "0.5px solid transparent",
+                        background: isActive
+                          ? "rgba(234,175,49,0.07)"
+                          : "transparent",
+                      }}
+                    >
+                      <span
+                        className="text-[22px] tracking-tight"
+                        style={{
+                          fontWeight: isActive ? 500 : 400,
+                          color: isActive ? "#eaaf31" : "rgba(255,255,255,0.6)",
+                          letterSpacing: "-0.02em",
+                        }}
+                      >
+                        {item.label}
+                      </span>
+                      <ArrowRight
+                        size={15}
+                        style={{
+                          color: isActive
+                            ? "rgba(234,175,49,0.55)"
+                            : "rgba(255,255,255,0.18)",
+                        }}
+                      />
+                    </Link>
+                  </motion.div>
+                );
+              })}
+            </nav>
+
+            {/* Bottom section */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="absolute bottom-14 flex flex-col items-center gap-6"
+              transition={{ delay: 0.42, ease: "easeOut", duration: 0.4 }}
+              className="relative z-10 px-6 pb-8"
             >
+              <div
+                className="mb-6 h-px w-full"
+                style={{ background: "rgba(255,255,255,0.06)" }}
+              />
+
               {!user ? (
-                <div className="flex gap-4">
+                <div className="mb-6 grid grid-cols-2 gap-2.5">
                   <Link
                     to="/login"
                     onClick={() => setToggleMenu(false)}
-                    className="px-6 py-2.5 rounded-full border border-white/20 text-[11px] uppercase tracking-[0.3em] text-white/60 hover:border-white/50 transition"
+                    className="flex items-center justify-center py-[13px] transition-all duration-200 active:scale-[0.98]"
+                    style={{
+                      borderRadius: 14,
+                      border: "0.5px solid rgba(255,255,255,0.1)",
+                    }}
                   >
-                    Login
+                    <span
+                      className="text-[10px] font-semibold uppercase tracking-[0.2em]"
+                      style={{ color: "rgba(255,255,255,0.55)" }}
+                    >
+                      Login
+                    </span>
                   </Link>
+
                   <Link
                     to="/signup"
                     onClick={() => setToggleMenu(false)}
-                    className="px-6 py-2.5 rounded-full bg-amber-400 text-slate-900 text-[11px] uppercase tracking-[0.2em] font-bold hover:bg-amber-300 transition"
+                    className="flex items-center justify-center py-[13px] transition-all duration-200 active:scale-[0.98]"
+                    style={{ borderRadius: 14, background: "#eaaf31" }}
                   >
-                    Join Free
+                    <span
+                      className="text-[10px] font-bold uppercase tracking-[0.18em]"
+                      style={{ color: "#1a1200" }}
+                    >
+                      Join Free
+                    </span>
                   </Link>
                 </div>
               ) : (
-                <div className="flex flex-col items-center gap-4">
+                <div className="mb-6 flex flex-col items-center gap-3">
                   <Link
                     to="/orders"
                     onClick={() => setToggleMenu(false)}
-                    className="text-white uppercase tracking-widest text-xs hover:text-amber-400 font-bold"
+                    className="flex w-full items-center justify-center py-[13px] transition-all duration-200 active:scale-[0.98]"
+                    style={{
+                      borderRadius: 14,
+                      border: "0.5px solid rgba(255,255,255,0.08)",
+                      background: "rgba(255,255,255,0.02)",
+                    }}
                   >
-                    My Orders
+                    <span
+                      onClick={logOut}
+                      className="text-[11px] font-bold uppercase tracking-[0.2em]"
+                      style={{ color: "rgba(255,255,255,0.7)" }}
+                    >
+                      Sign Out
+                    </span>
                   </Link>
+
                   <button
-                    onClick={logOut}
-                    className="text-amber-500 uppercase tracking-widest text-xs font-bold"
-                  >
-                    Sign Out
-                  </button>
+                    className="py-1 text-[10px] font-bold uppercase tracking-[0.25em] transition-all duration-200 active:scale-95"
+                    style={{ color: "rgba(248,113,113,0.75)" }}
+                  ></button>
                 </div>
               )}
-              <p className="text-white/20 text-[10px] tracking-widest uppercase">
-                © 2025 AVI Store
+
+              <p
+                className="text-center text-[9px] font-medium uppercase tracking-[0.35em] select-none"
+                style={{ color: "rgba(255,255,255,0.14)" }}
+              >
+                © {new Date().getFullYear()} &nbsp;·&nbsp; AVI Store
               </p>
             </motion.div>
           </motion.div>
