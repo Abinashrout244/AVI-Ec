@@ -74,8 +74,14 @@ const LetterReveal = ({ text, accent }) => {
             ease: [0.16, 1, 0.3, 1],
           }}
         >
-          {char === " " ? "\u00A0" : (
-            <span style={accent && i > 4 ? { color: accent, fontStyle: "italic" } : {}}>
+          {char === " " ? (
+            "\u00A0"
+          ) : (
+            <span
+              style={
+                accent && i > 4 ? { color: accent, fontStyle: "italic" } : {}
+              }
+            >
               {char}
             </span>
           )}
@@ -129,8 +135,7 @@ const HeroBanner = ({ title, page }) => {
   }, [cfg.accentRgb]);
 
   return (
-    <section className="relative h-[52vh] md:h-[58vh] flex items-center justify-center overflow-hidden bg-[#03050c]">
-
+    <section className="relative h-[52vh] md:h-[58vh] flex items-center justify-center overflow-hidden bg-[#03050c] pt-22 md:pt-10">
       {/* ── Background image (Ken Burns subtle zoom) ── */}
       <motion.div
         className="absolute inset-0"
@@ -152,7 +157,7 @@ const HeroBanner = ({ title, page }) => {
 
       {/* ── Accent color atmosphere ── */}
       <motion.div
-        animate={{ opacity: [0.06, 0.10, 0.06], scale: [1, 1.05, 1] }}
+        animate={{ opacity: [0.06, 0.1, 0.06], scale: [1, 1.05, 1] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
         className="absolute inset-0 pointer-events-none"
         style={{
@@ -195,7 +200,12 @@ const HeroBanner = ({ title, page }) => {
       />
       <motion.div
         animate={{ x: [0, -30, 0], y: [0, 30, 0] }}
-        transition={{ duration: 16, repeat: Infinity, ease: "easeInOut", delay: 2 }}
+        transition={{
+          duration: 16,
+          repeat: Infinity,
+          ease: "easeInOut",
+          delay: 2,
+        }}
         className="absolute -bottom-20 -left-20 w-[400px] h-[400px] rounded-full pointer-events-none"
         style={{
           background: `radial-gradient(circle, ${cfg.glow}18, transparent 70%)`,
@@ -203,11 +213,17 @@ const HeroBanner = ({ title, page }) => {
       />
 
       {/* ── Decorative horizontal lines ── */}
-      <div className="absolute left-0 right-0 top-1/3 h-px pointer-events-none"
-        style={{ background: `linear-gradient(90deg, transparent 0%, rgba(${cfg.accentRgb},0.08) 30%, rgba(${cfg.accentRgb},0.08) 70%, transparent 100%)` }}
+      <div
+        className="absolute left-0 right-0 top-1/3 h-px pointer-events-none"
+        style={{
+          background: `linear-gradient(90deg, transparent 0%, rgba(${cfg.accentRgb},0.08) 30%, rgba(${cfg.accentRgb},0.08) 70%, transparent 100%)`,
+        }}
       />
-      <div className="absolute left-0 right-0 bottom-1/3 h-px pointer-events-none"
-        style={{ background: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 30%, rgba(255,255,255,0.04) 70%, transparent 100%)` }}
+      <div
+        className="absolute left-0 right-0 bottom-1/3 h-px pointer-events-none"
+        style={{
+          background: `linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.04) 30%, rgba(255,255,255,0.04) 70%, transparent 100%)`,
+        }}
       />
 
       {/* ── Vertical accent lines (sides) ── */}
@@ -216,24 +232,32 @@ const HeroBanner = ({ title, page }) => {
         animate={{ scaleY: 1, opacity: 1 }}
         transition={{ duration: 1, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="absolute left-8 md:left-16 top-1/4 bottom-1/4 w-px origin-top pointer-events-none"
-        style={{ background: `linear-gradient(to bottom, transparent, rgba(${cfg.accentRgb},0.25), transparent)` }}
+        style={{
+          background: `linear-gradient(to bottom, transparent, rgba(${cfg.accentRgb},0.25), transparent)`,
+        }}
       />
       <motion.div
         initial={{ scaleY: 0, opacity: 0 }}
         animate={{ scaleY: 1, opacity: 1 }}
         transition={{ duration: 1, delay: 0.55, ease: [0.16, 1, 0.3, 1] }}
         className="absolute right-8 md:right-16 top-1/4 bottom-1/4 w-px origin-bottom pointer-events-none"
-        style={{ background: `linear-gradient(to bottom, transparent, rgba(${cfg.accentRgb},0.15), transparent)` }}
+        style={{
+          background: `linear-gradient(to bottom, transparent, rgba(${cfg.accentRgb},0.15), transparent)`,
+        }}
       />
 
       {/* ── MAIN CONTENT ── */}
       <div className="relative z-10 text-center flex flex-col items-center gap-6 px-6">
-
         {/* ── Tag pill ── */}
         <motion.div
           initial={{ opacity: 0, y: -16, scale: 0.88 }}
           animate={{ opacity: 1, y: 0, scale: 1 }}
-          transition={{ duration: 0.6, delay: 0.15, type: "spring", bounce: 0.35 }}
+          transition={{
+            duration: 0.6,
+            delay: 0.15,
+            type: "spring",
+            bounce: 0.35,
+          }}
           className="inline-flex items-center gap-2.5 px-5 py-2 rounded-full backdrop-blur-xl border"
           style={{
             backgroundColor: `rgba(${cfg.accentRgb}, 0.08)`,
@@ -324,12 +348,18 @@ const HeroBanner = ({ title, page }) => {
       </div>
 
       {/* ── Bottom edge gradient fade ── */}
-      <div className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
+      <div
+        className="absolute bottom-0 left-0 right-0 h-20 pointer-events-none"
         style={{ background: "linear-gradient(to top, #03050c, transparent)" }}
       />
 
       {/* ── Corner accents ── */}
-      {["top-0 left-0", "top-0 right-0", "bottom-0 left-0", "bottom-0 right-0"].map((pos, i) => (
+      {[
+        "top-0 left-0",
+        "top-0 right-0",
+        "bottom-0 left-0",
+        "bottom-0 right-0",
+      ].map((pos, i) => (
         <motion.div
           key={i}
           initial={{ opacity: 0, scale: 0 }}
@@ -338,9 +368,12 @@ const HeroBanner = ({ title, page }) => {
           className={`absolute ${pos} w-8 h-8 pointer-events-none`}
           style={{
             borderTop: i < 2 ? `1px solid rgba(${cfg.accentRgb},0.18)` : "none",
-            borderBottom: i >= 2 ? `1px solid rgba(${cfg.accentRgb},0.18)` : "none",
-            borderLeft: i % 2 === 0 ? `1px solid rgba(${cfg.accentRgb},0.18)` : "none",
-            borderRight: i % 2 === 1 ? `1px solid rgba(${cfg.accentRgb},0.18)` : "none",
+            borderBottom:
+              i >= 2 ? `1px solid rgba(${cfg.accentRgb},0.18)` : "none",
+            borderLeft:
+              i % 2 === 0 ? `1px solid rgba(${cfg.accentRgb},0.18)` : "none",
+            borderRight:
+              i % 2 === 1 ? `1px solid rgba(${cfg.accentRgb},0.18)` : "none",
           }}
         />
       ))}
