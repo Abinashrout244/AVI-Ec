@@ -62,6 +62,79 @@ const faqs = [
   },
 ];
 
+const socialLinks = [
+  {
+    label: "Twitter",
+    href: "#",
+    colorClass: "hover:bg-sky-500/10 hover:border-sky-500/30 text-sky-300",
+    icon: (
+      <svg className="size-4" fill="currentColor" viewBox="0 0 16 16">
+        <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.056-4.425 5.056H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.6.75Zm-.86 13.028h1.36L4.323 2.145H2.865z" />
+      </svg>
+    ),
+  },
+  {
+    label: "Instagram",
+    href: "#",
+    colorClass:
+      "hover:bg-fuchsia-500/10 hover:border-fuchsia-500/30 text-fuchsia-300",
+    icon: (
+      <svg
+        className="size-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        viewBox="0 0 24 24"
+      >
+        <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+        <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+        <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+      </svg>
+    ),
+  },
+  {
+    label: "YouTube",
+    href: "#",
+    colorClass: "hover:bg-red-500/10 hover:border-red-500/30 text-red-300",
+    icon: (
+      <svg
+        className="size-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        viewBox="0 0 24 24"
+      >
+        <path d="M22.54 6.42a2.78 2.78 0 0 0-1.94-2C18.88 4 12 4 12 4s-6.88 0-8.6.46a2.78 2.78 0 0 0-1.94 2A29 29 0 0 0 1 11.75a29 29 0 0 0 .46 5.33A2.78 2.78 0 0 0 3.4 19c1.72.46 8.6.46 8.6.46s6.88 0 8.6-.46a2.78 2.78 0 0 0 1.94-2 29 29 0 0 0 .46-5.25 29 29 0 0 0-.46-5.33z"></path>
+        <polygon points="9.75 15.02 15.5 11.75 9.75 8.48 9.75 15.02"></polygon>
+      </svg>
+    ),
+  },
+  {
+    label: "LinkedIn",
+    href: "#",
+    colorClass: "hover:bg-blue-500/10 hover:border-blue-500/30 text-blue-300",
+    icon: (
+      <svg
+        className="size-4"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        viewBox="0 0 24 24"
+      >
+        <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path>
+        <rect x="2" y="9" width="4" height="12"></rect>
+        <circle cx="4" cy="4" r="2"></circle>
+      </svg>
+    ),
+  },
+];
+
 // ── FAQ Item ─────────────────────────────────────────────────────────────────
 const FaqItem = ({ faq, i }) => {
   const [open, setOpen] = useState(false);
@@ -77,7 +150,9 @@ const FaqItem = ({ faq, i }) => {
         onClick={() => setOpen(!open)}
         className="w-full flex items-center justify-between gap-4 px-6 py-5 text-left"
       >
-        <span className="text-white font-medium text-[14px] leading-snug">{faq.q}</span>
+        <span className="text-white font-medium text-[14px] leading-snug">
+          {faq.q}
+        </span>
         <motion.span
           animate={{ rotate: open ? 45 : 0 }}
           transition={{ duration: 0.3 }}
@@ -156,25 +231,39 @@ const Contact = () => {
               {/* Hover glow */}
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
-                style={{ background: `radial-gradient(circle at 50% 0%, rgba(${card.accentRgb},0.08), transparent 70%)` }}
+                style={{
+                  background: `radial-gradient(circle at 50% 0%, rgba(${card.accentRgb},0.08), transparent 70%)`,
+                }}
               />
               {/* Bottom accent line */}
               <motion.div
                 className="absolute bottom-0 left-0 right-0 h-[2px] origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500"
-                style={{ background: `linear-gradient(90deg, transparent, ${card.accent}, transparent)` }}
+                style={{
+                  background: `linear-gradient(90deg, transparent, ${card.accent}, transparent)`,
+                }}
               />
 
               <div
                 className="size-12 rounded-xl flex items-center justify-center text-2xl"
-                style={{ background: `rgba(${card.accentRgb}, 0.1)`, border: `1px solid rgba(${card.accentRgb}, 0.2)` }}
+                style={{
+                  background: `rgba(${card.accentRgb}, 0.1)`,
+                  border: `1px solid rgba(${card.accentRgb}, 0.2)`,
+                }}
               >
                 {card.icon}
               </div>
 
               <div>
-                <h3 className="text-white font-semibold text-base mb-2">{card.title}</h3>
+                <h3 className="text-white font-semibold text-base mb-2">
+                  {card.title}
+                </h3>
                 {card.lines.map((line, j) => (
-                  <p key={j} className="text-white/45 text-[13px] leading-relaxed">{line}</p>
+                  <p
+                    key={j}
+                    className="text-white/45 text-[13px] leading-relaxed"
+                  >
+                    {line}
+                  </p>
                 ))}
               </div>
 
@@ -190,7 +279,9 @@ const Contact = () => {
                   <motion.span
                     animate={{ x: [0, 3, 0] }}
                     transition={{ duration: 1.5, repeat: Infinity }}
-                  >→</motion.span>
+                  >
+                    →
+                  </motion.span>
                 </a>
               )}
             </motion.div>
@@ -200,7 +291,6 @@ const Contact = () => {
 
       {/* ── MAP + FORM ── */}
       <section className="max-w-screen-2xl mx-auto px-6 md:px-16 pb-24 grid grid-cols-1 lg:grid-cols-2 gap-10">
-
         {/* Map */}
         <motion.div
           initial={{ opacity: 0, x: -30 }}
@@ -213,12 +303,17 @@ const Contact = () => {
             <p className="text-[11px] uppercase tracking-[0.4em] text-purple-400/70 font-semibold mb-2">
               — Find Us Here
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-white">Our Location</h2>
+            <h2 className="font-serif text-3xl md:text-4xl text-white">
+              Our Location
+            </h2>
           </div>
 
           <div
             className="relative rounded-3xl overflow-hidden"
-            style={{ border: "1px solid rgba(255,255,255,0.07)", boxShadow: "0 24px 60px rgba(0,0,0,0.5)" }}
+            style={{
+              border: "1px solid rgba(255,255,255,0.07)",
+              boxShadow: "0 24px 60px rgba(0,0,0,0.5)",
+            }}
           >
             {/* Map overlay tint */}
             <div className="absolute inset-0 bg-[#03050c]/20 pointer-events-none z-10 mix-blend-color" />
@@ -235,14 +330,11 @@ const Contact = () => {
 
           {/* Social links */}
           <div className="glass-panel rounded-2xl p-5 flex items-center justify-between">
-            <p className="text-white/40 text-[12px] uppercase tracking-widest">Follow Us</p>
+            <p className="text-white/40 text-[12px] uppercase tracking-widest">
+              Follow Us
+            </p>
             <div className="flex gap-3">
-              {[
-                { icon: "𝕏", label: "Twitter", color: "#7dd3fc" },
-                { icon: "📸", label: "Instagram", color: "#f0abfc" },
-                { icon: "▶", label: "YouTube", color: "#fca5a5" },
-                { icon: "💼", label: "LinkedIn", color: "#93c5fd" },
-              ].map((s) => (
+              {socialLinks.map((s) => (
                 <motion.a
                   key={s.label}
                   href="#"
@@ -274,7 +366,9 @@ const Contact = () => {
             <p className="text-[11px] uppercase tracking-[0.4em] text-purple-400/70 font-semibold mb-2">
               — Drop a Message
             </p>
-            <h2 className="font-serif text-3xl md:text-4xl text-white">Send Us a Message</h2>
+            <h2 className="font-serif text-3xl md:text-4xl text-white">
+              Send Us a Message
+            </h2>
           </div>
 
           <AnimatePresence mode="wait">
@@ -291,50 +385,95 @@ const Contact = () => {
                   animate={{ scale: 1 }}
                   transition={{ type: "spring", bounce: 0.5, delay: 0.2 }}
                   className="size-20 rounded-full flex items-center justify-center text-4xl"
-                  style={{ background: "rgba(134,239,172,0.12)", border: "1px solid rgba(134,239,172,0.3)" }}
+                  style={{
+                    background: "rgba(134,239,172,0.12)",
+                    border: "1px solid rgba(134,239,172,0.3)",
+                  }}
                 >
                   ✓
                 </motion.div>
-                <h3 className="font-serif text-2xl text-white">Message Sent!</h3>
+                <h3 className="font-serif text-2xl text-white">
+                  Message Sent!
+                </h3>
                 <p className="text-white/45 text-[13px] max-w-xs">
-                  Thank you for reaching out. Our team will get back to you within 24 hours.
+                  Thank you for reaching out. Our team will get back to you
+                  within 24 hours.
                 </p>
-                <p className="text-white/20 text-[11px]">Redirecting to home...</p>
+                <p className="text-white/20 text-[11px]">
+                  Redirecting to home...
+                </p>
               </motion.div>
             ) : (
               <motion.form
                 key="form"
                 onSubmit={handleSubmit}
                 className="glass-panel rounded-3xl p-7 md:p-8 flex flex-col gap-5"
-                style={{ boxShadow: "0 24px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)" }}
+                style={{
+                  boxShadow:
+                    "0 24px 80px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.04)",
+                }}
               >
                 {/* Row 1 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-white/35 text-[11px] uppercase tracking-widest pl-1">Full Name *</label>
-                    <input type="text" name="name" required placeholder="Abinash Rout" className={inputCls} />
+                    <label className="text-white/35 text-[11px] uppercase tracking-widest pl-1">
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      name="name"
+                      required
+                      placeholder="Abinash Rout"
+                      className={inputCls}
+                    />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-white/35 text-[11px] uppercase tracking-widest pl-1">Email *</label>
-                    <input type="email" name="email" required placeholder="you@example.com" className={inputCls} />
+                    <label className="text-white/35 text-[11px] uppercase tracking-widest pl-1">
+                      Email *
+                    </label>
+                    <input
+                      type="email"
+                      name="email"
+                      required
+                      placeholder="you@example.com"
+                      className={inputCls}
+                    />
                   </div>
                 </div>
 
                 {/* Row 2 */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-white/35 text-[11px] uppercase tracking-widest pl-1">Phone *</label>
-                    <input type="text" name="number" required placeholder="+91 8249281685" className={inputCls} />
+                    <label className="text-white/35 text-[11px] uppercase tracking-widest pl-1">
+                      Phone *
+                    </label>
+                    <input
+                      type="text"
+                      name="number"
+                      required
+                      placeholder="+91 8249281685"
+                      className={inputCls}
+                    />
                   </div>
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-white/35 text-[11px] uppercase tracking-widest pl-1">Subject *</label>
-                    <input type="text" name="sub" required placeholder="Order issue, partnership..." className={inputCls} />
+                    <label className="text-white/35 text-[11px] uppercase tracking-widest pl-1">
+                      Subject *
+                    </label>
+                    <input
+                      type="text"
+                      name="sub"
+                      required
+                      placeholder="Order issue, partnership..."
+                      className={inputCls}
+                    />
                   </div>
                 </div>
 
                 {/* Textarea */}
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-white/35 text-[11px] uppercase tracking-widest pl-1">Message</label>
+                  <label className="text-white/35 text-[11px] uppercase tracking-widest pl-1">
+                    Message
+                  </label>
                   <textarea
                     name="message"
                     placeholder="Tell us how we can help you..."
@@ -346,7 +485,10 @@ const Contact = () => {
                 {/* Privacy note */}
                 <p className="text-white/20 text-[11px] leading-relaxed">
                   By submitting this form you agree to our{" "}
-                  <span className="text-purple-400/60 cursor-pointer hover:text-purple-400 transition-colors">Privacy Policy</span>.
+                  <span className="text-purple-400/60 cursor-pointer hover:text-purple-400 transition-colors">
+                    Privacy Policy
+                  </span>
+                  .
                 </p>
 
                 {/* Submit button */}
@@ -360,7 +502,9 @@ const Contact = () => {
                     background: loading
                       ? "rgba(255,255,255,0.1)"
                       : "linear-gradient(135deg, #f0abfc, #c084fc)",
-                    boxShadow: loading ? "none" : "0 12px 30px rgba(240,171,252,0.3)",
+                    boxShadow: loading
+                      ? "none"
+                      : "0 12px 30px rgba(240,171,252,0.3)",
                     color: loading ? "rgba(255,255,255,0.4)" : "#0a0c10",
                   }}
                 >
@@ -368,7 +512,11 @@ const Contact = () => {
                     <span className="flex items-center justify-center gap-3">
                       <motion.span
                         animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                        transition={{
+                          duration: 1,
+                          repeat: Infinity,
+                          ease: "linear",
+                        }}
                         className="size-4 border-2 border-white/30 border-t-white/70 rounded-full inline-block"
                       />
                       Sending Message...
@@ -379,7 +527,9 @@ const Contact = () => {
                       <motion.span
                         animate={{ x: [0, 4, 0] }}
                         transition={{ duration: 1.5, repeat: Infinity }}
-                      >→</motion.span>
+                      >
+                        →
+                      </motion.span>
                     </span>
                   )}
                 </motion.button>
@@ -392,11 +542,17 @@ const Contact = () => {
       {/* ── FAQ SECTION ── */}
       <section className="max-w-screen-2xl mx-auto px-6 md:px-16 pb-24">
         <div className="flex flex-col gap-3 text-center max-w-2xl mx-auto mb-12">
-          <p className="text-[11px] uppercase tracking-[0.4em] text-amber-400/70 font-semibold">— FAQ</p>
-          <h2 className="font-serif text-4xl text-white">Frequently Asked Questions</h2>
+          <p className="text-[11px] uppercase tracking-[0.4em] text-amber-400/70 font-semibold">
+            — FAQ
+          </p>
+          <h2 className="font-serif text-4xl text-white">
+            Frequently Asked Questions
+          </h2>
         </div>
         <div className="max-w-3xl mx-auto flex flex-col gap-3">
-          {faqs.map((faq, i) => <FaqItem key={faq.q} faq={faq} i={i} />)}
+          {faqs.map((faq, i) => (
+            <FaqItem key={faq.q} faq={faq} i={i} />
+          ))}
         </div>
       </section>
     </div>
