@@ -1,6 +1,6 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import CategoryCard from "./CategoryCard";
 import icon from "../assets/icons/cube.svg";
 
@@ -73,53 +73,74 @@ const categoryList = [
   },
 ];
 
-const containerVariants = {
-  hidden: {},
-  visible: {
-    transition: {
-      staggerChildren: 0.1,
-    },
-  },
-};
+const FONT_LINK =
+  "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap";
 
-const itemVariants = {
-  hidden: { opacity: 0, y: 32, scale: 0.95 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    scale: 1,
-    transition: { duration: 0.6, ease: [0.16, 1, 0.3, 1] },
-  },
-};
+const serif = "font-['Instrument_Serif',Georgia,serif]";
+const sans = "font-['Hanken_Grotesk',system-ui,sans-serif]";
+const ease = [0.16, 1, 0.3, 1];
 
 const HomeCategory = () => {
+  const reduce = useReducedMotion();
+
+  useEffect(() => {
+    if (document.querySelector(`link[href="${FONT_LINK}"]`)) return;
+    const l = document.createElement("link");
+    l.rel = "stylesheet";
+    l.href = FONT_LINK;
+    document.head.appendChild(l);
+  }, []);
+
+  const containerVariants = {
+    hidden: {},
+    visible: { transition: { staggerChildren: reduce ? 0 : 0.1 } },
+  };
+  const itemVariants = {
+    hidden: reduce ? { opacity: 1 } : { opacity: 0, y: 32 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.9, ease } },
+  };
+  const Arrow = () => (
+    <svg
+      viewBox="0 0 24 24"
+      className="size-4 transition-transform duration-500 group-hover:translate-x-1.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M3 12h17M14 6l6 6-6 6" />
+    </svg>
+  );
   return (
     <div className="flex flex-col gap-12 py-20 px-2 md:px-8">
       {/* Header */}
       <motion.div
-        initial={{ opacity: 0, y: 24 }}
+        initial={reduce ? false : { opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true, amount: 0.3 }}
-        transition={{ duration: 0.7 }}
-        className="flex flex-col md:flex-row items-center justify-between gap-4"
+        transition={{ duration: 0.9, ease }}
+        className="flex flex-col items-start justify-between gap-8 md:flex-row md:items-end"
       >
-        <div className="text-center md:text-left">
-          <p className="text-amber-400 text-[11px] uppercase tracking-[0.4em] font-semibold mb-3">
-            — Browse Categories
+        <div>
+          <p className="mb-6 flex items-center gap-4 text-[11px] font-medium uppercase tracking-[0.3em] text-white/55">
+            <span className="h-px w-10 bg-white/40" />
+            Browse categories
           </p>
-          <h2 className="font-serif text-4xl md:text-5xl text-white leading-tight">
-            Shop by{" "}
-            <span className="italic text-white/40 font-light">Category</span>
+          <h2
+            className={`${serif} text-[clamp(2.8rem,6vw,5.2rem)] font-normal leading-[0.96] tracking-[-0.025em]`}
+          >
+            Shop by <span className="italic text-[#c4a1f5]">category</span>
           </h2>
         </div>
-        <Link to="/shop">
-          <motion.button
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            className="px-6 py-3 rounded-full border border-white/15 text-white/70 hover:text-white hover:border-amber-400/40 text-[12px] uppercase tracking-widest transition-all duration-300"
-          >
-            View All Categories →
-          </motion.button>
+
+        <Link
+          to="/shop"
+          className="group inline-flex items-center gap-3 border-b border-white/25 pb-1.5 text-[11px] font-medium uppercase tracking-[0.24em] text-white/80 transition-colors duration-500 hover:border-[#c4a1f5] hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c4a1f5]"
+        >
+          View all categories
+          <Arrow />
         </Link>
       </motion.div>
 
@@ -142,20 +163,18 @@ const HomeCategory = () => {
 
       {/* Bottom CTA */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={reduce ? false : { opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="flex justify-center"
+        transition={{ duration: 0.8, ease }}
+        className="flex justify-center pt-4"
       >
-        <Link to="/shop">
-          <motion.button
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            className="px-9 py-3.5 rounded-full bg-gradient-to-r from-amber-400 to-yellow-300 text-slate-900 font-bold text-[12px] uppercase tracking-[0.2em] shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all duration-300"
-          >
-            Explore All Products
-          </motion.button>
+        <Link
+          to="/shop"
+          className="group inline-flex items-center gap-3 border border-[#d9b55f] bg-[#d9b55f] px-9 py-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#0d0910] transition-colors duration-500 hover:bg-transparent hover:text-[#d9b55f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c4a1f5]"
+        >
+          Explore all products
+          <Arrow />
         </Link>
       </motion.div>
     </div>

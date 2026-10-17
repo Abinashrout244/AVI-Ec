@@ -7,55 +7,52 @@ import Client from "./Client";
 import AboutUs from "./AboutUs";
 import AppStore from "./AppStore";
 import Brand from "./Brand";
-import MotionSection from "../components/MotionSection";
+
+// Redesigned sections already handle their own width, padding and reveal
+// animations, so they sit directly on the page. Un-redesigned ones
+// (CategoryShowcase, Brand) get the same width via <Contained />.
+const Contained = ({ children }) => (
+  <div className="mx-auto max-w-[1500px] px-6 md:px-12">{children}</div>
+);
+
+// One hairline divider used everywhere
+const Divider = () => (
+  <div className="mx-auto max-w-[1500px] px-6 md:px-12">
+    <div className="h-px bg-white/10" />
+  </div>
+);
 
 const Home = () => {
   return (
-    <div className="overflow-hidden">
-      {/* Hero - full bleed, no container padding */}
+    // overflow-x-clip (not overflow-hidden) so the hero's search suggestions can drop below it
+    <div className="overflow-x-clip bg-[#0d0910]">
+      {/* Hero, full bleed */}
       <Banner />
 
-      {/* Section separator */}
-      <div className="section-divider" />
+      <Divider />
+      <HomeCategory />
 
-      {/* Categories */}
-      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
-        <HomeCategory />
-      </MotionSection>
-
-      {/* Thin separator */}
-      <div className="h-px bg-white/5 mx-6 md:mx-20" />
-
-      {/* Products */}
-      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
+      <Divider />
+      <Contained>
         <CategoryShowcase />
-      </MotionSection>
+      </Contained>
 
-      {/* Register / Workshop CTA */}
-      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
+      <Contained>
         <Register />
-      </MotionSection>
+      </Contained>
 
-      {/* Client Testimonials */}
-      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
-        <Client />
-      </MotionSection>
+      <Client />
 
-      {/* Stats + Why Choose Us */}
-      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
-        <AboutUs />
-      </MotionSection>
+      <Divider />
+      <AboutUs />
 
-      {/* App Download */}
-      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
-        <AppStore />
-      </MotionSection>
+      <Divider />
+      <AppStore />
 
-      {/* Brand logos */}
-      <div className="h-px bg-white/5 mx-6 md:mx-20 mb-8" />
-      <MotionSection className="px-4 md:px-12 max-w-screen-2xl mx-auto">
+      <Divider />
+      <Contained>
         <Brand />
-      </MotionSection>
+      </Contained>
     </div>
   );
 };

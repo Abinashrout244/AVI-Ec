@@ -1,41 +1,49 @@
 import React from "react";
-import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { addItem } from "../utilis/CartSlice";
 import { toggleWishlist } from "../utilis/WishlistSlice";
 import { addToast } from "../utilis/ToastSlice";
 
-const StarRating = ({ rating }) => {
-  return (
-    <div className="flex items-center gap-0.5">
-      {[1, 2, 3, 4, 5].map((star) => (
-        <svg
-          key={star}
-          className={`size-3 ${star <= Math.round(rating) ? "fill-amber-400 text-amber-400" : "fill-white/15 text-white/15"}`}
-          viewBox="0 0 24 24"
-        >
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
-        </svg>
-      ))}
-    </div>
-  );
-};
+/*
+  GRID on the parent (2 per row on phones):
+    className="grid grid-cols-2 gap-x-3 gap-y-10 sm:grid-cols-3 sm:gap-x-5 lg:grid-cols-4 xl:gap-x-6"
+  Fonts (Instrument Serif + Hanken Grotesk) are already loaded by the hero.
+*/
 
-const BADGE_COLORS = {
-  "Best Seller": "bg-amber-400/15 text-amber-400 border-amber-400/30",
-  "New": "bg-emerald-400/15 text-emerald-400 border-emerald-400/30",
-  "Hot": "bg-rose-400/15 text-rose-400 border-rose-400/30",
-  "Sale": "bg-blue-400/15 text-blue-400 border-blue-400/30",
-  "Trending": "bg-violet-400/15 text-violet-400 border-violet-400/30",
-};
+const serif = "font-['Instrument_Serif',Georgia,serif]";
+const sans = "font-['Hanken_Grotesk',system-ui,sans-serif]";
 
-const CategoryShowcaseCard = ({ imgUrl, cate, title, brand, price, rating, reviews, badge, id }) => {
+const parsePrice = (v) => Number(String(v ?? "").replace(/[^0-9.]/g, "")) || 0;
+const inr = (n) => `₹${Math.round(n).toLocaleString("en-IN")}`;
+
+const CategoryShowcaseCard = ({
+  imgUrl,
+  cate,
+  title,
+  brand,
+  price,
+  mrp, // optional: original price. Strike-through + "% off" only show when higher than price
+  rating,
+  reviews,
+  badge,
+  id,
+}) => {
   const dispatch = useDispatch();
   const wishlistItems = useSelector((store) => store?.wishlist?.items || []);
   const isWishlisted = wishlistItems.some((item) => item.id === id);
-  const numericPrice = Number(String(price || "").replace(/[^0-9.]/g, "")) || 0;
-  const formattedPrice = price ? String(price).replace("$", "₹") : "₹00.00";
+
+  const numericPrice = parsePrice(price);
+  const numericMrp = parsePrice(mrp);
+  const hasDiscount = numericMrp > numericPrice && numericPrice > 0;
+  const off = hasDiscount
+    ? Math.round(((numericMrp - numericPrice) / numericMrp) * 100)
+    : 0;
+  const formattedPrice = numericPrice
+    ? inr(numericPrice)
+    : price
+      ? String(price).replace("$", "₹")
+      : "₹0";
 
   const handleAddToCart = () => {
     dispatch(
@@ -72,113 +80,124 @@ const CategoryShowcaseCard = ({ imgUrl, cate, title, brand, price, rating, revie
   };
 
   return (
-    <motion.div
-      whileHover="hover"
-      className="group relative rounded-2xl overflow-hidden lux-card flex flex-col h-full"
-    >
-      {/* Image container */}
-      <div className="relative overflow-hidden aspect-[4/3]">
-        <Link to={`/shop/${id}`} className="block">
-          <motion.img
+    <article className={`${sans} group relative flex h-full flex-col`}>
+      {/* ── Image: borderless, quiet, slow zoom ── */}
+      <div className="relative aspect-[3/4] overflow-hidden bg-[#1a1420]">
+        <Link to={`/shop/${id}`} className="block h-full" aria-label={title}>
+          <img
             src={imgUrl}
             alt={title}
-            className="w-full h-full object-cover"
-            variants={{ hover: { scale: 1.07 } }}
-            transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+            loading="lazy"
+            decoding="async"
+            className="h-full w-full object-cover saturate-[0.92] transition-transform duration-[1400ms] ease-[cubic-bezier(0.16,1,0.3,1)] group-hover:scale-[1.04] motion-reduce:transform-none"
           />
         </Link>
 
-        {/* Badge */}
+        {/* soft grade so any photo sits well on the dark page */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0d0910]/35 via-transparent to-transparent" />
+
+        {/* Badge: just type, no box */}
         {badge && (
-          <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${BADGE_COLORS[badge] || BADGE_COLORS["New"]}`}>
+          <span className="pointer-events-none absolute left-3 top-3 text-[10px] font-medium uppercase tracking-[0.24em] text-white drop-shadow-[0_1px_4px_rgba(0,0,0,0.55)]">
             {badge}
           </span>
         )}
 
-        {/* Wishlist button */}
-        <motion.button
+        {/* Wishlist: thin outline heart, no circle */}
+        <button
+          type="button"
           onClick={handleToggleWishlist}
-          whileHover={{ scale: 1.15 }}
-          whileTap={{ scale: 0.9 }}
-          className="absolute top-3 right-3 size-9 rounded-full bg-black/40 backdrop-blur-sm border border-white/10 flex items-center justify-center transition-all hover:bg-black/60"
-          aria-label="Add to wishlist"
+          aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+          aria-pressed={isWishlisted}
+          className="absolute right-2.5 top-2.5 flex size-9 items-center justify-center"
         >
           <svg
-            className={`size-4 transition-colors ${isWishlisted ? "fill-red-400 text-red-400" : "fill-none text-white/60"}`}
+            className={`size-[19px] drop-shadow-[0_1px_4px_rgba(0,0,0,0.55)] transition-all duration-300 ${
+              isWishlisted
+                ? "fill-[#c4a1f5] text-[#c4a1f5]"
+                : "fill-none text-white hover:scale-110"
+            }`}
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            strokeWidth={1.2}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+            />
+          </svg>
+        </button>
+
+        {/* Desktop: quick-add bar slides up on hover */}
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          className="absolute inset-x-0 bottom-0 hidden translate-y-full items-center justify-center gap-2 bg-[#f3ecf4]/95 py-3.5 text-[10.5px] font-semibold uppercase tracking-[0.24em] text-[#0d0910] opacity-0 backdrop-blur-sm transition-[transform,opacity] duration-500 ease-[cubic-bezier(0.16,1,0.3,1)] hover:bg-white group-hover:translate-y-0 group-hover:opacity-100 group-focus-within:translate-y-0 group-focus-within:opacity-100 md:flex"
+        >
+          Add to bag
+        </button>
+
+        {/* Mobile: small always-visible quick-add */}
+        <button
+          type="button"
+          onClick={handleAddToCart}
+          aria-label="Add to bag"
+          className="absolute bottom-2.5 right-2.5 flex size-9 items-center justify-center rounded-full bg-[#f3ecf4]/95 text-[#0d0910] shadow-[0_4px_14px_rgba(0,0,0,0.35)] transition-transform duration-200 active:scale-90 md:hidden"
+        >
+          <svg
+            className="size-4"
+            fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
             strokeWidth={1.5}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+            <path strokeLinecap="round" d="M12 5v14M5 12h14" />
           </svg>
-        </motion.button>
-
-        {/* Add to Cart hover overlay */}
-        <motion.div
-          className="absolute inset-x-0 bottom-0 p-3"
-          initial={{ opacity: 0, y: 10 }}
-          variants={{ hover: { opacity: 1, y: 0 } }}
-          transition={{ duration: 0.3 }}
-        >
-          <motion.button
-            onClick={handleAddToCart}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.97 }}
-            className="w-full py-2.5 rounded-xl bg-amber-400 text-slate-900 font-bold text-[11px] uppercase tracking-[0.15em] shadow-lg shadow-amber-400/30 hover:bg-amber-300 transition-colors flex items-center justify-center gap-2"
-          >
-            <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
-            </svg>
-            Add to Cart
-          </motion.button>
-        </motion.div>
+        </button>
       </div>
 
-      {/* Card Body */}
-      <div className="p-4 flex flex-col gap-2.5 flex-1">
-        {/* Category tag */}
-        <span className="text-[10px] uppercase tracking-[0.2em] text-amber-400/70 font-semibold">
-          {cate}
-        </span>
+      {/* ── Details: left-aligned to the image edge, no box ── */}
+      <div className="flex flex-1 flex-col pt-3.5">
+        <div className="flex items-baseline justify-between gap-3">
+          <p className="truncate text-[10px] font-medium uppercase tracking-[0.22em] text-white/45">
+            {brand || cate}
+          </p>
+          {rating ? (
+            <span className="shrink-0 text-[10.5px] tabular-nums tracking-wide text-white/40">
+              {Number(rating).toFixed(1)} ★
+              {reviews ? ` · ${Number(reviews).toLocaleString("en-IN")}` : ""}
+            </span>
+          ) : null}
+        </div>
 
-        {/* Title */}
-        <Link to={`/shop/${id}`}>
-          <h3 className="text-white font-semibold text-[15px] leading-snug line-clamp-2 group-hover:text-amber-400 transition-colors duration-300">
+        <Link to={`/shop/${id}`} className="mt-1.5">
+          <h3
+            className={`${sans} line-clamp-2 text-[13px] font-normal leading-[1.3] tracking-[0.01em] text-white/85 transition-colors duration-500 group-hover:text-white md:text-[14px]`}
+          >
             {title}
           </h3>
         </Link>
 
-        {/* Brand + Rating row */}
-        <div className="flex items-center justify-between gap-2">
-          <span className="text-white/40 text-[12px]">{brand}</span>
-          <div className="flex items-center gap-1.5">
-            <StarRating rating={rating || 4.5} />
-            <span className="text-white/30 text-[10px]">({reviews?.toLocaleString() || "0"})</span>
-          </div>
-        </div>
-
-        {/* Price row */}
-        <div className="flex items-center justify-between mt-auto pt-2 border-t border-white/5">
-          <div>
-            <p className="text-amber-300 font-bold text-lg leading-none">{formattedPrice}</p>
-            <p className="text-white/20 text-[10px] line-through mt-0.5">
-              {formattedPrice.replace("₹", "₹").replace(/\d+/, (n) => Math.round(n * 1.3))}
-            </p>
-          </div>
-          <Link to={`/shop/${id}`}>
-            <motion.button
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.95 }}
-              className="size-9 rounded-full bg-white/5 hover:bg-amber-400/20 border border-white/10 hover:border-amber-400/40 flex items-center justify-center transition-all duration-300 text-white/60 hover:text-amber-400"
-            >
-              <svg className="size-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={1.5}>
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13 7l5 5m0 0l-5 5m5-5H6" />
-              </svg>
-            </motion.button>
-          </Link>
+        <div className="mt-auto flex flex-wrap items-baseline gap-x-2.5 pt-3">
+          <span
+            className={`${serif} text-[20px] leading-none tabular-nums text-white md:text-[22px]`}
+          >
+            {formattedPrice}
+          </span>
+          {hasDiscount && (
+            <>
+              <span className="text-[11px] tabular-nums text-white/30 line-through">
+                {inr(numericMrp)}
+              </span>
+              <span className="text-[10.5px] font-medium uppercase tracking-[0.14em] text-[#d9b55f]">
+                {off}% off
+              </span>
+            </>
+          )}
         </div>
       </div>
-    </motion.div>
+    </article>
   );
 };
 

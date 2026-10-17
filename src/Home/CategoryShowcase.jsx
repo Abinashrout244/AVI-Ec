@@ -3,10 +3,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import CategoryShowcaseHeader from "./CategoryShowcaseHeader";
 import CategoryShowcaseCard from "./CategoryShowcaseCard";
 import { Link } from "react-router-dom";
+import { useReducedMotion } from "framer-motion";
 
 const ProductData = [
   {
-    imgUrl: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&q=80",
     cate: "Shoes",
     title: "Nike Air Zoom X",
     brand: "Nike",
@@ -17,7 +19,8 @@ const ProductData = [
     badge: "Best Seller",
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1548036328-c9fa89d128fa?w=600&q=80",
     cate: "Bags",
     title: "Aesthetic Tote Bag",
     brand: "D&J Bags",
@@ -28,7 +31,8 @@ const ProductData = [
     badge: "New",
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=600&q=80",
     cate: "Phones",
     title: "iPhone 15 Pro",
     brand: "Apple",
@@ -39,7 +43,8 @@ const ProductData = [
     badge: "Hot",
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=600&q=80",
     cate: "Bags",
     title: "Hiking Bag NH100",
     brand: "Quechua",
@@ -49,7 +54,8 @@ const ProductData = [
     id: 4,
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1491553895911-0055eca6402d?w=600&q=80",
     cate: "Shoes",
     title: "Outdoor Sport Shoes",
     brand: "Adidas",
@@ -60,7 +66,8 @@ const ProductData = [
     badge: "Sale",
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=600&q=80",
     cate: "Beauty",
     title: "Glow Serum Kit",
     brand: "Zaara Beauty",
@@ -71,7 +78,8 @@ const ProductData = [
     badge: "Trending",
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1584917865442-de89df76afd3?w=600&q=80",
     cate: "Bags",
     title: "Mini Chanel Look",
     brand: "Gucci",
@@ -81,7 +89,8 @@ const ProductData = [
     id: 7,
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1595950653106-6c9ebd614d3a?w=600&q=80",
     cate: "Shoes",
     title: "Casual Sneakers",
     brand: "Puma",
@@ -91,7 +100,8 @@ const ProductData = [
     id: 8,
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&q=80",
     cate: "Phones",
     title: "Galaxy S25 Ultra",
     brand: "Samsung",
@@ -102,7 +112,8 @@ const ProductData = [
     badge: "New",
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1614251056798-0a63eda2bb25?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1614251056798-0a63eda2bb25?w=600&q=80",
     cate: "Beauty",
     title: "Cetaphil Glow Set",
     brand: "Cetaphil",
@@ -112,7 +123,8 @@ const ProductData = [
     id: 10,
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1555529669-e69e7aa0ba9a?w=600&q=80",
     cate: "Beauty",
     title: "De-Construct Serum",
     brand: "De-Construct",
@@ -122,7 +134,8 @@ const ProductData = [
     id: 11,
   },
   {
-    imgUrl: "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&q=80",
+    imgUrl:
+      "https://images.unsplash.com/photo-1610945265064-0e34e5519bbf?w=600&q=80",
     cate: "Phones",
     title: "iPhone 16",
     brand: "Apple",
@@ -133,6 +146,9 @@ const ProductData = [
     badge: "Hot",
   },
 ];
+const serif = "font-['Instrument_Serif',Georgia,serif]";
+const sans = "font-['Hanken_Grotesk',system-ui,sans-serif]";
+const ease = [0.16, 1, 0.3, 1];
 
 const containerVariants = {
   hidden: {},
@@ -142,11 +158,15 @@ const containerVariants = {
 const cardVariants = {
   hidden: { opacity: 0, y: 28, scale: 0.95 },
   visible: {
-    opacity: 1, y: 0, scale: 1,
+    opacity: 1,
+    y: 0,
+    scale: 1,
     transition: { duration: 0.55, ease: [0.16, 1, 0.3, 1] },
   },
   exit: {
-    opacity: 0, scale: 0.92, y: -10,
+    opacity: 0,
+    scale: 0.92,
+    y: -10,
     transition: { duration: 0.3 },
   },
 };
@@ -154,6 +174,7 @@ const cardVariants = {
 const CategoryShowcase = () => {
   const [data, setData] = useState(ProductData);
   const [active, setActive] = useState("All");
+  const reduce = useReducedMotion();
 
   const filterItem = (select) => {
     setActive(select);
@@ -163,6 +184,20 @@ const CategoryShowcase = () => {
       setData(ProductData.filter((item) => item.cate === select));
     }
   };
+  const Arrow = () => (
+    <svg
+      viewBox="0 0 24 24"
+      className="size-4 transition-transform duration-500 group-hover:translate-x-1.5"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M3 12h17M14 6l6 6-6 6" />
+    </svg>
+  );
 
   return (
     <div className="py-20 px-2 md:px-8 flex flex-col gap-10">
@@ -197,7 +232,7 @@ const CategoryShowcase = () => {
           initial="hidden"
           animate="visible"
           exit="exit"
-          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
+          className="grid grid-cols-1 grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5"
         >
           {data.map((item) => (
             <motion.div key={item.id} variants={cardVariants}>
@@ -209,22 +244,18 @@ const CategoryShowcase = () => {
 
       {/* Bottom CTA */}
       <motion.div
-        initial={{ opacity: 0, y: 20 }}
+        initial={reduce ? false : { opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
+        transition={{ duration: 0.8, ease }}
         className="flex justify-center pt-4"
       >
-        <Link to="/shop">
-          <motion.button
-            whileHover={{ scale: 1.04, y: -2 }}
-            whileTap={{ scale: 0.97 }}
-            className="group flex items-center gap-3 px-9 py-3.5 rounded-full border border-amber-400/30 text-amber-400 text-[12px] uppercase tracking-widest font-semibold hover:bg-amber-400 hover:text-slate-900 transition-all duration-300"
-          >
-            View All Products
-            <motion.span
-              className="group-hover:translate-x-1 transition-transform inline-block"
-            >→</motion.span>
-          </motion.button>
+        <Link
+          to="/shop"
+          className="group inline-flex items-center gap-3 border border-[#d9b55f] bg-[#d9b55f] px-9 py-4 text-[11px] font-semibold uppercase tracking-[0.24em] text-[#0d0910] transition-colors duration-500 hover:bg-transparent hover:text-[#d9b55f] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c4a1f5]"
+        >
+          Explore all products
+          <Arrow />
         </Link>
       </motion.div>
     </div>
