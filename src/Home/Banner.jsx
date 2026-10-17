@@ -1,97 +1,116 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import searchIcon from "../assets/icons/search-2.svg";
 import Select from "../components/Select";
 import Product from "../products.json";
-import { Link } from "react-router-dom";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import fallbackImg from "../assets/images/bg-img/01.jpg";
 
-// ── Hero slide data ────────────────────────────────────────────────────────────
-const heroSlides = [
+/* ─────────────────────────────────────────────────────────
+   EDIT ME
+   Drop a clean campaign photo (woman in a plum/burgundy suit,
+   warm side light, subject on the RIGHT, dark negative space on
+   the LEFT) at src/assets/images/hero-editorial.jpg and swap the
+   import / constant below. Portrait-ish crops work best, 2000px+ wide.
+   ───────────────────────────────────────────────────────── */
+const HERO_IMAGE =
+  "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=2000&q=80";
+
+const FONT_LINK =
+  "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap";
+
+// Tailwind arbitrary font families (loaded by the effect below)
+const serif = "font-['Instrument_Serif',Georgia,serif]";
+const sans = "font-['Hanken_Grotesk',system-ui,sans-serif]";
+
+const FEATURE_LINKS = [
+  { label: "Shoes", sub: "Step into style", to: "/shop" },
+  { label: "Beauty", sub: "Glow your way", to: "/shop" },
+  { label: "Phones", sub: "Smarter every day", to: "/shop" },
+];
+
+const TRENDING = [
+  "Electronics",
+  "Fashion",
+  "Beauty",
+  "Shoes",
+  "Bags",
+  "Phones",
+];
+
+const TRUST = [
   {
-    id: 1,
-    eyebrow: "New Arrivals · Spring 2025",
-    headline: "Wear What\nMatters Most",
-    sub: "Curated fashion, tech & lifestyle drops — delivered fast across India.",
-    cta: "Shop Collection",
-    ctaLink: "/shop",
-    badge: "UP TO 40% OFF",
-    color: "from-violet-900/60 via-slate-950/80",
-    accent: "#a78bfa",
-    img: "https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=1600&q=80",
+    label: "Free Shipping",
+    sub: "Across India",
+    d: "M3 7h11v9H3zM14 10h4l3 3v3h-7M7.5 17.5h.01M17.5 17.5h.01",
   },
   {
-    id: 2,
-    eyebrow: "Tech · Gadgets & More",
-    headline: "Next-Gen Gadgets\nAre Here",
-    sub: "Explore the latest smartphones, cameras & accessories at unbeatable prices.",
-    cta: "Explore Tech",
-    ctaLink: "/shop",
-    badge: "FREE SHIPPING",
-    color: "from-sky-900/60 via-slate-950/80",
-    accent: "#38bdf8",
-    img: "https://images.unsplash.com/photo-1585771724684-38269d6639fd?w=1600&q=80",
+    label: "Secure Payments",
+    sub: "100% Safe",
+    d: "M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6zM9 12l2 2 4-4",
   },
   {
-    id: 3,
-    eyebrow: "Beauty · Skincare Essentials",
-    headline: "Glow From\nWithin",
-    sub: "Top beauty & skincare brands trusted by thousands — shop today.",
-    cta: "Shop Beauty",
-    ctaLink: "/shop",
-    badge: "BUY 2 GET 1",
-    color: "from-rose-900/60 via-slate-950/80",
-    accent: "#fb7185",
-    img: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?w=1600&q=80",
+    label: "Fast Delivery",
+    sub: "2–5 Days",
+    d: "M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v5l3 2",
   },
 ];
 
-const floatingCards = [
-  { label: "Shoes", count: "2.4k+ Products", emoji: "👟", color: "from-violet-500/20 to-violet-600/5" },
-  { label: "Phones", count: "1.8k+ Products", emoji: "📱", color: "from-sky-500/20 to-sky-600/5" },
-  { label: "Beauty", count: "3.2k+ Products", emoji: "✨", color: "from-rose-500/20 to-rose-600/5" },
-];
+const GRAIN =
+  "bg-[url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")]";
 
-const trustBadges = [
-  { icon: "🚚", text: "Free Delivery", sub: "Orders over ₹999" },
-  { icon: "↩️", text: "Easy Returns", sub: "7-day policy" },
-  { icon: "🔒", text: "Secure Pay", sub: "256-bit SSL" },
-  { icon: "⭐", text: "4.8 Rated", sub: "60k+ reviews" },
-];
+const Arrow = ({ className = "" }) => (
+  <svg
+    viewBox="0 0 24 24"
+    className={`size-4 shrink-0 transition-transform duration-500 ease-out ${className}`}
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="1.4"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    aria-hidden="true"
+  >
+    <path d="M3 12h17M14 6l6 6-6 6" />
+  </svg>
+);
 
-// ── Component ──────────────────────────────────────────────────────────────────
+const ease = [0.16, 1, 0.3, 1];
+
+// ── Component ──────────────────────────────────────────────
 const Banner = () => {
-  const [current, setCurrent] = useState(0);
   const [searchText, setSearchText] = useState("");
   const [filterProducts, setFilterProducts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
-  const [paused, setPaused] = useState(false);
+  const [src, setSrc] = useState(HERO_IMAGE);
   const dropdownRef = useRef(null);
   const data = Product;
+  const reduce = useReducedMotion();
+  const navigate = useNavigate();
 
-  // Auto-slide
+  // Load editorial fonts once (no config changes needed)
   useEffect(() => {
-    if (paused) return;
-    const timer = setInterval(() => {
-      setCurrent((c) => (c + 1) % heroSlides.length);
-    }, 5000);
-    return () => clearInterval(timer);
-  }, [paused]);
+    if (document.querySelector(`link[href="${FONT_LINK}"]`)) return;
+    const l = document.createElement("link");
+    l.rel = "stylesheet";
+    l.href = FONT_LINK;
+    document.head.appendChild(l);
+  }, []);
 
-  // Search filter
+  // Search filter (unchanged logic)
   useEffect(() => {
     if (searchText.trim() === "") {
       setFilterProducts([]);
       setShowDropdown(false);
     } else {
       const filter = data.filter((prod) =>
-        prod.name.toLowerCase().includes(searchText.toLowerCase())
+        prod.name.toLowerCase().includes(searchText.toLowerCase()),
       );
       setFilterProducts(filter);
       setShowDropdown(true);
     }
   }, [searchText, data]);
 
-  // Close dropdown on outside click
+  // Close dropdown on outside click (unchanged)
   useEffect(() => {
     const handler = (e) => {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
@@ -102,231 +121,190 @@ const Banner = () => {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const slide = heroSlides[current];
+  const submit = (e) => {
+    e.preventDefault();
+    const q = searchText.trim();
+    navigate(q ? `/shop?q=${encodeURIComponent(q)}` : "/shop");
+  };
+
+  const rise = (delay = 0) => ({
+    initial: reduce ? false : { opacity: 0, y: 16 },
+    animate: { opacity: 1, y: 0 },
+    transition: { duration: 0.9, delay, ease },
+  });
 
   return (
-    <section className="relative min-h-screen flex flex-col overflow-hidden bg-[#04060e]">
-
-      {/* ── Background Image with parallax feel ── */}
-      <AnimatePresence mode="sync">
-        <motion.div
-          key={slide.id}
-          initial={{ opacity: 0, scale: 1.04 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.98 }}
-          transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="absolute inset-0"
-        >
-          <img
-            src={slide.img}
-            alt="Hero background"
-            className="w-full h-full object-cover opacity-30"
-          />
-          <div className={`absolute inset-0 bg-gradient-to-r ${slide.color} to-transparent`} />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#04060e] via-transparent to-[#04060e]/40" />
-        </motion.div>
-      </AnimatePresence>
-
-      {/* ── Decorative orbs ── */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <motion.div
-          animate={{ x: [0, 30, 0], y: [0, -20, 0] }}
-          transition={{ duration: 12, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute top-[-10%] left-[-5%] w-[50vw] h-[50vw] max-w-[600px] max-h-[600px] rounded-full opacity-10"
-          style={{ background: `radial-gradient(circle, ${slide.accent}, transparent 70%)` }}
+    <section
+      className={`${sans} relative isolate z-20 flex min-h-screen flex-col overflow-x-clip bg-[#0d0910] text-[#f3ecf4]`}
+    >
+      {/* ── Editorial photograph, blended into the dark ── */}
+      <motion.div
+        className="absolute inset-0 -z-10 lg:left-auto lg:w-[76%]"
+        initial={reduce ? false : { opacity: 0, scale: 1.06 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 1.8, ease }}
+      >
+        <img
+          src={src}
+          onError={() => setSrc(fallbackImg)}
+          alt="Editorial campaign photograph"
+          fetchpriority="high"
+          decoding="async"
+          className="h-full w-full object-cover object-[60%_20%] saturate-[0.9] contrast-[1.05]"
         />
-        <motion.div
-          animate={{ x: [0, -25, 0], y: [0, 25, 0] }}
-          transition={{ duration: 15, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute bottom-[-15%] right-[-5%] w-[45vw] h-[45vw] max-w-[500px] max-h-[500px] rounded-full opacity-8"
-          style={{ background: `radial-gradient(circle, ${slide.accent}, transparent 70%)` }}
-        />
-      </div>
+        {/* blend left edge into the page */}
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0d0910] via-[#0d0910]/70 to-transparent lg:via-[#0d0910]/25" />
+        {/* mobile legibility */}
+        <div className="absolute inset-0 bg-[#0d0910]/55 lg:hidden" />
+        {/* ground the bottom for search */}
+        <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#0d0910] via-[#0d0910]/70 to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0d0910]/80 to-transparent" />
+      </motion.div>
+      <div
+        className={`pointer-events-none absolute inset-0 -z-10 opacity-[0.04] mix-blend-overlay ${GRAIN}`}
+      />
 
-      {/* ── Main Hero Content ── */}
-      <div className="relative z-10 flex-1 flex flex-col justify-center px-6 md:px-16 lg:px-24 pt-36 pb-12 max-w-screen-2xl mx-auto w-full">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+      {/* ── Content ── */}
+      <div className="relative mx-auto flex w-full max-w-[1500px] flex-1 flex-col px-6 pb-10 pt-32 md:px-12 lg:pt-36">
+        <div className="flex flex-1 items-start justify-between gap-10 lg:items-center">
+          {/* LEFT */}
+          <div className="w-full max-w-[680px]">
+            <motion.p
+              {...rise(0.1)}
+              className="mb-8 flex items-center gap-4 text-[11px] font-normal uppercase tracking-[0.3em] text-white/60"
+            >
+              <span className="h-px w-10 bg-white/50" />
+              Style <span className="text-white/30">/</span> Tech{" "}
+              <span className="text-white/30">/</span> Lifestyle
+            </motion.p>
 
-          {/* Left: Text */}
-          <div className="flex flex-col gap-8">
-            {/* Eyebrow */}
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={`eyebrow-${slide.id}`}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -8 }}
-                transition={{ duration: 0.5 }}
-                className="flex items-center gap-3"
-              >
-                <span
-                  className="inline-block h-px w-10"
-                  style={{ backgroundColor: slide.accent }}
-                />
-                <span
-                  className="text-[11px] uppercase tracking-[0.4em] font-semibold"
-                  style={{ color: slide.accent }}
+            <h1
+              className={`${serif} text-[clamp(3.6rem,9vw,8rem)] font-normal leading-[0.9] tracking-[-0.025em]`}
+            >
+              <span className="block overflow-hidden pb-[0.08em]">
+                <motion.span
+                  className="block"
+                  initial={reduce ? false : { y: "105%" }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 1.1, delay: 0.2, ease }}
                 >
-                  {slide.eyebrow}
-                </span>
-              </motion.div>
-            </AnimatePresence>
+                  Wear What
+                </motion.span>
+              </span>
+              <span className="block overflow-hidden pb-[0.12em]">
+                <motion.span
+                  className="block italic text-[#c4a1f5]"
+                  initial={reduce ? false : { y: "105%" }}
+                  animate={{ y: 0 }}
+                  transition={{ duration: 1.1, delay: 0.32, ease }}
+                >
+                  Matters Most
+                </motion.span>
+              </span>
+            </h1>
 
-            {/* Headline */}
-            <AnimatePresence mode="wait">
-              <motion.h1
-                key={`headline-${slide.id}`}
-                initial={{ opacity: 0, y: 30 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                transition={{ duration: 0.7, delay: 0.1, ease: [0.16, 1, 0.3, 1] }}
-                className="text-5xl sm:text-6xl lg:text-7xl xl:text-[82px] font-serif text-white leading-[1.05] tracking-tight"
-              >
-                {slide.headline.split("\n").map((line, i) => (
-                  <span key={i} className="block">
-                    {i === 1 ? (
-                      <span className="italic font-light" style={{ color: slide.accent }}>
-                        {line}
-                      </span>
-                    ) : line}
-                  </span>
-                ))}
-              </motion.h1>
-            </AnimatePresence>
-
-            {/* Sub */}
-            <AnimatePresence mode="wait">
-              <motion.p
-                key={`sub-${slide.id}`}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.6, delay: 0.2 }}
-                className="text-base md:text-lg text-white/55 max-w-md leading-relaxed"
-              >
-                {slide.sub}
-              </motion.p>
-            </AnimatePresence>
+            <motion.p
+              {...rise(0.55)}
+              className="mt-8 max-w-[24rem] text-[17px] font-light leading-[1.55] text-white/70"
+            >
+              Curated fashion, tech &amp; lifestyle drops — delivered fast
+              across India.
+            </motion.p>
 
             {/* CTAs */}
             <motion.div
-              initial={{ opacity: 0, y: 16 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: 0.35 }}
-              className="flex flex-wrap items-center gap-4"
+              {...rise(0.68)}
+              className="mt-9 flex flex-wrap items-center gap-3"
             >
-              <Link to={slide.ctaLink}>
-                <motion.button
-                  whileHover={{ scale: 1.04, y: -2 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="relative px-7 py-3.5 rounded-full text-slate-900 font-bold text-[13px] uppercase tracking-[0.15em] overflow-hidden group"
-                  style={{ background: `linear-gradient(135deg, ${slide.accent}, #f8d77b)` }}
-                >
-                  {slide.cta}
-                  <motion.span
-                    className="ml-2 inline-block group-hover:translate-x-1 transition-transform"
-                  >→</motion.span>
-                </motion.button>
-              </Link>
-              <Link to="/shop">
-                <motion.button
-                  whileHover={{ scale: 1.04 }}
-                  whileTap={{ scale: 0.97 }}
-                  className="px-7 py-3.5 rounded-full border border-white/20 text-white font-semibold text-[13px] uppercase tracking-[0.12em] hover:border-white/50 hover:bg-white/5 transition-all"
-                >
-                  View All
-                </motion.button>
-              </Link>
-            </motion.div>
-
-            {/* Slide nav dots */}
-            <div className="flex items-center gap-3 pt-2">
-              {heroSlides.map((s, i) => (
-                <button
-                  key={s.id}
-                  onClick={() => { setCurrent(i); setPaused(true); }}
-                  className="relative h-[3px] rounded-full overflow-hidden transition-all"
-                  style={{
-                    width: i === current ? "36px" : "16px",
-                    backgroundColor: "rgba(255,255,255,0.15)"
-                  }}
-                  aria-label={`Go to slide ${i + 1}`}
-                >
-                  {i === current && (
-                    <motion.span
-                      className="absolute inset-y-0 left-0 rounded-full"
-                      style={{ backgroundColor: slide.accent }}
-                      initial={{ width: "0%" }}
-                      animate={{ width: "100%" }}
-                      transition={{ duration: 5, ease: "linear" }}
-                      key={`dot-${i}-${current}`}
-                    />
-                  )}
-                </button>
-              ))}
-              <span className="text-white/30 text-[11px] tracking-widest ml-2">
-                {String(current + 1).padStart(2, "0")} / {String(heroSlides.length).padStart(2, "0")}
-              </span>
-            </div>
-          </div>
-
-          {/* Right: Floating Category Cards */}
-          <div className="hidden lg:flex flex-col gap-4 items-center relative">
-            {/* Badge pill */}
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8, y: -10 }}
-              animate={{ opacity: 1, scale: 1, y: 0 }}
-              transition={{ delay: 0.5, type: "spring" }}
-              className="self-end mr-12 px-5 py-2 rounded-full bg-amber-400 text-slate-900 text-[11px] font-bold uppercase tracking-widest shadow-xl shadow-amber-400/30"
-            >
-              🏷 {slide.badge}
-            </motion.div>
-
-            {floatingCards.map((card, i) => (
-              <motion.div
-                key={card.label}
-                initial={{ opacity: 0, x: i % 2 === 0 ? -30 : 30, y: 20 }}
-                animate={{ opacity: 1, x: i % 2 === 0 ? -20 : 20, y: 0 }}
-                transition={{ delay: 0.4 + i * 0.15, type: "spring", bounce: 0.3 }}
-                whileHover={{ scale: 1.05, y: -4 }}
-                className={`glass-panel bg-gradient-to-br ${card.color} border border-white/10 rounded-2xl p-5 flex items-center gap-4 cursor-pointer w-56`}
-                style={{ alignSelf: i % 2 === 0 ? "flex-start" : "flex-end" }}
+              <Link
+                to="/shop"
+                className="group inline-flex items-center gap-3 rounded-full bg-[#c4a1f5] px-7 py-3.5 text-[13px] font-medium tracking-[0.02em] text-[#150d1c] transition-colors duration-500 hover:bg-[#d6bcfa] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c4a1f5]"
               >
-                <span className="text-3xl">{card.emoji}</span>
-                <div>
-                  <p className="text-white font-semibold text-sm">{card.label}</p>
-                  <p className="text-white/40 text-[11px]">{card.count}</p>
-                </div>
-              </motion.div>
-            ))}
-
-            {/* Stats card */}
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.8 }}
-              className="glass-panel border border-white/10 rounded-2xl p-5 flex gap-6 self-center"
-            >
-              {[["60k+", "Happy Clients"], ["500+", "Brands"], ["24/7", "Support"]].map(([num, label]) => (
-                <div key={label} className="text-center">
-                  <p className="font-bold text-white text-xl" style={{ color: slide.accent }}>{num}</p>
-                  <p className="text-white/40 text-[10px] uppercase tracking-widest">{label}</p>
-                </div>
-              ))}
+                Shop collection
+                <Arrow className="group-hover:translate-x-1.5" />
+              </Link>
+              <Link
+                to="/shop"
+                className="group inline-flex items-center gap-3 rounded-full border border-white/25 px-7 py-3.5 text-[13px] font-medium tracking-[0.02em] text-white/90 transition-colors duration-500 hover:border-white/60 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60"
+              >
+                Explore all
+              </Link>
             </motion.div>
+
+            {/* Trust */}
+            <motion.ul
+              {...rise(0.82)}
+              className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-4"
+            >
+              {TRUST.map((t, i) => (
+                <li key={t.label} className="flex items-center gap-7">
+                  {i > 0 && (
+                    <span className="hidden h-7 w-px bg-white/15 sm:block" />
+                  )}
+                  <div className="flex items-center gap-3">
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="size-[18px] text-white/65"
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.3"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      aria-hidden="true"
+                    >
+                      <path d={t.d} />
+                    </svg>
+                    <div className="leading-tight">
+                      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/85">
+                        {t.label}
+                      </p>
+                      <p className="mt-1 text-[10px] font-light tracking-wide text-white/40">
+                        {t.sub}
+                      </p>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </motion.ul>
           </div>
+
+          {/* RIGHT: editorial category links */}
+          <motion.nav
+            aria-label="Featured categories"
+            {...rise(0.9)}
+            className="hidden self-start pt-2 lg:flex lg:flex-col lg:gap-10"
+          >
+            {FEATURE_LINKS.map((l) => (
+              <Link key={l.label} to={l.to} className="group block w-56">
+                <div className="flex items-center justify-between">
+                  <span
+                    className={`${serif} text-[2.1rem] italic leading-none text-white/95 transition-colors duration-500 group-hover:text-[#c4a1f5]`}
+                  >
+                    {l.label}
+                  </span>
+                  <Arrow className="text-white/70 group-hover:translate-x-1.5 group-hover:text-[#c4a1f5]" />
+                </div>
+                <span className="mt-3 block h-px w-8 bg-[#c4a1f5] transition-all duration-500 group-hover:w-16" />
+                <p className="mt-3 text-[12px] font-light tracking-wide text-white/65">
+                  {l.sub}
+                </p>
+              </Link>
+            ))}
+          </motion.nav>
         </div>
 
-        {/* ── Search Bar ── */}
+        {/* ── Search ── */}
         <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5, duration: 0.8 }}
-          className="relative max-w-3xl mx-auto mt-14 w-full"
+          {...rise(1)}
           ref={dropdownRef}
+          className="relative mx-auto mt-14 w-full max-w-[640px]"
         >
-          <div className="relative flex items-center bg-white/[0.04] backdrop-blur-3xl border border-white/12 rounded-full p-1.5 transition-all duration-500 focus-within:border-white/30 focus-within:bg-white/[0.07] shadow-2xl">
-            <div className="hidden md:block pl-5 pr-3 border-r border-white/10">
+          <form
+            onSubmit={submit}
+            role="search"
+            className="flex items-center rounded-full border border-white/20 bg-[#0d0910]/70 p-1.5 backdrop-blur-md transition-colors duration-500 focus-within:border-[#c4a1f5]/60"
+          >
+            <div className="hidden border-r border-white/10 pl-4 pr-3 md:block">
               <Select select={"all"} />
             </div>
 
@@ -334,116 +312,90 @@ const Banner = () => {
               type="text"
               value={searchText}
               onChange={(e) => setSearchText(e.target.value)}
-              placeholder="Search for products, brands & more..."
-              className="flex-1 bg-transparent px-6 py-3.5 outline-none text-white font-light tracking-wide placeholder:text-white/25 text-sm"
+              placeholder="Search for products, brands & more…"
+              aria-label="Search products"
+              className="min-w-0 flex-1 bg-transparent px-5 py-3 text-[13px] font-light tracking-wide text-white outline-none placeholder:text-white/40"
             />
 
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-5 py-3.5 bg-amber-400 rounded-full hover:bg-amber-300 transition-all duration-300 flex items-center gap-2 text-slate-900 font-semibold text-[12px] uppercase tracking-wider"
+            <button
+              type="submit"
+              aria-label="Search"
+              className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#d9b55f] transition-colors duration-300 hover:bg-[#e8c97a]"
             >
-              <img src={searchIcon} alt="search" className="size-4" />
-              <span className="hidden sm:inline">Search</span>
-            </motion.button>
-          </div>
+              <img src={searchIcon} alt="" className="size-4" />
+            </button>
+          </form>
 
-          {/* Dropdown */}
+          {/* Dropdown (behavior preserved) */}
           <AnimatePresence>
             {showDropdown && (
               <motion.ul
-                initial={{ opacity: 0, y: -8, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                className="absolute left-0 right-0 mt-3 bg-[#0a0e1c]/98 backdrop-blur-3xl border border-white/10 rounded-2xl overflow-hidden shadow-[0_30px_80px_rgba(0,0,0,0.9)] z-[100] max-h-[320px] overflow-y-auto"
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
+                transition={{ duration: 0.25 }}
+                className="absolute left-0 right-0 z-[100] mt-3 max-h-[320px] overflow-y-auto rounded-2xl border border-white/10 bg-[#120c16]/95 shadow-[0_30px_80px_rgba(0,0,0,0.8)] backdrop-blur-xl"
               >
                 {filterProducts.length > 0 ? (
                   filterProducts.slice(0, 8).map((item) => (
                     <li
                       key={item.id}
-                      onClick={() => { setSearchText(item.name); setShowDropdown(false); }}
-                      className="group px-6 py-3.5 flex justify-between items-center hover:bg-white/[0.04] cursor-pointer transition-all border-b border-white/5 last:border-none"
+                      onClick={() => {
+                        setSearchText(item.name);
+                        setShowDropdown(false);
+                      }}
+                      className="group flex cursor-pointer items-center justify-between border-b border-white/5 px-5 py-3 transition-colors last:border-none hover:bg-white/[0.04]"
                     >
                       <div className="flex items-center gap-4">
-                        <div className="size-10 rounded-lg overflow-hidden flex-shrink-0 bg-white/5">
-                          {item.img && <img src={item.img} alt={item.name} className="size-full object-cover" />}
+                        <div className="size-10 shrink-0 overflow-hidden rounded-md bg-white/5">
+                          {item.img && (
+                            <img
+                              src={item.img}
+                              alt=""
+                              className="size-full object-cover"
+                            />
+                          )}
                         </div>
                         <div className="flex flex-col">
-                          <span className="text-white text-sm font-medium group-hover:text-amber-400 transition-colors">
+                          <span className="text-sm text-white transition-colors group-hover:text-[#c4a1f5]">
                             {item.name}
                           </span>
-                          <span className="text-[10px] text-white/30 uppercase tracking-widest">
+                          <span className="text-[10px] uppercase tracking-[0.2em] text-white/35">
                             {item.category || "Collection"}
                           </span>
                         </div>
                       </div>
                       <Link
                         to={`/shop/${item.id}`}
-                        className="opacity-0 group-hover:opacity-100 transition-opacity text-[10px] text-amber-400 font-semibold uppercase tracking-wider"
+                        className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#d9b55f] opacity-0 transition-opacity group-hover:opacity-100"
                       >
                         View →
                       </Link>
                     </li>
                   ))
                 ) : (
-                  <li className="px-8 py-8 text-center">
-                    <span className="text-3xl block mb-3">🔍</span>
-                    <p className="text-white/40 text-sm">No products found for "{searchText}"</p>
+                  <li className="px-8 py-8 text-center text-sm text-white/45">
+                    No products found for “{searchText}”
                   </li>
                 )}
               </motion.ul>
             )}
           </AnimatePresence>
 
-          {/* Quick category pills below search */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="flex flex-wrap gap-2 mt-4 justify-center"
-          >
-            {["Electronics", "Fashion", "Beauty", "Shoes", "Bags", "Phones"].map((cat) => (
-              <Link key={cat} to="/shop">
-                <motion.span
-                  whileHover={{ scale: 1.06, backgroundColor: "rgba(251,191,36,0.15)" }}
-                  whileTap={{ scale: 0.96 }}
-                  className="inline-block px-4 py-1.5 rounded-full border border-white/10 text-white/50 text-[11px] uppercase tracking-widest cursor-pointer transition-colors hover:text-white hover:border-amber-400/30"
-                >
-                  {cat}
-                </motion.span>
+          {/* Trending */}
+          <div className="mt-6 flex flex-wrap justify-center gap-x-7 gap-y-2">
+            {TRENDING.map((cat) => (
+              <Link
+                key={cat}
+                to="/shop"
+                className="relative py-1 text-[10px] font-normal uppercase tracking-[0.25em] text-white/55 transition-colors duration-500 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#c4a1f5] after:transition-transform after:duration-500 hover:text-white hover:after:scale-x-100"
+              >
+                {cat}
               </Link>
             ))}
-          </motion.div>
+          </div>
         </motion.div>
       </div>
-
-      {/* ── Trust Badges Bar ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.9, duration: 0.6 }}
-        className="relative z-10 border-t border-white/5 bg-white/[0.02] backdrop-blur-sm"
-      >
-        <div className="max-w-screen-2xl mx-auto px-6 md:px-16 py-5">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-            {trustBadges.map((badge, i) => (
-              <motion.div
-                key={badge.text}
-                initial={{ opacity: 0, y: 16 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 1.0 + i * 0.1 }}
-                className="flex items-center gap-3"
-              >
-                <span className="text-2xl flex-shrink-0">{badge.icon}</span>
-                <div>
-                  <p className="text-white font-semibold text-[13px]">{badge.text}</p>
-                  <p className="text-white/35 text-[11px]">{badge.sub}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </motion.div>
     </section>
   );
 };
