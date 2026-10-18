@@ -27,10 +27,14 @@ export default function Singleproduct() {
   }, [id]);
 
   if (!product) {
-    return <div className="text-center py-20 text-white min-h-screen flex items-center justify-center">Loading product...</div>;
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center gap-3 bg-[#05070e] text-white">
+        <div className="w-10 h-10 border-2 border-amber-400 border-t-transparent rounded-full animate-spin" />
+        <span className="text-sm text-slate-400 font-medium">Loading product...</span>
+      </div>
+    );
   }
 
-  // Generate mock images for gallery if only one exists
   const images = product.images && product.images.length > 0 
     ? product.images 
     : [product.img, product.img, product.img, product.img];
@@ -43,102 +47,117 @@ export default function Singleproduct() {
   };
 
   return (
-    <div className="max-w-[1440px] mx-auto pt-24 pb-12 px-4 md:px-8">
-      {/* Breadcrumb */}
-      <nav className="flex items-center gap-2 text-sm text-slate-400 mb-8 overflow-x-auto whitespace-nowrap">
-        <Link to="/" className="hover:text-amber-300 transition-colors flex items-center gap-1">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>
-          Home
-        </Link>
-        <span>/</span>
-        <Link to="/shop" className="hover:text-amber-300 transition-colors">Shop</Link>
-        <span>/</span>
-        <span className="text-slate-500">{product.category}</span>
-        <span>/</span>
-        <span className="text-amber-200 truncate max-w-[200px]">{product.name}</span>
-      </nav>
+    <div className="min-h-screen bg-[#05070e] text-slate-100">
+      <div className="max-w-[1440px] mx-auto pt-20 pb-16 px-4 md:px-8">
+        
+        {/* Amazon/Flipkart Breadcrumb Trail */}
+        <nav className="flex items-center gap-1.5 text-xs text-slate-400 mb-6 overflow-x-auto whitespace-nowrap py-1">
+          <Link to="/" className="hover:text-amber-400 transition-colors">Home</Link>
+          <span className="text-slate-600">›</span>
+          <Link to="/shop" className="hover:text-amber-400 transition-colors">Shop</Link>
+          <span className="text-slate-600">›</span>
+          <span className="text-slate-400">{product.category}</span>
+          <span className="text-slate-600">›</span>
+          <span className="text-amber-300 font-medium truncate max-w-[260px]">{product.name}</span>
+        </nav>
 
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
-        {/* Main Product Area */}
-        <div className="lg:col-span-3 flex flex-col gap-8">
+        {/* 2-Column Product Showcase */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start mb-16">
           
-          <div className="bg-slate-900/40 border border-white/5 rounded-3xl p-4 md:p-8 flex flex-col md:flex-row gap-8">
-            {/* Left: Images */}
-            <div className="w-full md:w-1/2 flex flex-col-reverse md:flex-row gap-4">
-              {/* Desktop Thumbnails */}
-              <div className="hidden md:flex flex-col gap-3 w-20 overflow-y-auto max-h-[500px] custom-scrollbar pr-2">
-                {images.map((imgUrl, idx) => {
-                  const isActive = imgUrl === activeImage;
-                  return (
-                    <button
-                      key={idx}
-                      onClick={() => setActiveImage(imgUrl)}
-                      className={`relative rounded-xl overflow-hidden border-2 flex-shrink-0 transition-all ${
-                        isActive ? "border-amber-400" : "border-transparent hover:border-white/20"
-                      }`}
-                    >
-                      <img src={imgUrl} alt="thumbnail" className="w-full h-20 object-cover bg-white/5 p-1" />
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* Main Image Container */}
-              <div className="relative w-full aspect-square md:aspect-auto md:h-[500px] rounded-2xl overflow-hidden bg-white flex items-center justify-center">
-                {/* Mobile Swiper */}
-                <div className="md:hidden w-full h-[350px] mb-8 group relative">
-                  <Swiper
-                    modules={[Pagination, Navigation]}
-                    pagination={{ clickable: true }}
-                    navigation={true}
-                    loop={true}
-                    className="w-full h-full pb-10 [&_.swiper-button-next]:text-slate-900 [&_.swiper-button-prev]:text-slate-900 [&_.swiper-button-next]:bg-amber-400 hover:[&_.swiper-button-next]:bg-amber-300 [&_.swiper-button-prev]:bg-amber-400 hover:[&_.swiper-button-prev]:bg-amber-300 [&_.swiper-button-next]:w-10 [&_.swiper-button-prev]:w-10 [&_.swiper-button-next]:h-10 [&_.swiper-button-prev]:h-10 [&_.swiper-button-next]:rounded-full [&_.swiper-button-prev]:rounded-full [&_.swiper-button-next]:shadow-[0_4px_15px_rgba(251,191,36,0.4)] [&_.swiper-button-prev]:shadow-[0_4px_15px_rgba(251,191,36,0.4)] [&_.swiper-button-next:after]:text-[16px] [&_.swiper-button-next:after]:font-black [&_.swiper-button-prev:after]:text-[16px] [&_.swiper-button-prev:after]:font-black transition-all"
-                    onSlideChange={(swiper) => setActiveImage(images[swiper.realIndex])}
+          {/* Left Column: Sticky Gallery (Amazon Style) */}
+          <div className="lg:col-span-5 lg:sticky lg:top-24 flex flex-col-reverse md:flex-row gap-3">
+            
+            {/* Desktop Thumbnail Sidebar */}
+            <div className="hidden md:flex flex-col gap-2.5 w-18 flex-shrink-0">
+              {images.map((imgUrl, idx) => {
+                const isActive = imgUrl === activeImage;
+                return (
+                  <button
+                    key={idx}
+                    onMouseEnter={() => setActiveImage(imgUrl)}
+                    onClick={() => setActiveImage(imgUrl)}
+                    className={`relative rounded-xl overflow-hidden border-2 transition-all p-1 bg-slate-900/80 ${
+                      isActive 
+                        ? "border-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.35)] scale-[1.02]" 
+                        : "border-white/10 hover:border-white/30 opacity-70 hover:opacity-100"
+                    }`}
                   >
-                    {images.map((imgUrl, idx) => (
-                      <SwiperSlide key={idx}>
-                        <div className="w-full h-full p-4 flex items-center justify-center">
-                            <img src={imgUrl} alt="Product" className="max-w-full max-h-[300px] object-contain drop-shadow-xl" />
-                        </div>
-                      </SwiperSlide>
-                    ))}
-                  </Swiper>
-                </div>
-
-                {/* Desktop Zoomable Image */}
-                <div 
-                  className="hidden md:block w-full h-full cursor-crosshair overflow-hidden p-6"
-                  onMouseEnter={() => setIsZoomed(true)}
-                  onMouseLeave={() => setIsZoomed(false)}
-                  onMouseMove={handleMouseMove}
-                >
-                  <img
-                    src={activeImage}
-                    alt={product.name}
-                    className="w-full h-full object-contain transition-transform duration-200"
-                    style={{
-                      transform: isZoomed ? "scale(2.5)" : "scale(1)",
-                      transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`
-                    }}
-                  />
-                </div>
-              </div>
+                    <img src={imgUrl} alt="thumbnail" className="w-14 h-14 object-contain rounded-lg" />
+                  </button>
+                );
+              })}
             </div>
 
-            {/* Right: Details (ProductCarDisplay) */}
-            <div className="w-full md:w-1/2">
-              <ProductCarDisplay product={product} />
+            {/* Main Stage Image Container */}
+            <div className="relative flex-1 aspect-square rounded-2xl overflow-hidden border border-white/10 bg-gradient-to-b from-white/[0.06] to-white/[0.02] backdrop-blur-xl flex items-center justify-center group">
+              
+              {/* Flipkart Assured / Prime Style Badge */}
+              <div className="absolute top-3 left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-amber-400/10 border border-amber-400/30 text-amber-300 text-[11px] font-bold tracking-wider">
+                <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
+                VERIFIED AUTHENTIC
+              </div>
+
+              {/* Mobile Swiper */}
+              <div className="md:hidden w-full h-full">
+                <Swiper
+                  modules={[Pagination, Navigation]}
+                  pagination={{ clickable: true }}
+                  navigation={true}
+                  loop={true}
+                  className="w-full h-full pb-8"
+                  onSlideChange={(swiper) => setActiveImage(images[swiper.realIndex])}
+                >
+                  {images.map((imgUrl, idx) => (
+                    <SwiperSlide key={idx}>
+                      <div className="w-full h-full p-6 flex items-center justify-center">
+                        <img src={imgUrl} alt="Product" className="max-h-[320px] object-contain drop-shadow-2xl" />
+                      </div>
+                    </SwiperSlide>
+                  ))}
+                </Swiper>
+              </div>
+
+              {/* Desktop Zoomable Stage */}
+              <div
+                className="hidden md:flex w-full h-full cursor-crosshair items-center justify-center p-8 overflow-hidden"
+                onMouseEnter={() => setIsZoomed(true)}
+                onMouseLeave={() => setIsZoomed(false)}
+                onMouseMove={handleMouseMove}
+              >
+                <img
+                  src={activeImage}
+                  alt={product.name}
+                  className="max-h-full max-w-full object-contain transition-transform duration-150 drop-shadow-[0_15px_30px_rgba(0,0,0,0.7)]"
+                  style={{
+                    transform: isZoomed ? "scale(2.2)" : "scale(1)",
+                    transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
+                  }}
+                />
+              </div>
+
+              <div className="hidden md:block absolute bottom-3 right-3 text-[10px] text-slate-400 bg-black/60 backdrop-blur-md px-2 py-1 rounded-md border border-white/5 pointer-events-none">
+                Hover to zoom
+              </div>
             </div>
           </div>
 
-          <ReviewListpage />
+          {/* Right Column: Buying Details */}
+          <div className="lg:col-span-7">
+            <ProductCarDisplay product={product} />
+          </div>
         </div>
 
-        {/* Sidebar */}
-        <div className="lg:col-span-1 flex flex-col gap-8">
-          <Popularpost />
-          <TagList />
+        {/* Lower Details, Reviews & Sidebar Grid */}
+        <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+          <div className="lg:col-span-3">
+            <ReviewListpage />
+          </div>
+          <div className="lg:col-span-1 flex flex-col gap-6">
+            <Popularpost />
+            <TagList />
+          </div>
         </div>
+
       </div>
     </div>
   );

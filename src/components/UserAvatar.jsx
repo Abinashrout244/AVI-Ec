@@ -1,8 +1,3 @@
-/**
- * UserAvatar — Reusable dynamic avatar component.
- * Shows user.photoURL when present; falls back to a gold-gradient
- * circle containing the first letter of the display name / email.
- */
 import React from "react";
 
 const UserAvatar = ({

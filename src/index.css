@@ -189,4 +189,60 @@
   .animate-pulse-slow {
     animation: pulse-slow 3s ease-in-out infinite;
   }
+
+  /* ── Shop page — product card ── */
+  .pcard {
+    background: rgba(10,15,28,0.80);
+    border: 1px solid rgba(255,255,255,0.07);
+    border-radius: 12px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: border-color 0.25s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  }
+
+  .pcard:hover {
+    border-color: rgba(251,191,36,0.18);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(251,191,36,0.06);
+    transform: translateY(-2px);
+  }
+
+  /* Add to Cart button */
+  .pcard-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    width: 100%;
+    padding: 7px 0;
+    border-radius: 8px;
+    background: rgba(251,191,36,0.1);
+    border: 1px solid rgba(251,191,36,0.25);
+    color: #fbbf24;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+    font-family: inherit;
+  }
+
+  .pcard-btn:hover {
+    background: rgba(251,191,36,0.9);
+    border-color: #fbbf24;
+    color: #0a0e1c;
+  }
+
+  .pcard-btn:active {
+    transform: scale(0.97);
+  }
+
+  /* Hide scrollbar for category strip */
+  .hide-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  .hide-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 }

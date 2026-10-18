@@ -18,6 +18,7 @@ const Header = () => {
   const [hidden, setHidden] = useState(false);
   const [toggleMenu, setToggleMenu] = useState(false);
   const [profileDrop, setProfileDrop] = useState(false);
+  const [announcementIdx, setAnnouncementIdx] = useState(0);
   const [showAnnouncementBar, setShowAnnouncementBar] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
@@ -103,14 +104,26 @@ const Header = () => {
     "🔥 New arrivals every week — Don't miss out!",
     "💎 Use code SHOPAVI for 15% off your first order",
   ];
-  const [announcementIdx, setAnnouncementIdx] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setAnnouncementIdx((i) => (i + 1) % announcements.length);
+    if (!showAnnouncementBar) return;
+
+    // Hide the banner after the final announcement
+    if (announcementIdx === announcements.length - 1) {
+      const timeout = setTimeout(() => {
+        setShowAnnouncementBar(false);
+      }, 3500);
+
+      return () => clearTimeout(timeout);
+    }
+
+    // Move to the next announcement
+    const timeout = setTimeout(() => {
+      setAnnouncementIdx((prev) => prev + 1);
     }, 3500);
-    return () => clearInterval(interval);
-  }, []);
+
+    return () => clearTimeout(timeout);
+  }, [announcementIdx, showAnnouncementBar]);
 
   return (
     <div className="fixed top-0 left-0 w-full z-50">
@@ -122,10 +135,10 @@ const Header = () => {
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.4 }}
-            className="overflow-hidden bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-slate-900 text-xs font-semibold tracking-widest uppercase"
+            className="overflow-hidden bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 text-xs font-semibold uppercase tracking-widest text-slate-900"
           >
-            <div className="max-w-screen-2xl mx-auto px-6 py-2 flex items-center justify-between">
-              <div className="flex-1 text-center overflow-hidden">
+            <div className="mx-auto flex max-w-screen-2xl items-center justify-between px-4 py-2 sm:px-6">
+              <div className="flex-1 overflow-hidden text-center">
                 <AnimatePresence mode="wait">
                   <motion.span
                     key={announcementIdx}
@@ -133,15 +146,17 @@ const Header = () => {
                     animate={{ y: 0, opacity: 1 }}
                     exit={{ y: -10, opacity: 0 }}
                     transition={{ duration: 0.35 }}
-                    className="block tracking-[0.15em]"
+                    className="block tracking-[0.1em] sm:tracking-[0.15em]"
                   >
                     {announcements[announcementIdx]}
                   </motion.span>
                 </AnimatePresence>
               </div>
+
               <button
+                type="button"
                 onClick={() => setShowAnnouncementBar(false)}
-                className="ml-4 text-slate-800 hover:text-slate-900 transition-colors flex-shrink-0"
+                className="ml-3 flex-shrink-0 text-slate-800 transition-colors hover:text-black"
                 aria-label="Close announcement"
               >
                 <svg
@@ -149,6 +164,7 @@ const Header = () => {
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
+                  aria-hidden="true"
                 >
                   <path
                     strokeLinecap="round"

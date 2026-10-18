@@ -1,5 +1,4 @@
 import React from "react";
-import { motion } from "framer-motion";
 
 const Pegination = ({ productperpage, totalproducts, currPage, peginate }) => {
   const totalPages = Math.ceil(totalproducts / productperpage);
@@ -12,7 +11,7 @@ const Pegination = ({ productperpage, totalproducts, currPage, peginate }) => {
       pages.push(1);
       if (currPage > 3) pages.push("...");
       const start = Math.max(2, currPage - 1);
-      const end = Math.min(totalPages - 1, currPage + 1);
+      const end   = Math.min(totalPages - 1, currPage + 1);
       for (let i = start; i <= end; i++) pages.push(i);
       if (currPage < totalPages - 2) pages.push("...");
       pages.push(totalPages);
@@ -20,54 +19,65 @@ const Pegination = ({ productperpage, totalproducts, currPage, peginate }) => {
     return pages;
   };
 
+  const btnBase = {
+    background: "rgba(255,255,255,0.05)",
+    border:     "1px solid rgba(255,255,255,0.1)",
+    color:      "rgba(255,255,255,0.5)",
+    borderRadius: 8,
+    cursor: "pointer",
+    transition: "all 0.2s",
+    fontFamily: "inherit",
+  };
+
+  const btnActive = {
+    background: "linear-gradient(135deg,#fbbf24,#f59e0b)",
+    border:     "1px solid #fbbf24",
+    color:      "#0a0e1c",
+    fontWeight: 700,
+    borderRadius: 8,
+    cursor: "pointer",
+  };
+
   return (
-    <div className="flex items-center justify-center gap-2 py-8">
+    <div className="flex items-center justify-center gap-1.5 py-10 flex-wrap">
       {/* Prev */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.9 }}
+      <button
         onClick={() => currPage > 1 && peginate(currPage - 1)}
         disabled={currPage === 1}
-        className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/50 text-[12px] uppercase tracking-widest disabled:opacity-30 disabled:cursor-not-allowed hover:border-amber-400/30 hover:text-white transition-all"
+        style={{ ...btnBase, padding: "7px 14px", fontSize: 12, opacity: currPage === 1 ? 0.3 : 1 }}
+        onMouseEnter={e => { if (currPage > 1) { e.target.style.borderColor = "rgba(251,191,36,0.4)"; e.target.style.color = "#fbbf24"; }}}
+        onMouseLeave={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.color = "rgba(255,255,255,0.5)"; }}
       >
         ← Prev
-      </motion.button>
+      </button>
 
-      {/* Page numbers */}
-      <div className="flex items-center gap-1.5">
-        {getPages().map((page, i) =>
-          page === "..." ? (
-            <span key={`ellipsis-${i}`} className="px-2 text-white/20 text-sm">
-              ···
-            </span>
-          ) : (
-            <motion.button
-              key={page}
-              whileHover={{ scale: 1.08 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => peginate(page)}
-              className={`size-10 rounded-full text-sm font-semibold transition-all duration-200 ${
-                currPage === page
-                  ? "bg-amber-400 text-slate-900 shadow-lg shadow-amber-400/25"
-                  : "bg-white/5 border border-white/10 text-white/50 hover:border-amber-400/30 hover:text-white"
-              }`}
-            >
-              {page}
-            </motion.button>
-          )
-        )}
-      </div>
+      {/* Pages */}
+      {getPages().map((page, i) =>
+        page === "..." ? (
+          <span key={`el-${i}`} className="text-white/20 text-sm px-1">···</span>
+        ) : (
+          <button
+            key={page}
+            onClick={() => peginate(page)}
+            style={currPage === page ? { ...btnActive, width: 36, height: 36 } : { ...btnBase, width: 36, height: 36, fontSize: 13 }}
+            onMouseEnter={e => { if (currPage !== page) { e.target.style.borderColor = "rgba(251,191,36,0.35)"; e.target.style.color = "#fbbf24"; }}}
+            onMouseLeave={e => { if (currPage !== page) { e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.color = "rgba(255,255,255,0.5)"; }}}
+          >
+            {page}
+          </button>
+        )
+      )}
 
       {/* Next */}
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.9 }}
+      <button
         onClick={() => currPage < totalPages && peginate(currPage + 1)}
         disabled={currPage === totalPages}
-        className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white/50 text-[12px] uppercase tracking-widest disabled:opacity-30 disabled:cursor-not-allowed hover:border-amber-400/30 hover:text-white transition-all"
+        style={{ ...btnBase, padding: "7px 14px", fontSize: 12, opacity: currPage === totalPages ? 0.3 : 1 }}
+        onMouseEnter={e => { if (currPage < totalPages) { e.target.style.borderColor = "rgba(251,191,36,0.4)"; e.target.style.color = "#fbbf24"; }}}
+        onMouseLeave={e => { e.target.style.borderColor = "rgba(255,255,255,0.1)"; e.target.style.color = "rgba(255,255,255,0.5)"; }}
       >
         Next →
-      </motion.button>
+      </button>
     </div>
   );
 };

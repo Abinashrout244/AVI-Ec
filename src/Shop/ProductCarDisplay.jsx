@@ -1,179 +1,271 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { addItem, removeItem } from "../utilis/CartSlice";
 import { addToast } from "../utilis/ToastSlice";
 
+const SIZES = ["SM", "MD", "LG", "XL", "XXL"];
+const COLORS = [
+  { name: "Black", bg: "bg-slate-900 border-white/30" },
+  { name: "White", bg: "bg-white border-slate-300" },
+  { name: "Navy", bg: "bg-blue-950 border-blue-500/40" },
+  { name: "Red", bg: "bg-rose-600 border-rose-400" },
+];
+
 const ProductCarDisplay = ({ product }) => {
-  const [size, setSize] = useState("");
-  const [color, setColor] = useState("");
+  const [size, setSize] = useState("MD");
+  const [color, setColor] = useState("Black");
+  const [pincode, setPincode] = useState("");
+  const [deliveryChecked, setDeliveryChecked] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  
-  const { id, seller, name, ratings, ratingsCount, price, description, img } = product;
-  
-  // Mock Data for UI enhancements
-  const originalPrice = Math.round(price * 1.3); // 30% discount mock
+
+  const { id, seller, name, ratings = 4.3, ratingsCount = 1240, price = 0, description, img } = product;
+
+  const originalPrice = Math.round(price * 1.35);
   const discountPercentage = Math.round(((originalPrice - price) / originalPrice) * 100);
-  const inStock = true;
+
+  const CartItems = useSelector((store) => store.cart.items || []);
+  const currentItem = CartItems.find(
+    (i) => i.id === id && i.size === size && i.color === color
+  );
 
   const handleAddItem = () => {
     dispatch(addItem({ id, seller, name, price, img, size, color }));
-    dispatch(addToast({ type: "success", message: "Added to cart" }));
+    dispatch(addToast({ type: "success", message: "Added to Cart" }));
   };
-  
+
   const handleBuyNow = () => {
-    handleAddItem();
+    dispatch(addItem({ id, seller, name, price, img, size, color }));
     navigate("/cart-page");
   };
 
   const increment = () => {
-    dispatch(addItem({ id, name, img, price, size, color }));
+    dispatch(addItem({ id, seller, name, price, img, size, color }));
   };
-  
+
   const decrement = () => {
     dispatch(removeItem({ id, size, color }));
   };
 
-  const CartItem = useSelector((store) => store.cart.items);
-  const currentItem = CartItem.find(
-    (i) => i.id === id && i.size === size && i.color === color
-  );
-
   return (
-    <div className="flex flex-col h-full text-white pb-20 md:pb-0">
-      {/* Title & Brand */}
-      <div className="mb-4">
-        <span className="inline-block bg-amber-400/10 border border-amber-400/20 text-amber-400 font-bold tracking-widest text-xs md:text-sm px-3.5 py-1.5 rounded-full uppercase mb-4 shadow-[0_0_15px_rgba(251,191,36,0.15)] backdrop-blur-sm">
-          {seller}
-        </span>
-        <h1 className="text-3xl md:text-4xl lg:text-5xl font-extrabold leading-tight mt-1 text-transparent bg-clip-text bg-gradient-to-br from-white via-slate-100 to-slate-400 drop-shadow-sm">
+    <div className="flex flex-col text-slate-100">
+      
+      {/* Brand & Title */}
+      <div className="border-b border-white/10 pb-4">
+        <div className="flex items-center justify-between gap-2 mb-2">
+          <span className="text-xs uppercase font-extrabold tracking-widest text-amber-400 hover:underline cursor-pointer">
+            Visit the {seller || "Official"} Store
+          </span>
+          <span className="text-[11px] font-semibold text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded border border-emerald-400/20">
+            In Stock
+          </span>
+        </div>
+
+        <h1 className="text-xl md:text-2xl lg:text-3xl font-bold leading-snug text-white">
           {name}
         </h1>
-      </div>
 
-      {/* Ratings */}
-      <div className="flex items-center gap-4 mt-2 mb-6">
-        <div className="flex items-center bg-amber-400/20 border border-amber-400/30 px-2.5 py-1.5 rounded-lg text-amber-400 text-sm font-black shadow-[0_0_10px_rgba(251,191,36,0.2)]">
-          {ratings} <svg className="w-4 h-4 ml-1.5 fill-current" viewBox="0 0 20 20"><path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.572-.955L10 0l2.94 5.955 6.572.955-4.756 4.635 1.122 6.545z"/></svg>
-        </div>
-        <div className="w-1.5 h-1.5 rounded-full bg-white/20"></div>
-        <p className="text-sm font-medium text-slate-400 hover:text-amber-300 transition-colors cursor-pointer group flex items-center gap-1.5">
-          <span className="text-white">{ratingsCount}</span>
-          <span className="group-hover:underline decoration-amber-400/50 underline-offset-4">Verified Reviews</span>
-        </p>
-      </div>
-
-      {/* Price Section */}
-      <div className="flex items-center gap-5 mb-8 bg-white/5 p-4 md:p-5 rounded-2xl border border-white/10 w-fit backdrop-blur-sm">
-        <span className="text-4xl md:text-5xl font-black text-white tracking-tight">₹{price}</span>
-        <div className="flex flex-col justify-center h-full gap-1">
-          <span className="text-sm md:text-base text-slate-400 line-through font-medium">₹{originalPrice}</span>
-          <span className="text-xs md:text-sm font-extrabold text-emerald-400 bg-emerald-400/10 border border-emerald-400/20 px-2 py-0.5 rounded flex items-center justify-center tracking-wide">{discountPercentage}% OFF</span>
+        {/* Rating Pill + Badges */}
+        <div className="flex items-center gap-3 mt-3 flex-wrap text-xs">
+          <div className="flex items-center gap-1 bg-amber-400 text-slate-950 font-black px-2 py-0.5 rounded">
+            <span>{ratings}</span>
+            <svg className="w-3.5 h-3.5 fill-current" viewBox="0 0 20 20">
+              <path d="M10 15l-5.878 3.09 1.122-6.545L.488 6.91l6.572-.955L10 0l2.94 5.955 6.572.955-4.756 4.635 1.122 6.545z" />
+            </svg>
+          </div>
+          <span className="text-slate-400 underline decoration-slate-600 cursor-pointer">
+            {ratingsCount.toLocaleString()} ratings & reviews
+          </span>
+          <span className="text-slate-600">|</span>
+          <span className="text-cyan-400 font-medium">100+ bought in past month</span>
         </div>
       </div>
 
-      {/* Stock Status */}
-      <div className="mb-6">
-        {inStock ? (
-          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-emerald-400 bg-emerald-400/10 px-2.5 py-1 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span> In Stock
+      {/* Pricing Section (Amazon/Flipkart Discount Breakdown) */}
+      <div className="py-4 border-b border-white/10">
+        <div className="flex items-baseline gap-3">
+          <span className="text-2xl text-rose-500 font-light">-{discountPercentage}%</span>
+          <div className="flex items-start">
+            <span className="text-xs text-slate-300 font-semibold mt-1">₹</span>
+            <span className="text-4xl font-extrabold tracking-tight text-white">{price.toLocaleString()}</span>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 text-xs text-slate-400 mt-1">
+          <span>M.R.P.:</span>
+          <span className="line-through text-slate-500">₹{originalPrice.toLocaleString()}</span>
+          <span className="text-slate-400 font-normal">(Inclusive of all taxes)</span>
+        </div>
+
+        {/* Bank & Special Offers Bar */}
+        <div className="mt-4 p-3 rounded-xl bg-gradient-to-r from-amber-400/[0.08] via-amber-400/[0.03] to-transparent border border-amber-400/20 flex items-start gap-3">
+          <span className="text-lg">🏷️</span>
+          <div className="text-xs">
+            <span className="font-bold text-amber-300">Bank Offer:</span> 5% Unlimited Cashback on Axis Bank Credit Cards. Flat ₹100 instant off on UPI orders.
+          </div>
+        </div>
+      </div>
+
+      {/* Size Selector: Amazon/Flipkart Square Chips */}
+      <div className="py-4 border-b border-white/10">
+        <div className="flex justify-between items-center mb-2.5">
+          <span className="text-xs font-semibold text-slate-300">
+            Size: <strong className="text-white font-bold">{size}</strong>
           </span>
-        ) : (
-          <span className="inline-flex items-center gap-1.5 text-sm font-medium text-red-400 bg-red-400/10 px-2.5 py-1 rounded-full">
-            <span className="w-1.5 h-1.5 rounded-full bg-red-400"></span> Out of Stock
-          </span>
+          <button type="button" className="text-xs text-amber-400 hover:underline">
+            Size Chart
+          </button>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          {SIZES.map((s) => {
+            const isSelected = size === s;
+            return (
+              <button
+                key={s}
+                type="button"
+                onClick={() => setSize(s)}
+                className={`min-w-[46px] h-10 px-3 rounded-lg text-xs font-bold transition-all border ${
+                  isSelected
+                    ? "bg-amber-400 text-slate-950 border-amber-400 shadow-[0_0_12px_rgba(251,191,36,0.3)]"
+                    : "bg-slate-900 text-slate-300 border-white/10 hover:border-white/30"
+                }`}
+              >
+                {s}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Color Selector: Visual Swatches */}
+      <div className="py-4 border-b border-white/10">
+        <span className="text-xs font-semibold text-slate-300 block mb-2.5">
+          Color: <strong className="text-white font-bold">{color}</strong>
+        </span>
+        <div className="flex items-center gap-3">
+          {COLORS.map((c) => {
+            const isSelected = color === c.name;
+            return (
+              <button
+                key={c.name}
+                type="button"
+                onClick={() => setColor(c.name)}
+                className={`flex items-center gap-2 px-3 py-1.5 rounded-lg border text-xs font-medium transition-all ${
+                  isSelected
+                    ? "border-amber-400 bg-amber-400/10 text-amber-300 ring-1 ring-amber-400"
+                    : "border-white/10 bg-slate-900 text-slate-400 hover:border-white/20"
+                }`}
+              >
+                <span className={`w-3.5 h-3.5 rounded-full border ${c.bg}`} />
+                <span>{c.name}</span>
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* Delivery Pincode Checker (Flipkart/Amazon staple) */}
+      <div className="py-4 border-b border-white/10">
+        <span className="text-xs font-semibold text-slate-300 block mb-2">Delivery & Services</span>
+        <div className="flex gap-2 max-w-sm">
+          <input
+            type="text"
+            maxLength={6}
+            placeholder="Enter Delivery Pincode"
+            value={pincode}
+            onChange={(e) => setPincode(e.target.value)}
+            className="w-full bg-slate-900 border border-white/10 focus:border-amber-400 rounded-lg px-3 py-2 text-xs text-white outline-none"
+          />
+          <button
+            type="button"
+            onClick={() => setDeliveryChecked(true)}
+            className="px-4 py-2 bg-white/10 hover:bg-white/15 text-xs font-bold rounded-lg border border-white/10 transition-colors"
+          >
+            Check
+          </button>
+        </div>
+        {deliveryChecked && (
+          <p className="text-[11px] text-emerald-400 font-medium mt-2 flex items-center gap-1.5">
+            <span>✓</span> Free Delivery by <strong>Tomorrow, 4 PM</strong>
+          </p>
         )}
       </div>
 
-      <div className="h-px w-full bg-white/10 mb-6" />
-
-      {/* Selectors */}
-      <div className="grid grid-cols-2 gap-5 mb-8">
-        <div className="flex flex-col gap-2">
-          <label className="text-sm text-slate-300 font-semibold tracking-wide">Select Size</label>
-          <div className="relative">
-            <select
-              className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 appearance-none transition-all cursor-pointer hover:bg-slate-800"
-              onChange={(e) => setSize(e.target.value)}
-              value={size}
-            >
-              <option value="" disabled>Choose Size</option>
-              {['SM', 'MD', 'LG', 'XL', 'XXL'].map(s => <option key={s} value={s}>{s}</option>)}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-            </div>
-          </div>
+      {/* Trust Guarantee Badges */}
+      <div className="grid grid-cols-3 gap-2 py-4 border-b border-white/10 text-center text-[10px] text-slate-400">
+        <div className="p-2 rounded-lg bg-white/[0.02] border border-white/5 flex flex-col items-center gap-1">
+          <span className="text-base">🔄</span>
+          <span>7 Days Replacement</span>
         </div>
-
-        <div className="flex flex-col gap-2">
-          <label className="text-sm text-slate-300 font-semibold tracking-wide">Select Color</label>
-          <div className="relative">
-            <select
-              className="w-full bg-slate-900 border border-white/10 rounded-xl px-4 py-3.5 text-white focus:outline-none focus:ring-2 focus:ring-amber-400/50 appearance-none transition-all cursor-pointer hover:bg-slate-800"
-              onChange={(e) => setColor(e.target.value)}
-              value={color}
-            >
-              <option value="" disabled>Choose Color</option>
-              {['Black', 'White', 'Blue', 'Red'].map(c => <option key={c} value={c}>{c}</option>)}
-            </select>
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-slate-400">
-              <svg className="fill-current h-4 w-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z"/></svg>
-            </div>
-          </div>
+        <div className="p-2 rounded-lg bg-white/[0.02] border border-white/5 flex flex-col items-center gap-1">
+          <span className="text-base">🚚</span>
+          <span>Free Express Shipping</span>
+        </div>
+        <div className="p-2 rounded-lg bg-white/[0.02] border border-white/5 flex flex-col items-center gap-1">
+          <span className="text-base">🛡️</span>
+          <span>1 Year Warranty</span>
         </div>
       </div>
 
-      {/* Quantity */}
-      <div className="flex items-center gap-6 mb-8">
-        <label className="text-sm text-slate-300 font-semibold tracking-wide">Quantity</label>
-        <div className="flex items-center border border-white/10 rounded-xl overflow-hidden bg-slate-900/80 shadow-[inset_0_2px_4px_rgba(0,0,0,0.3)]">
-          <button
-            disabled={!size || !color}
-            onClick={decrement}
-            className="px-5 py-2.5 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-xl font-medium"
-          >
-            -
-          </button>
-          <span className="font-bold w-12 text-center text-lg">{currentItem?.quantity || 0}</span>
-          <button
-            disabled={!size || !color}
-            onClick={increment}
-            className="px-5 py-2.5 hover:bg-white/10 disabled:opacity-30 disabled:hover:bg-transparent transition-colors text-xl font-medium"
-          >
-            +
-          </button>
-        </div>
-      </div>
-
-      {/* Description */}
-      <div className="mt-auto mb-8 pt-6 border-t border-white/10">
-        <h3 className="text-lg font-semibold mb-3">Product Description</h3>
-        <p className="text-slate-400 leading-relaxed text-sm">
-          {description || "Experience top-tier quality with this premium product from our exclusive collection. Crafted for durability and style, it blends modern aesthetics with reliable performance perfectly suited for your everyday needs."}
+      {/* Description Snippet */}
+      <div className="py-4">
+        <span className="text-xs font-semibold text-slate-300 uppercase tracking-wider block mb-1.5">
+          About this item
+        </span>
+        <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">
+          {description || "Engineered for optimal comfort and longevity. Made from premium certified materials suited for everyday performance and elevated lifestyle aesthetics."}
         </p>
       </div>
 
-      {/* Action Buttons (Sticky on Mobile) */}
-      <div className="fixed bottom-0 left-0 w-full p-4 bg-slate-900/95 md:bg-transparent md:static md:p-0 backdrop-blur-xl md:backdrop-blur-none border-t border-white/10 md:border-0 z-50 flex gap-4 shadow-[0_-10px_40px_rgba(0,0,0,0.5)] md:shadow-none">
+      {/* Action / Buy CTAs (Desktop inline, Sticky on Mobile) */}
+      <div className="fixed bottom-0 left-0 w-full p-3 bg-[#05070e]/95 backdrop-blur-xl border-t border-white/10 md:static md:p-0 md:bg-transparent md:border-0 z-50 flex items-center gap-3 mt-4">
+        
+        {/* Quantity Controller (shows if item is in cart) */}
+        {currentItem?.quantity > 0 ? (
+          <div className="flex items-center h-12 bg-slate-900 border border-white/20 rounded-xl px-2">
+            <button
+              onClick={decrement}
+              className="w-8 h-full flex items-center justify-center text-slate-300 hover:text-white font-bold text-lg"
+            >
+              -
+            </button>
+            <span className="w-8 text-center text-xs font-bold text-amber-400">
+              {currentItem.quantity}
+            </span>
+            <button
+              onClick={increment}
+              className="w-8 h-full flex items-center justify-center text-slate-300 hover:text-white font-bold text-lg"
+            >
+              +
+            </button>
+          </div>
+        ) : null}
+
         <button
-          disabled={!size || !color}
+          type="button"
           onClick={handleAddItem}
-          className="flex-1 bg-slate-800 hover:bg-slate-700 text-white font-bold py-4 rounded-xl border border-white/10 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg"
+          className="flex-1 h-12 bg-slate-900 hover:bg-slate-800 text-amber-400 border border-amber-400/40 font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_4px_14px_rgba(0,0,0,0.5)] flex items-center justify-center gap-2 active:scale-[0.98]"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"/></svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+          </svg>
           Add to Cart
         </button>
+
         <button
-          disabled={!size || !color}
+          type="button"
           onClick={handleBuyNow}
-          className="flex-1 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-900 font-black py-4 rounded-xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-[0_0_20px_rgba(251,191,36,0.4)] hover:shadow-[0_0_30px_rgba(251,191,36,0.6)] transform hover:-translate-y-0.5 active:translate-y-0"
+          className="flex-1 h-12 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 font-black text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_0_20px_rgba(251,191,36,0.35)] flex items-center justify-center gap-2 active:scale-[0.98]"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={2.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z" />
+          </svg>
           Buy Now
         </button>
       </div>
+
     </div>
   );
 };

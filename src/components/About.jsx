@@ -4,6 +4,7 @@ import img1 from "../assets/images/about/01.jpg";
 import img2 from "../assets/images/about/02.jpg";
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
+import { ShieldCheck, Truck, Sparkles, ArrowRight } from "lucide-react";
 import CountUp from "react-countup";
 import { useInView } from "react-intersection-observer";
 
@@ -118,131 +119,197 @@ const StatCard = ({ stat, i }) => {
 // ── MAIN ─────────────────────────────────────────────────────────────────────
 const About = () => {
   const [activeTab, setActiveTab] = useState("story");
+const ABOUT_IMAGES = {
+  // Main showcase: High-end curated boutique space
+  primary: "https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=1200&q=80",
+  // Secondary overlay: Minimalist artisan luxury watch / accessories packaging
+  secondary: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=80"
+};
 
+const TAB_DATA = {
+  story: "Founded in 2021 by a team of design and retail specialists, AVI Store evolved from an exclusive micro-boutique into India's fastest-growing destination for authentic lifestyle goods, delivering to more than 3 million households nationwide.",
+  mission: "Our mission is to democratize fine craftsmanship—combining certified authenticity, transparent direct-to-consumer pricing, and lightning-fast fulfillment so you never have to settle for compromises.",
+  vision: "We envision a connected marketplace where discovering the world's most innovative fashion, beauty, and tech essentials is effortless, backed by relentless attention to detail and customer care."
+};
   return (
     <div className="min-h-screen">
       <HeroBanner title="About AVI Store" page="About" />
 
       {/* ── INTRO SECTION ── */}
-      <section className="max-w-screen-2xl mx-auto px-6 md:px-16 py-24 grid grid-cols-1 lg:grid-cols-2 gap-16 lg:gap-24 items-center">
+     <section className="relative max-w-screen-2xl mx-auto px-6 md:px-16 py-24 lg:py-32 grid grid-cols-1 lg:grid-cols-12 gap-16 lg:gap-20 items-center overflow-hidden">
+      
+      {/* ── Left: Interactive Image Collage ── */}
+      <motion.div
+        initial={{ opacity: 0, x: -40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        className="lg:col-span-6 relative pb-10 sm:pb-12"
+      >
+        {/* Ambient lighting glow underneath images */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-3/4 bg-amber-500/10 rounded-full blur-[100px] pointer-events-none" />
 
-        {/* Left: Image collage */}
-        <motion.div
-          initial={{ opacity: 0, x: -40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="relative"
-        >
-          {/* Main image */}
-          <div className="relative rounded-3xl overflow-hidden shadow-[0_40px_80px_rgba(0,0,0,0.6)]">
-            <img src={img1} alt="AVI Store" className="w-full object-cover aspect-[4/3]" />
-            <div className="absolute inset-0 bg-gradient-to-t from-[#03050c]/60 to-transparent" />
+        {/* Primary Flagship Image Container */}
+        <div className="relative rounded-3xl overflow-hidden border border-white/10 shadow-[0_30px_70px_rgba(0,0,0,0.8)] bg-slate-900 group">
+          <img
+            src={ABOUT_IMAGES.primary}
+            alt="AVI Store Interior & Flagship Curation"
+            className="w-full object-cover aspect-[4/3] group-hover:scale-105 transition-transform duration-700 ease-out"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#03050c]/80 via-transparent to-black/20 pointer-events-none" />
+          
+          {/* Subtle watermark / accreditation */}
+          <div className="absolute top-4 left-4 flex items-center gap-2 px-3 py-1 rounded-full bg-black/40 backdrop-blur-md border border-white/10 text-[10px] font-bold text-amber-300 uppercase tracking-widest">
+            <Sparkles size={11} className="text-amber-400" />
+            Curated Showroom
           </div>
+        </div>
 
-          {/* Overlapping secondary image */}
-          <motion.div
-            animate={{ y: [0, -8, 0] }}
-            transition={{ duration: 4.5, repeat: Infinity, ease: "easeInOut" }}
-            className="absolute -bottom-10 -right-6 md:-right-12 w-1/2 rounded-2xl overflow-hidden shadow-[0_24px_60px_rgba(0,0,0,0.7)]"
-            style={{ border: "2px solid rgba(196,168,130,0.2)" }}
-          >
-            <img src={img2} alt="AVI Store" className="w-full object-cover" />
-          </motion.div>
-
-          {/* Experience badge */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8 }}
-            whileInView={{ opacity: 1, scale: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4, type: "spring", bounce: 0.35 }}
-            className="absolute -bottom-4 -left-4 md:-left-6 glass-panel rounded-2xl px-5 py-4 text-center border border-amber-400/20"
-          >
-            <p className="font-serif text-4xl text-amber-400 font-bold leading-none">4+</p>
-            <p className="text-white/50 text-[11px] uppercase tracking-widest mt-1">Years of<br />Excellence</p>
-          </motion.div>
-
-          {/* Decorative corner */}
-          <div className="absolute top-4 left-4 size-12 border-t border-l border-amber-400/25 rounded-tl-xl pointer-events-none" />
-          <div className="absolute bottom-4 right-4 size-12 border-b border-r border-amber-400/15 rounded-br-xl pointer-events-none" />
+        {/* Overlapping Secondary Focus Image */}
+        <motion.div
+          animate={{ y: [0, -10, 0] }}
+          transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+          className="absolute -bottom-4 right-0 sm:-right-6 md:-right-8 w-1/2 rounded-2xl overflow-hidden shadow-[0_25px_60px_rgba(0,0,0,0.85)] border-2 border-amber-400/30 bg-slate-900"
+        >
+          <img
+            src={ABOUT_IMAGES.secondary}
+            alt="AVI Precision Product Selection"
+            className="w-full object-cover aspect-square hover:scale-110 transition-transform duration-500"
+            loading="lazy"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#03050c]/50 to-transparent pointer-events-none" />
         </motion.div>
 
-        {/* Right: Text */}
+        {/* Floating Stat Badge */}
         <motion.div
-          initial={{ opacity: 0, x: 40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, amount: 0.3 }}
-          transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
-          className="flex flex-col gap-8"
+          initial={{ opacity: 0, scale: 0.8 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.35, type: "spring", bounce: 0.35 }}
+          className="absolute -bottom-6 left-0 sm:-left-4 md:-left-6 backdrop-blur-2xl bg-[#070b14]/90 rounded-2xl px-5 py-4 border border-amber-400/30 shadow-[0_15px_35px_rgba(0,0,0,0.6)] flex items-center gap-4 z-20"
         >
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.4em] text-amber-400/70 font-semibold mb-3">
-              — Our Brand Story
-            </p>
-            <h2 className="font-serif text-4xl md:text-5xl text-white leading-tight">
-              Premium Shopping,{" "}
-              <span className="italic text-white/40 font-light">Redefined</span>
-            </h2>
+          <div className="text-center pr-3 border-r border-white/10">
+            <p className="font-serif text-3xl md:text-4xl text-amber-400 font-black leading-none">4+</p>
+            <p className="text-slate-400 text-[10px] font-bold uppercase tracking-wider mt-1">Years</p>
+          </div>
+          <div className="text-left text-xs leading-tight">
+            <p className="font-bold text-white tracking-wide">Excellence</p>
+            <p className="text-slate-400 text-[11px] mt-0.5">3M+ Packages Sent</p>
+          </div>
+        </motion.div>
+
+        {/* Accent Geometric Brackets */}
+        <div className="absolute -top-3 -left-3 size-10 border-t-2 border-l-2 border-amber-400/40 rounded-tl-xl pointer-events-none" />
+        <div className="absolute -bottom-3 -right-3 size-10 border-b-2 border-r-2 border-amber-400/25 rounded-br-xl pointer-events-none" />
+      </motion.div>
+
+      {/* ── Right: Narrative & Mission ── */}
+      <motion.div
+        initial={{ opacity: 0, x: 40 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+        className="lg:col-span-6 flex flex-col gap-7"
+      >
+        <div>
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/10 border border-amber-400/25 text-amber-300 text-[11px] font-bold uppercase tracking-[0.25em] mb-3">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+            Our Brand Heritage
+          </div>
+          <h2 className="font-serif text-3xl sm:text-4xl md:text-5xl text-white leading-[1.15] font-normal tracking-tight">
+            Premium Shopping,{" "}
+            <span className="italic font-light text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-amber-100">
+              Redefined.
+            </span>
+          </h2>
+        </div>
+
+        <p className="text-slate-300 text-sm sm:text-base leading-relaxed">
+          AVI Store was born from a singular proposition: exceptional design, uncompromising authenticity, and seamless service shouldn’t belong solely to luxury gatekeepers. We partner with over 500 hand-selected makers across fashion, electronics, and home decor—delivering flagship quality directly to your doorstep.
+        </p>
+
+        {/* Trust Points Mini-Grid */}
+        <div className="grid grid-cols-2 gap-3 py-1">
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+            <div className="p-2 rounded-lg bg-amber-400/10 text-amber-400">
+              <ShieldCheck size={18} />
+            </div>
+            <div className="text-xs">
+              <p className="font-bold text-white">Direct Source</p>
+              <p className="text-slate-400 text-[11px]">Zero Middlemen</p>
+            </div>
           </div>
 
-          <p className="text-white/50 text-[15px] leading-relaxed">
-            AVI Store was born from a simple belief — that quality products and a delightful shopping experience should be available to everyone across India. We curate the best from fashion, tech, beauty, and lifestyle brands, bringing it all to your doorstep.
-          </p>
+          <div className="flex items-center gap-3 p-3 rounded-xl bg-white/[0.02] border border-white/5">
+            <div className="p-2 rounded-lg bg-amber-400/10 text-amber-400">
+              <Truck size={18} />
+            </div>
+            <div className="text-xs">
+              <p className="font-bold text-white">Priority Dispatch</p>
+              <p className="text-slate-400 text-[11px]">Across 28 States</p>
+            </div>
+          </div>
+        </div>
 
-          <p className="text-white/40 text-[14px] leading-relaxed">
-            We work directly with 500+ brands and manufacturers, cutting out the middlemen to give you better prices without compromising on authenticity or quality.
-          </p>
-
-          {/* Tab switcher */}
-          <div className="flex gap-2 p-1 rounded-full bg-white/5 border border-white/8 w-fit">
-            {["story", "mission", "vision"].map((tab) => (
-              <motion.button
+        {/* Tab Switcher Pills */}
+        <div className="flex gap-1.5 p-1 rounded-2xl bg-white/[0.04] border border-white/10 w-fit backdrop-blur-md">
+          {["story", "mission", "vision"].map((tab) => {
+            const isCurrent = activeTab === tab;
+            return (
+              <button
                 key={tab}
+                type="button"
                 onClick={() => setActiveTab(tab)}
-                className="relative px-5 py-2 rounded-full text-[12px] uppercase tracking-widest font-semibold transition-colors capitalize"
-                style={{ color: activeTab === tab ? "#0a0c10" : "rgba(255,255,255,0.4)" }}
+                className={`relative px-5 py-2 rounded-xl text-xs uppercase tracking-widest font-bold transition-all duration-200 ${
+                  isCurrent ? "text-slate-950" : "text-slate-400 hover:text-white"
+                }`}
               >
-                {activeTab === tab && (
+                {isCurrent && (
                   <motion.span
-                    layoutId="about-tab"
-                    className="absolute inset-0 rounded-full"
-                    style={{ background: "linear-gradient(135deg, #c4a882, #f8d77b)" }}
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.5 }}
+                    layoutId="about-active-tab"
+                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 shadow-[0_0_15px_rgba(251,191,36,0.35)]"
+                    transition={{ type: "spring", bounce: 0.2, duration: 0.45 }}
                   />
                 )}
-                <span className="relative">{tab}</span>
-              </motion.button>
-            ))}
-          </div>
+                <span className="relative z-10">{tab}</span>
+              </button>
+            );
+          })}
+        </div>
 
+        {/* Dynamic Tab Body */}
+        <div className="min-h-[80px]">
           <AnimatePresence mode="wait">
             <motion.p
               key={activeTab}
-              initial={{ opacity: 0, y: 8 }}
+              initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3 }}
-              className="text-white/45 text-[14px] leading-relaxed"
+              exit={{ opacity: 0, y: -6 }}
+              transition={{ duration: 0.25 }}
+              className="text-slate-400 text-xs sm:text-sm leading-relaxed border-l-2 border-amber-400/40 pl-4"
             >
-              {activeTab === "story" && "Started in 2021 by a team of passionate entrepreneurs, AVI Store grew from a small curated boutique to India's fastest-growing multi-category online store with over 3 million orders delivered."}
-              {activeTab === "mission" && "Our mission is to make premium products genuinely accessible — combining competitive pricing, lightning-fast delivery, and world-class customer service so every shopper feels valued."}
-              {activeTab === "vision" && "We envision a future where every Indian household has access to the world's best products at honest prices, delivered with joy and supported with trust."}
+              {TAB_DATA[activeTab]}
             </motion.p>
           </AnimatePresence>
+        </div>
 
-          <Link to="/shop">
+        {/* CTA Button */}
+        <div>
+          <Link to="/shop" className="inline-block">
             <motion.button
-              whileHover={{ scale: 1.04, y: -2 }}
+              whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
-              className="self-start flex items-center gap-3 px-7 py-3.5 rounded-full font-bold text-[12px] uppercase tracking-[0.2em] text-[#0a0c10]"
-              style={{ background: "linear-gradient(135deg, #c4a882, #f8d77b)", boxShadow: "0 12px 30px rgba(196,168,130,0.3)" }}
+              className="flex items-center gap-3 px-8 py-3.5 rounded-full font-black text-xs uppercase tracking-[0.2em] text-slate-950 bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 shadow-[0_10px_25px_rgba(251,191,36,0.35)] hover:shadow-[0_15px_35px_rgba(251,191,36,0.5)] transition-shadow"
             >
-              Shop Now
-              <motion.span animate={{ x: [0, 4, 0] }} transition={{ duration: 1.5, repeat: Infinity }}>→</motion.span>
+              <span>Explore Collection</span>
+              <ArrowRight size={15} />
             </motion.button>
           </Link>
-        </motion.div>
-      </section>
+        </div>
+      </motion.div>
+
+    </section>
 
       {/* ── STATS ── */}
       <section className="max-w-screen-2xl mx-auto px-6 md:px-16 py-16">
