@@ -6,11 +6,10 @@ import {
   useMotionValueEvent,
   useScroll,
 } from "framer-motion";
-import Logo from "../assets/images/logo/logo.png";
 import { AuthContext } from "../context/AuthProvider";
 import UserAvatar from "./UserAvatar";
 import { useSelector } from "react-redux";
-import Product from "../products.json";
+import { fetchProducts } from "../api.js";
 import { X, ArrowRight } from "lucide-react";
 
 const Header = () => {
@@ -22,8 +21,11 @@ const Header = () => {
   const [showAnnouncementBar, setShowAnnouncementBar] = useState(true);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchText, setSearchText] = useState("");
+  const [products, setProducts] = useState([]);
   const [filterProducts, setFilterProducts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [productsError, setProductsError] = useState(false);
   const cartItems = useSelector((store) => store?.cart?.items || []);
   const wishlistItems = useSelector((store) => store?.wishlist?.items || []);
   const cartCount = cartItems.reduce(
@@ -37,7 +39,6 @@ const Header = () => {
   const { scrollY } = useScroll();
   const lastScrollY = useRef(0);
   const searchRef = useRef(null);
-  const data = Product;
 
   useEffect(() => {
     setToggleMenu(false);
@@ -52,18 +53,60 @@ const Header = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Fetch products once for the header search.
   useEffect(() => {
-    if (searchText.trim() === "") {
+    let isMounted = true;
+
+    const loadProducts = async () => {
+      try {
+        setProductsLoading(true);
+        setProductsError(false);
+
+        const result = await fetchProducts();
+
+        const productList = Array.isArray(result)
+          ? result
+          : Array.isArray(result?.data)
+            ? result.data
+            : [];
+
+        if (isMounted) setProducts(productList);
+      } catch (error) {
+        console.error("Failed to fetch products for header search:", error);
+        if (isMounted) {
+          setProducts([]);
+          setProductsError(true);
+        }
+      } finally {
+        if (isMounted) setProductsLoading(false);
+      }
+    };
+
+    loadProducts();
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Filter the fetched product array as the user types.
+  useEffect(() => {
+    const query = searchText.trim().toLowerCase();
+
+    if (!query) {
       setFilterProducts([]);
       setShowDropdown(false);
-    } else {
-      const filter = data.filter((prod) =>
-        prod.name.toLowerCase().includes(searchText.toLowerCase()),
-      );
-      setFilterProducts(filter);
-      setShowDropdown(true);
+      return;
     }
-  }, [searchText, data]);
+
+    const filtered = products.filter((prod) =>
+      String(prod?.name ?? "")
+        .toLowerCase()
+        .includes(query),
+    );
+
+    setFilterProducts(filtered);
+    setShowDropdown(true);
+  }, [searchText, products]);
 
   useEffect(() => {
     const handler = (e) => {
@@ -316,30 +359,38 @@ const Header = () => {
                           exit={{ opacity: 0, y: -6 }}
                           className="mt-3 max-h-[280px] overflow-y-auto custom-scrollbar"
                         >
-                          {filterProducts.length > 0 ? (
+                          {productsLoading ? (
+                            <li className="px-4 py-6 text-center text-white/40 text-sm">
+                              Loading products...
+                            </li>
+                          ) : productsError ? (
+                            <li className="px-4 py-6 text-center text-rose-400 text-sm">
+                              Could not load products. Please try again.
+                            </li>
+                          ) : filterProducts.length > 0 ? (
                             filterProducts.slice(0, 6).map((item) => (
                               <li key={item.id}>
                                 <Link
                                   to={`/shop/${item.id}`}
                                   onClick={() => {
-                                    setSearchText(item.name);
+                                    setSearchText("");
                                     setSearchOpen(false);
                                     setShowDropdown(false);
                                   }}
                                   className="group flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-white/[0.05] transition"
                                 >
                                   <div className="size-9 rounded-lg overflow-hidden bg-white/5 flex-shrink-0">
-                                    {item.img && (
+                                    {(item.img || item.image) && (
                                       <img
-                                        src={item.img}
-                                        alt={item.name}
+                                        src={item.img || item.image}
+                                        alt={item.name || "Product"}
                                         className="size-full object-cover"
                                       />
                                     )}
                                   </div>
-                                  <div className="flex-1">
-                                    <p className="text-white text-sm font-medium group-hover:text-amber-400 transition-colors">
-                                      {item.name}
+                                  <div className="flex-1 min-w-0">
+                                    <p className="text-white text-sm font-medium group-hover:text-amber-400 transition-colors truncate">
+                                      {item.name || "Untitled product"}
                                     </p>
                                     <p className="text-[10px] text-white/35 uppercase tracking-widest">
                                       {item.category || "Collection"}
@@ -755,18 +806,24 @@ const Header = () => {
                     }}
                   >
                     <span
-                      onClick={logOut}
                       className="text-[11px] font-bold uppercase tracking-[0.2em]"
                       style={{ color: "rgba(255,255,255,0.7)" }}
                     >
-                      Sign Out
+                      Orders
                     </span>
                   </Link>
 
                   <button
+                    type="button"
+                    onClick={() => {
+                      setToggleMenu(false);
+                      logOut();
+                    }}
                     className="py-1 text-[10px] font-bold uppercase tracking-[0.25em] transition-all duration-200 active:scale-95"
                     style={{ color: "rgba(248,113,113,0.75)" }}
-                  ></button>
+                  >
+                    Sign Out
+                  </button>
                 </div>
               )}
 

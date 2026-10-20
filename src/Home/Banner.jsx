@@ -3,15 +3,13 @@ import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import searchIcon from "../assets/icons/search-2.svg";
 import Select from "../components/Select";
-import Product from "../products.json";
 import fallbackImg from "../assets/images/bg-img/01.jpg";
+import { fetchProducts } from "../api.js";
 
 /* ─────────────────────────────────────────────────────────
    EDIT ME
-   Drop a clean campaign photo (woman in a plum/burgundy suit,
-   warm side light, subject on the RIGHT, dark negative space on
-   the LEFT) at src/assets/images/hero-editorial.jpg and swap the
-   import / constant below. Portrait-ish crops work best, 2000px+ wide.
+   Drop a clean campaign photo at src/assets/images/hero-editorial.jpg
+   and update HERO_IMAGE below if you want to use a local image.
    ───────────────────────────────────────────────────────── */
 const HERO_IMAGE =
   "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=2000&q=80";
@@ -19,7 +17,6 @@ const HERO_IMAGE =
 const FONT_LINK =
   "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap";
 
-// Tailwind arbitrary font families (loaded by the effect below)
 const serif = "font-['Instrument_Serif',Georgia,serif]";
 const sans = "font-['Hanken_Grotesk',system-ui,sans-serif]";
 
@@ -76,55 +73,108 @@ const Arrow = ({ className = "" }) => (
 
 const ease = [0.16, 1, 0.3, 1];
 
-// ── Component ──────────────────────────────────────────────
 const Banner = () => {
   const [searchText, setSearchText] = useState("");
+  const [products, setProducts] = useState([]);
   const [filterProducts, setFilterProducts] = useState([]);
   const [showDropdown, setShowDropdown] = useState(false);
+  const [productsLoading, setProductsLoading] = useState(false);
+  const [productsError, setProductsError] = useState(false);
   const [src, setSrc] = useState(HERO_IMAGE);
+
   const dropdownRef = useRef(null);
-  const data = Product;
   const reduce = useReducedMotion();
   const navigate = useNavigate();
 
-  // Load editorial fonts once (no config changes needed)
+  // Load editorial fonts once.
   useEffect(() => {
     if (document.querySelector(`link[href="${FONT_LINK}"]`)) return;
-    const l = document.createElement("link");
-    l.rel = "stylesheet";
-    l.href = FONT_LINK;
-    document.head.appendChild(l);
+
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = FONT_LINK;
+    document.head.appendChild(link);
   }, []);
 
-  // Search filter (unchanged logic)
+  // Fetch products from the fake API once when the banner mounts.
   useEffect(() => {
-    if (searchText.trim() === "") {
+    let isMounted = true;
+
+    const loadProducts = async () => {
+      try {
+        setProductsLoading(true);
+        setProductsError(false);
+
+        const result = await fetchProducts();
+        const productList = Array.isArray(result)
+          ? result
+          : Array.isArray(result?.data)
+            ? result.data
+            : Array.isArray(result?.products)
+              ? result.products
+              : [];
+
+        if (isMounted) setProducts(productList);
+      } catch (error) {
+        console.error("Failed to load products for banner search:", error);
+        if (isMounted) {
+          setProducts([]);
+          setProductsError(true);
+        }
+      } finally {
+        if (isMounted) setProductsLoading(false);
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      isMounted = false;
+    };
+  }, []);
+
+  // Filter API products as the user types.
+  useEffect(() => {
+    const query = searchText.trim().toLowerCase();
+
+    if (!query) {
       setFilterProducts([]);
       setShowDropdown(false);
-    } else {
-      const filter = data.filter((prod) =>
-        prod.name.toLowerCase().includes(searchText.toLowerCase()),
-      );
-      setFilterProducts(filter);
-      setShowDropdown(true);
+      return;
     }
-  }, [searchText, data]);
 
-  // Close dropdown on outside click (unchanged)
+    const filtered = products.filter((product) => {
+      const name = String(product?.name ?? "").toLowerCase();
+      const category = String(product?.category ?? "").toLowerCase();
+      return name.includes(query) || category.includes(query);
+    });
+
+    setFilterProducts(filtered);
+    setShowDropdown(true);
+  }, [searchText, products]);
+
+  // Close dropdown when clicking outside the search area.
   useEffect(() => {
-    const handler = (e) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
+    const handler = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowDropdown(false);
       }
     };
+
     document.addEventListener("mousedown", handler);
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const submit = (e) => {
-    e.preventDefault();
-    const q = searchText.trim();
-    navigate(q ? `/shop?q=${encodeURIComponent(q)}` : "/shop");
+  const submit = (event) => {
+    event.preventDefault();
+    const query = searchText.trim();
+    setShowDropdown(false);
+    navigate(query ? `/shop?q=${encodeURIComponent(query)}` : "/shop");
+  };
+
+  const openProduct = (productId) => {
+    setShowDropdown(false);
+    navigate(`/shop/${productId}`);
   };
 
   const rise = (delay = 0) => ({
@@ -137,7 +187,7 @@ const Banner = () => {
     <section
       className={`${sans} relative isolate z-20 flex min-h-screen flex-col overflow-x-clip bg-[#0d0910] text-[#f3ecf4]`}
     >
-      {/* ── Editorial photograph, blended into the dark ── */}
+      {/* Editorial photograph, blended into the dark */}
       <motion.div
         className="absolute inset-0 -z-10 lg:left-auto lg:w-[76%]"
         initial={reduce ? false : { opacity: 0, scale: 1.06 }}
@@ -148,23 +198,21 @@ const Banner = () => {
           src={src}
           onError={() => setSrc(fallbackImg)}
           alt="Editorial campaign photograph"
-          fetchpriority="high"
+          fetchPriority="high"
           decoding="async"
           className="h-full w-full object-cover object-[60%_20%] saturate-[0.9] contrast-[1.05]"
         />
-        {/* blend left edge into the page */}
         <div className="absolute inset-0 bg-gradient-to-r from-[#0d0910] via-[#0d0910]/70 to-transparent lg:via-[#0d0910]/25" />
-        {/* mobile legibility */}
         <div className="absolute inset-0 bg-[#0d0910]/55 lg:hidden" />
-        {/* ground the bottom for search */}
         <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#0d0910] via-[#0d0910]/70 to-transparent" />
         <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0d0910]/80 to-transparent" />
       </motion.div>
+
       <div
         className={`pointer-events-none absolute inset-0 -z-10 opacity-[0.04] mix-blend-overlay ${GRAIN}`}
       />
 
-      {/* ── Content ── */}
+      {/* Content */}
       <div className="relative mx-auto flex w-full max-w-[1500px] flex-1 flex-col px-6 pb-10 pt-32 md:px-12 lg:pt-36">
         <div className="flex flex-1 items-start justify-between gap-10 lg:items-center">
           {/* LEFT */}
@@ -236,9 +284,9 @@ const Banner = () => {
               {...rise(0.82)}
               className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-4"
             >
-              {TRUST.map((t, i) => (
-                <li key={t.label} className="flex items-center gap-7">
-                  {i > 0 && (
+              {TRUST.map((item, index) => (
+                <li key={item.label} className="flex items-center gap-7">
+                  {index > 0 && (
                     <span className="hidden h-7 w-px bg-white/15 sm:block" />
                   )}
                   <div className="flex items-center gap-3">
@@ -252,14 +300,14 @@ const Banner = () => {
                       strokeLinejoin="round"
                       aria-hidden="true"
                     >
-                      <path d={t.d} />
+                      <path d={item.d} />
                     </svg>
                     <div className="leading-tight">
                       <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/85">
-                        {t.label}
+                        {item.label}
                       </p>
                       <p className="mt-1 text-[10px] font-light tracking-wide text-white/40">
-                        {t.sub}
+                        {item.sub}
                       </p>
                     </div>
                   </div>
@@ -274,26 +322,26 @@ const Banner = () => {
             {...rise(0.9)}
             className="hidden self-start pt-2 lg:flex lg:flex-col lg:gap-10"
           >
-            {FEATURE_LINKS.map((l) => (
-              <Link key={l.label} to={l.to} className="group block w-56">
+            {FEATURE_LINKS.map((item) => (
+              <Link key={item.label} to={item.to} className="group block w-56">
                 <div className="flex items-center justify-between">
                   <span
                     className={`${serif} text-[2.1rem] italic leading-none text-white/95 transition-colors duration-500 group-hover:text-[#c4a1f5]`}
                   >
-                    {l.label}
+                    {item.label}
                   </span>
                   <Arrow className="text-white/70 group-hover:translate-x-1.5 group-hover:text-[#c4a1f5]" />
                 </div>
                 <span className="mt-3 block h-px w-8 bg-[#c4a1f5] transition-all duration-500 group-hover:w-16" />
                 <p className="mt-3 text-[12px] font-light tracking-wide text-white/65">
-                  {l.sub}
+                  {item.sub}
                 </p>
               </Link>
             ))}
           </motion.nav>
         </div>
 
-        {/* ── Search ── */}
+        {/* Search */}
         <motion.div
           {...rise(1)}
           ref={dropdownRef}
@@ -305,18 +353,17 @@ const Banner = () => {
             className="flex items-center rounded-full border border-white/20 bg-[#0d0910]/70 p-1.5 backdrop-blur-md transition-colors duration-500 focus-within:border-[#c4a1f5]/60"
           >
             <div className="hidden border-r border-white/10 pl-4 pr-3 md:block">
-              <Select select={"all"} />
+              <Select select="all" />
             </div>
-
             <input
               type="text"
               value={searchText}
-              onChange={(e) => setSearchText(e.target.value)}
+              onChange={(event) => setSearchText(event.target.value)}
               placeholder="Search for products, brands & more…"
               aria-label="Search products"
+              aria-expanded={showDropdown}
               className="min-w-0 flex-1 bg-transparent px-5 py-3 text-[13px] font-light tracking-wide text-white outline-none placeholder:text-white/40"
             />
-
             <button
               type="submit"
               aria-label="Search"
@@ -326,7 +373,7 @@ const Banner = () => {
             </button>
           </form>
 
-          {/* Dropdown (behavior preserved) */}
+          {/* Search dropdown */}
           <AnimatePresence>
             {showDropdown && (
               <motion.ul
@@ -336,41 +383,46 @@ const Banner = () => {
                 transition={{ duration: 0.25 }}
                 className="absolute left-0 right-0 z-[100] mt-3 max-h-[320px] overflow-y-auto rounded-2xl border border-white/10 bg-[#120c16]/95 shadow-[0_30px_80px_rgba(0,0,0,0.8)] backdrop-blur-xl"
               >
-                {filterProducts.length > 0 ? (
+                {productsLoading ? (
+                  <li className="px-8 py-8 text-center text-sm text-white/45">
+                    Loading products...
+                  </li>
+                ) : productsError ? (
+                  <li className="px-8 py-8 text-center text-sm text-rose-300">
+                    Could not load products. Please try again.
+                  </li>
+                ) : filterProducts.length > 0 ? (
                   filterProducts.slice(0, 8).map((item) => (
-                    <li
-                      key={item.id}
-                      onClick={() => {
-                        setSearchText(item.name);
-                        setShowDropdown(false);
-                      }}
-                      className="group flex cursor-pointer items-center justify-between border-b border-white/5 px-5 py-3 transition-colors last:border-none hover:bg-white/[0.04]"
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="size-10 shrink-0 overflow-hidden rounded-md bg-white/5">
-                          {item.img && (
-                            <img
-                              src={item.img}
-                              alt=""
-                              className="size-full object-cover"
-                            />
-                          )}
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-sm text-white transition-colors group-hover:text-[#c4a1f5]">
-                            {item.name}
-                          </span>
-                          <span className="text-[10px] uppercase tracking-[0.2em] text-white/35">
-                            {item.category || "Collection"}
-                          </span>
-                        </div>
-                      </div>
-                      <Link
-                        to={`/shop/${item.id}`}
-                        className="text-[10px] font-medium uppercase tracking-[0.2em] text-[#d9b55f] opacity-0 transition-opacity group-hover:opacity-100"
+                    <li key={item.id}>
+                      <button
+                        type="button"
+                        onClick={() => openProduct(item.id)}
+                        className="group flex w-full items-center justify-between border-b border-white/5 px-5 py-3 text-left transition-colors last:border-none hover:bg-white/[0.04]"
                       >
-                        View →
-                      </Link>
+                        <div className="flex min-w-0 items-center gap-4">
+                          <div className="size-10 shrink-0 overflow-hidden rounded-md bg-white/5">
+                            {(item.img || item.image || item.images?.[0]) && (
+                              <img
+                                src={item.img || item.image || item.images?.[0]}
+                                alt={item.name || "Product"}
+                                loading="lazy"
+                                className="size-full object-cover"
+                              />
+                            )}
+                          </div>
+                          <div className="flex min-w-0 flex-col">
+                            <span className="truncate text-sm text-white transition-colors group-hover:text-[#c4a1f5]">
+                              {item.name || "Untitled product"}
+                            </span>
+                            <span className="text-[10px] uppercase tracking-[0.2em] text-white/35">
+                              {item.category || "Collection"}
+                            </span>
+                          </div>
+                        </div>
+                        <span className="ml-3 shrink-0 text-[10px] font-medium uppercase tracking-[0.2em] text-[#d9b55f]">
+                          View →
+                        </span>
+                      </button>
                     </li>
                   ))
                 ) : (
@@ -384,13 +436,13 @@ const Banner = () => {
 
           {/* Trending */}
           <div className="mt-6 flex flex-wrap justify-center gap-x-7 gap-y-2">
-            {TRENDING.map((cat) => (
+            {TRENDING.map((category) => (
               <Link
-                key={cat}
-                to="/shop"
+                key={category}
+                to={`/shop?category=${encodeURIComponent(category)}`}
                 className="relative py-1 text-[10px] font-normal uppercase tracking-[0.25em] text-white/55 transition-colors duration-500 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#c4a1f5] after:transition-transform after:duration-500 hover:text-white hover:after:scale-x-100"
               >
-                {cat}
+                {category}
               </Link>
             ))}
           </div>

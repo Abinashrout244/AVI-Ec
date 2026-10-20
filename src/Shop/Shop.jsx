@@ -1,25 +1,23 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import HeroBanner from "../components/HeroBanner";
-import Info from "../products.json";
+import { fetchProducts } from "../api";
 import Pegination from "./Pegination";
 import { useLocation, Link } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import { CATEGORIES } from "../utilis/Categorydata";
 
-
-
 const SORT_OPTIONS = [
-  { label: "Relevance",         value: "newest"     },
-  { label: "Price: Low to High", value: "price_asc"  },
+  { label: "Relevance", value: "newest" },
+  { label: "Price: Low to High", value: "price_asc" },
   { label: "Price: High to Low", value: "price_desc" },
-  { label: "Name: A to Z",       value: "name_asc"   },
+  { label: "Name: A to Z", value: "name_asc" },
 ];
-
-
 
 /* ── Main Shop ── */
 const Shop = () => {
-  const [baseProducts, setBaseProducts] = useState(Info);
+  const [baseProducts, setBaseProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
   const [currPage, setCurrPage] = useState(1);
   const [search, setSearch] = useState("");
   const [selectCategory, setSelectCategory] = useState("All");
@@ -29,6 +27,35 @@ const Shop = () => {
 
   const productperpage = 20;
   const location = useLocation();
+
+  useEffect(() => {
+    let ignore = false;
+
+    const loadProducts = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const data = await fetchProducts();
+        if (!ignore) {
+          setBaseProducts(data || []);
+        }
+      } catch (err) {
+        if (!ignore) {
+          setError(err.message || "Failed to load products.");
+        }
+      } finally {
+        if (!ignore) {
+          setLoading(false);
+        }
+      }
+    };
+
+    loadProducts();
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
 
   // Close dropdown on outside click
   useEffect(() => {
@@ -46,7 +73,7 @@ const Shop = () => {
       Bags: ["Bag", "Bags", "Colorful Bags"],
       Shoes: ["Shoes", "Men's Sneaker", "Men's Boot"],
     }),
-    []
+    [],
   );
 
   const matchesCategory = (itemCat, selected) => {
@@ -58,20 +85,24 @@ const Shop = () => {
   const filterCategory = (cat) => {
     setSelectCategory(cat);
     setCurrPage(1);
-    setBaseProducts(cat === "All" ? Info : Info.filter((i) => matchesCategory(i.category, cat)));
   };
 
-  const sortProducts = (prods) => {
-    const s = [...prods];
-    if (sortBy === "price_asc") s.sort((a, b) => a.price - b.price);
-    if (sortBy === "price_desc") s.sort((a, b) => b.price - a.price);
-    if (sortBy === "name_asc") s.sort((a, b) => a.name.localeCompare(b.name));
-    return s;
-  };
+  const filtered = useMemo(() => {
+    const list = baseProducts.filter((item) => {
+      const matchCat = matchesCategory(item.category, selectCategory);
+      const matchSearch = item.name
+        ?.toLowerCase()
+        .includes(search.toLowerCase());
+      return matchCat && matchSearch;
+    });
 
-  const filtered = sortProducts(
-    baseProducts.filter((i) => i.name.toLowerCase().includes(search.toLowerCase()))
-  );
+    const sorted = [...list];
+    if (sortBy === "price_asc") sorted.sort((a, b) => a.price - b.price);
+    if (sortBy === "price_desc") sorted.sort((a, b) => b.price - a.price);
+    if (sortBy === "name_asc")
+      sorted.sort((a, b) => a.name.localeCompare(b.name));
+    return sorted;
+  }, [baseProducts, selectCategory, search, sortBy, categoryAliases]);
 
   const lastindex = currPage * productperpage;
   const firstindex = lastindex - productperpage;
@@ -88,14 +119,15 @@ const Shop = () => {
   }, [location.search]);
 
   return (
-    <div className="min-h-screen text-slate-100 selection:bg-amber-400 selection:text-black" style={{ background: "linear-gradient(180deg,#04060e 0%,#070a14 100%)" }}>
-      {/* Banner */}
+    <div
+      className="min-h-screen text-slate-100 selection:bg-amber-400 selection:text-black"
+      style={{ background: "linear-gradient(180deg,#04060e 0%,#070a14 100%)" }}
+    >
       <HeroBanner title="Our Shop" page="Shop" />
 
-      {/* ── Redesigned Premium Category Bar ── */}
+      {/* ── Category Bar ── */}
       <div className="sticky top-0 z-30 border-y border-white/[0.06] bg-[#04060e]/85 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 relative">
-          {/* Subtle horizontal gradient edge fades */}
           <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#04060e] to-transparent z-10 sm:hidden" />
           <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#04060e] to-transparent z-10 sm:hidden" />
 
@@ -103,23 +135,23 @@ const Shop = () => {
             {CATEGORIES.map((cat) => {
               const active = selectCategory === cat.label;
               return (
-               <button
-               key={cat.label}
-              onClick={() => filterCategory(cat.label)}
-              className={`group relative flex-shrink-0 flex items-center gap-2 pl-1.5 pr-3.5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all duration-300 select-none 
-                ${active
-               ? "text-amber-300 bg-amber-400/[0.12] border border-amber-400/40 shadow-[0_0_16px_rgba(251,191,36,0.18)]"
-               : "text-white/60 hover:text-white bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-white/20"
-              }`}
->
-  <img
-    src={cat.image}
-    alt={cat.label}
-    className="w-5 h-5 rounded-full object-cover border border-white/20 group-hover:scale-105 transition-transform duration-200"
-    loading="lazy"
-  />
-  <span>{cat.label}</span>
-</button>
+                <button
+                  key={cat.label}
+                  onClick={() => filterCategory(cat.label)}
+                  className={`group relative flex-shrink-0 flex items-center gap-2 pl-1.5 pr-3.5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all duration-300 select-none ${
+                    active
+                      ? "text-amber-300 bg-amber-400/[0.12] border border-amber-400/40 shadow-[0_0_16px_rgba(251,191,36,0.18)]"
+                      : "text-white/60 hover:text-white bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-white/20"
+                  }`}
+                >
+                  <img
+                    src={cat.image}
+                    alt={cat.label}
+                    className="w-5 h-5 rounded-full object-cover border border-white/20 group-hover:scale-105 transition-transform duration-200"
+                    loading="lazy"
+                  />
+                  <span>{cat.label}</span>
+                </button>
               );
             })}
           </div>
@@ -128,8 +160,6 @@ const Shop = () => {
 
       {/* ── Main Content ── */}
       <div className="max-w-screen-xl mx-auto px-3 sm:px-6 py-6">
-
-        {/* ── Redesigned Premium Toolbar ── */}
         <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
           {/* Search Bar */}
           <div className="relative flex-1 min-w-[220px] max-w-md group">
@@ -142,7 +172,11 @@ const Shop = () => {
                 viewBox="0 0 24 24"
                 strokeWidth={2}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"
+                />
               </svg>
               <input
                 type="text"
@@ -166,9 +200,12 @@ const Shop = () => {
           </div>
 
           <div className="flex items-center gap-3 ml-auto">
-            {/* Live Count Pill */}
             <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-white/40">
-              Showing <span className="text-white/90 font-semibold">{filtered.length}</span> items
+              Showing{" "}
+              <span className="text-white/90 font-semibold">
+                {filtered.length}
+              </span>{" "}
+              items
             </span>
 
             {/* Custom Glass Dropdown */}
@@ -182,7 +219,9 @@ const Shop = () => {
                     : "bg-white/[0.04] hover:bg-white/[0.08] border-white/10 hover:border-white/20 text-white/70 hover:text-white"
                 }`}
               >
-                <span className="text-[10px] uppercase tracking-wider text-white/40 font-semibold">Sort:</span>
+                <span className="text-[10px] uppercase tracking-wider text-white/40 font-semibold">
+                  Sort:
+                </span>
                 <span className="text-white/90 font-medium">
                   {SORT_OPTIONS.find((o) => o.value === sortBy)?.label}
                 </span>
@@ -201,7 +240,6 @@ const Shop = () => {
                 </svg>
               </button>
 
-              
               {isSortOpen && (
                 <div className="absolute right-0 z-50 mt-2 w-48 rounded-xl p-1.5 backdrop-blur-2xl bg-[#090d16]/95 border border-white/[0.12] shadow-[0_20px_50px_rgba(0,0,0,0.8),0_0_0_1px_rgba(255,255,255,0.05)]">
                   <div className="flex flex-col gap-0.5">
@@ -223,7 +261,11 @@ const Shop = () => {
                         >
                           <span>{o.label}</span>
                           {isSelected && (
-                            <svg className="w-3.5 h-3.5 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]" viewBox="0 0 20 20" fill="currentColor">
+                            <svg
+                              className="w-3.5 h-3.5 text-amber-400 drop-shadow-[0_0_6px_rgba(251,191,36,0.5)]"
+                              viewBox="0 0 20 20"
+                              fill="currentColor"
+                            >
                               <path
                                 fillRule="evenodd"
                                 d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
@@ -246,7 +288,10 @@ const Shop = () => {
           <div className="flex items-center gap-2 mb-5 flex-wrap">
             {selectCategory !== "All" && (
               <span className="flex items-center gap-2 text-xs px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 backdrop-blur-md">
-                Category: <strong className="font-semibold text-white">{selectCategory}</strong>
+                Category:{" "}
+                <strong className="font-semibold text-white">
+                  {selectCategory}
+                </strong>
                 <button
                   onClick={() => filterCategory("All")}
                   className="hover:text-white ml-0.5 text-[11px] p-0.5 rounded-full hover:bg-white/10 transition-colors"
@@ -257,7 +302,8 @@ const Shop = () => {
             )}
             {search && (
               <span className="flex items-center gap-2 text-xs px-3 py-1 rounded-full bg-white/[0.05] border border-white/[0.1] text-white/70 backdrop-blur-md">
-                Keyword: <strong className="font-semibold text-white">"{search}"</strong>
+                Keyword:{" "}
+                <strong className="font-semibold text-white">"{search}"</strong>
                 <button
                   onClick={() => setSearch("")}
                   className="hover:text-white ml-0.5 text-[11px] p-0.5 rounded-full hover:bg-white/10 transition-colors"
@@ -269,7 +315,7 @@ const Shop = () => {
           </div>
         )}
 
-        {/* ── Products Grid (Untouched) ── */}
+        {/* ── Products Grid ── */}
         {currentProducts.length > 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
             {currentProducts.map((item) => (
@@ -281,16 +327,21 @@ const Shop = () => {
             <span className="text-5xl">🔍</span>
             <p className="text-white/40 font-medium">No products found</p>
             <button
-              onClick={() => { filterCategory("All"); setSearch(""); }}
+              onClick={() => {
+                filterCategory("All");
+                setSearch("");
+              }}
               className="px-6 py-2.5 rounded-xl text-slate-900 font-bold text-sm transition-all"
-              style={{ background: "linear-gradient(135deg,#fbbf24,#f59e0b)", boxShadow: "0 8px 24px rgba(251,191,36,0.3)" }}
+              style={{
+                background: "linear-gradient(135deg,#fbbf24,#f59e0b)",
+                boxShadow: "0 8px 24px rgba(251,191,36,0.3)",
+              }}
             >
               Clear Filters
             </button>
           </div>
         )}
 
-      
         {filtered.length > productperpage && (
           <Pegination
             productperpage={productperpage}
