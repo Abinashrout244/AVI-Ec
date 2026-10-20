@@ -62,12 +62,12 @@ AVI-EC is a responsive e-commerce storefront built with React and Vite. It inclu
 
 ## Available scripts
 
-| Command | Description |
-| --- | --- |
-| `npm run start` | Start the development server |
-| `npm run build` | Create a production build in `dist/` |
+| Command           | Description                          |
+| ----------------- | ------------------------------------ |
+| `npm run start`   | Start the development server         |
+| `npm run build`   | Create a production build in `dist/` |
 | `npm run preview` | Preview the production build locally |
-| `npm run lint` | Run ESLint |
+| `npm run lint`    | Run ESLint                           |
 
 ## Project layout
 
@@ -87,9 +87,69 @@ src/
 screenshots/    Project screenshots
 ```
 
-## Product data
+## 🚀 Custom REST API Integration
 
-The storefront catalog is defined in [`src/products.json`](src/products.json). Update that file to change the products displayed in the shop.
+> **Built my own REST API** to serve product data dynamically, demonstrating practical experience in API development, deployment, and frontend integration.
+
+### 🔗 Explore My API
+
+<p align="center">
+  <a href="https://my-store-api-sgnu.onrender.com/products/">
+    <img src="https://img.shields.io/badge/🌐_Live_API-View_Products-46E3B7?style=for-the-badge" alt="Live API" />
+  </a>
+  <a href="https://github.com/Abinashrout244/my-store-api">
+    <img src="https://img.shields.io/badge/GitHub-Source_Code-181717?style=for-the-badge&logo=github" alt="GitHub Repository" />
+  </a>
+</p>
+
+### ✨ Key Features
+
+- ⚡ **Custom Built API** — Developed my own REST API instead of relying entirely on third-party services.
+- 📦 **Product Data** — Serves product information through a dedicated endpoint.
+- 🔄 **JSON Responses** — Returns structured data for frontend applications.
+- 🌍 **Live Deployment** — Deployed and accessible online through Render.
+- 🔌 **Frontend Integration** — Product data can be fetched using JavaScript's Fetch API.
+
+### 🛠️ API Specifications
+
+| Specification   | Details      |
+| --------------- | ------------ |
+| API Type        | REST API     |
+| Endpoint        | `/products/` |
+| HTTP Method     | `GET`        |
+| Response Format | JSON         |
+| Deployment      | Render       |
+
+### 💻 Example Usage
+
+```javascript
+const fetchProducts = async () => {
+  try {
+    const response = await fetch(
+      "https://my-store-api-sgnu.onrender.com/products/",
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch products");
+    }
+
+    const products = await response.json();
+    console.log(products);
+  } catch (error) {
+    console.error("Error fetching products:", error);
+  }
+};
+
+fetchProducts();
+```
+
+### 🎯 What I Learned
+
+Building and deploying a custom API, handling HTTP requests and responses, working with JSON data, and connecting backend services with frontend applications.
+
+---
+
+**Developed by [Abinash Rout](https://github.com/Abinashrout244)**
 
 ## Deployment
 

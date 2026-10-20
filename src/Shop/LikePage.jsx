@@ -6,19 +6,30 @@ import { addItem } from "../utilis/CartSlice";
 import { removeWishlist } from "../utilis/WishlistSlice";
 import { addToast } from "../utilis/ToastSlice";
 import { motion, AnimatePresence } from "framer-motion";
-import { Heart, ShoppingBag, Trash2, ArrowRight, Sparkles, ExternalLink } from "lucide-react";
+import {
+  Heart,
+  ShoppingBag,
+  Trash2,
+  ArrowRight,
+  Sparkles,
+  ExternalLink,
+} from "lucide-react";
 
 const container = {
   hidden: { opacity: 0 },
   show: {
     opacity: 1,
-    transition: { staggerChildren: 0.08 }
-  }
+    transition: { staggerChildren: 0.08 },
+  },
 };
 
 const itemAnim = {
   hidden: { opacity: 0, y: 20 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] } }
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.4, ease: [0.16, 1, 0.3, 1] },
+  },
 };
 
 const LikePage = () => {
@@ -37,7 +48,9 @@ const LikePage = () => {
         color: "Default",
       }),
     );
-    dispatch(addToast({ type: "success", message: `"${item.name}" added to cart!` }));
+    dispatch(
+      addToast({ type: "success", message: `"${item.name}" added to cart!` }),
+    );
   };
 
   const handleRemove = (id) => {
@@ -56,10 +69,15 @@ const LikePage = () => {
           seller: item.seller || "Official Brand",
           size: "Standard",
           color: "Default",
-        })
+        }),
       );
     });
-    dispatch(addToast({ type: "success", message: "All liked products moved to cart!" }));
+    dispatch(
+      addToast({
+        type: "success",
+        message: "All liked products moved to cart!",
+      }),
+    );
   };
 
   return (
@@ -67,20 +85,20 @@ const LikePage = () => {
       <HeroBanner title="Curated Wishlist" page="Saved Items" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 md:py-16">
-        
         {wishlistItems.length === 0 ? (
           /* ── Empty Wishlist State ── */
           <div className="flex flex-col items-center justify-center text-center py-24 px-4 rounded-3xl border border-white/5 bg-slate-900/40 backdrop-blur-xl">
             <div className="w-20 h-20 rounded-full bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400 mb-6 shadow-[0_0_30px_rgba(244,63,94,0.15)]">
               <Heart size={36} className="fill-rose-500/20" />
             </div>
-            
+
             <h1 className="text-2xl md:text-3xl font-extrabold text-white tracking-tight">
               Your wishlist is currently empty
             </h1>
-            
+
             <p className="mt-2 text-sm text-slate-400 max-w-sm leading-relaxed">
-              Explore our boutique and tap the heart icon on any product to save it here for later.
+              Explore our boutique and tap the heart icon on any product to save
+              it here for later.
             </p>
 
             <Link to="/shop" className="mt-8">
@@ -101,7 +119,8 @@ const LikePage = () => {
                 </h2>
                 <span className="px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/25 text-amber-300 text-xs font-bold flex items-center gap-1.5">
                   <Sparkles size={12} />
-                  {wishlistItems.length} {wishlistItems.length === 1 ? "Item" : "Items"}
+                  {wishlistItems.length}{" "}
+                  {wishlistItems.length === 1 ? "Item" : "Items"}
                 </span>
               </div>
 
@@ -137,7 +156,10 @@ const LikePage = () => {
                     >
                       {/* Image Block */}
                       <div className="relative aspect-square overflow-hidden bg-[#070b14]">
-                        <Link to={`/shop/${item.id}`} className="block w-full h-full">
+                        <Link
+                          to={`/shop/${item.id}`}
+                          className="block w-full h-full"
+                        >
                           <img
                             src={item.img}
                             alt={item.name}
@@ -145,7 +167,7 @@ const LikePage = () => {
                             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                           />
                         </Link>
-                        
+
                         <div className="absolute inset-0 bg-gradient-to-t from-[#03050C]/80 via-transparent to-transparent pointer-events-none" />
 
                         {/* Category Pill */}
@@ -213,7 +235,6 @@ const LikePage = () => {
                           </button>
                         </div>
                       </div>
-
                     </motion.div>
                   );
                 })}
@@ -221,7 +242,6 @@ const LikePage = () => {
             </motion.div>
           </div>
         )}
-
       </main>
     </div>
   );
