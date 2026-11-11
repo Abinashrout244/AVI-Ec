@@ -1,451 +1,433 @@
-import React, { useEffect, useRef, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
+import React, { Suspense, lazy, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { useScroll, useSpring, useTransform, useReducedMotion, motion, AnimatePresence } from "framer-motion";
+import { useNavigate, Link } from "react-router-dom";
 import searchIcon from "../assets/icons/search-2.svg";
 import Select from "../components/Select";
-import fallbackImg from "../assets/images/bg-img/01.jpg";
 import { fetchProducts } from "../api.js";
 
-/* ─────────────────────────────────────────────────────────
-   EDIT ME
-   Drop a clean campaign photo at src/assets/images/hero-editorial.jpg
-   and update HERO_IMAGE below if you want to use a local image.
-   ───────────────────────────────────────────────────────── */
-const HERO_IMAGE =
-  "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=2000&q=80";
-
-const FONT_LINK =
-  "https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@300;400;500;600&family=Instrument+Serif:ital@0;1&display=swap";
-
+const BannerScene = lazy(() => import("./BannerScene.jsx"));
 const serif = "font-['Instrument_Serif',Georgia,serif]";
 const sans = "font-['Hanken_Grotesk',system-ui,sans-serif]";
+const TRENDING = ["Electronics", "Fashion", "Beauty", "Shoes", "Bags", "Phones"];
 
-const FEATURE_LINKS = [
-  { label: "Shoes", sub: "Step into style", to: "/shop" },
-  { label: "Beauty", sub: "Glow your way", to: "/shop" },
-  { label: "Phones", sub: "Smarter every day", to: "/shop" },
-];
+const detectLowPower = () => {
+  if (typeof window === "undefined") return false;
+  const coarse = window.matchMedia?.("(pointer: coarse)").matches;
+  const cores = navigator.hardwareConcurrency || 8;
+  const mem = navigator.deviceMemory || 8;
+  return Boolean(coarse) || cores <= 4 || mem <= 4;
+};
 
-const TRENDING = [
-  "Electronics",
-  "Fashion",
-  "Beauty",
-  "Shoes",
-  "Bags",
-  "Phones",
-];
+const detectWebGL = () => {
+  try {
+    const c = document.createElement("canvas");
+    return !!(
+      window.WebGLRenderingContext &&
+      (c.getContext("webgl2") || c.getContext("webgl"))
+    );
+  } catch {
+    return false;
+  }
+};
 
-const TRUST = [
-  {
-    label: "Free Shipping",
-    sub: "Across India",
-    d: "M3 7h11v9H3zM14 10h4l3 3v3h-7M7.5 17.5h.01M17.5 17.5h.01",
-  },
-  {
-    label: "Secure Payments",
-    sub: "100% Safe",
-    d: "M12 3l7 3v5c0 4.5-3 8-7 10-4-2-7-5.5-7-10V6zM9 12l2 2 4-4",
-  },
-  {
-    label: "Fast Delivery",
-    sub: "2–5 Days",
-    d: "M12 3a9 9 0 100 18 9 9 0 000-18zM12 7v5l3 2",
-  },
-];
+/* Pauses rendering when the banner is off-screen or the tab is hidden. */
+const useActive = (ref) => {
+  const [active, setActive] = useState(true);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el || typeof IntersectionObserver === "undefined") return undefined;
+    let inView = true;
+    const update = () => setActive(inView && !document.hidden);
+    const io = new IntersectionObserver(
+      ([entry]) => {
+        inView = entry.isIntersecting;
+        update();
+      },
+      { rootMargin: "120px" },
+    );
+    io.observe(el);
+    document.addEventListener("visibilitychange", update);
+    return () => {
+      io.disconnect();
+      document.removeEventListener("visibilitychange", update);
+    };
+  }, [ref]);
+  return active;
+};
 
-const GRAIN =
-  "bg-[url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")]";
-
-const Arrow = ({ className = "" }) => (
-  <svg
-    viewBox="0 0 24 24"
-    className={`size-4 shrink-0 transition-transform duration-500 ease-out ${className}`}
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="1.4"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    aria-hidden="true"
-  >
-    <path d="M3 12h17M14 6l6 6-6 6" />
-  </svg>
-);
-
-const ease = [0.16, 1, 0.3, 1];
+/* ───────────────────────── shared textures (CPU-drawn, no network) ───────────────────────── */
 
 const Banner = () => {
+  const containerRef = useRef(null);
+  const searchBoxRef = useRef(null);
+  const pointerRef = useRef({ x: 0, y: 0 });
+  const navigate = useNavigate();
+  const reduced = useReducedMotion();
+
   const [searchText, setSearchText] = useState("");
   const [products, setProducts] = useState([]);
-  const [filterProducts, setFilterProducts] = useState([]);
-  const [showDropdown, setShowDropdown] = useState(false);
-  const [productsLoading, setProductsLoading] = useState(false);
-  const [productsError, setProductsError] = useState(false);
-  const [src, setSrc] = useState(HERO_IMAGE);
+  const [open, setOpen] = useState(false);
+  const [activeIdx, setActiveIdx] = useState(-1);
+  const [sceneEnabled, setSceneEnabled] = useState(false);
 
-  const dropdownRef = useRef(null);
-  const reduce = useReducedMotion();
-  const navigate = useNavigate();
+  const [lowPower] = useState(detectLowPower);
+  const [webgl, setWebgl] = useState(true);
+  const [ready, setReady] = useState(false);
+  const maxDpr = lowPower ? 1.25 : 1.75;
+  const [dpr, setDpr] = useState(maxDpr);
 
-  // Load editorial fonts once.
+  const active = useActive(containerRef);
+
   useEffect(() => {
-    if (document.querySelector(`link[href="${FONT_LINK}"]`)) return;
-
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = FONT_LINK;
-    document.head.appendChild(link);
-  }, []);
-
-  // Fetch products from the fake API once when the banner mounts.
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadProducts = async () => {
-      try {
-        setProductsLoading(true);
-        setProductsError(false);
-
-        const result = await fetchProducts();
-        const productList = Array.isArray(result)
-          ? result
-          : Array.isArray(result?.data)
-            ? result.data
-            : Array.isArray(result?.products)
-              ? result.products
-              : [];
-
-        if (isMounted) setProducts(productList);
-      } catch (error) {
-        console.error("Failed to load products for banner search:", error);
-        if (isMounted) {
-          setProducts([]);
-          setProductsError(true);
-        }
-      } finally {
-        if (isMounted) setProductsLoading(false);
-      }
-    };
-
-    loadProducts();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  // Filter API products as the user types.
-  useEffect(() => {
-    const query = searchText.trim().toLowerCase();
-
-    if (!query) {
-      setFilterProducts([]);
-      setShowDropdown(false);
-      return;
+    if (typeof window.requestIdleCallback === "function") {
+      const idleId = window.requestIdleCallback(
+        () => setSceneEnabled(true),
+        { timeout: 900 },
+      );
+      return () => window.cancelIdleCallback?.(idleId);
     }
 
-    const filtered = products.filter((product) => {
-      const name = String(product?.name ?? "").toLowerCase();
-      const category = String(product?.category ?? "").toLowerCase();
-      return name.includes(query) || category.includes(query);
-    });
-
-    setFilterProducts(filtered);
-    setShowDropdown(true);
-  }, [searchText, products]);
-
-  // Close dropdown when clicking outside the search area.
-  useEffect(() => {
-    const handler = (event) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-        setShowDropdown(false);
-      }
-    };
-
-    document.addEventListener("mousedown", handler);
-    return () => document.removeEventListener("mousedown", handler);
+    const timer = window.setTimeout(() => setSceneEnabled(true), 0);
+    return () => window.clearTimeout(timer);
   }, []);
 
-  const submit = (event) => {
-    event.preventDefault();
+  useEffect(() => {
+    setWebgl(detectWebGL());
+  }, []);
+
+  /* products */
+  useEffect(() => {
+    let alive = true;
+    fetchProducts()
+      .then((r) => {
+        const list = Array.isArray(r) ? r : r?.data || r?.products || [];
+        if (alive) setProducts(list);
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, []);
+
+  /* search (derived — no extra state/effect round trip) */
+  const index = useMemo(
+    () =>
+      products.map((p) => ({
+        p,
+        name: String(p?.name ?? "").toLowerCase(),
+        cat: String(p?.category ?? "").toLowerCase(),
+      })),
+    [products],
+  );
+  const deferred = useDeferredValue(searchText);
+  const results = useMemo(() => {
+    const q = deferred.trim().toLowerCase();
+    if (!q) return [];
+    return index
+      .filter((r) => r.name.includes(q) || r.cat.includes(q))
+      .slice(0, 6)
+      .map((r) => r.p);
+  }, [deferred, index]);
+  const showDropdown = open && searchText.trim().length > 0;
+
+  /* close dropdown on outside click */
+  useEffect(() => {
+    const onDown = (e) => {
+      if (searchBoxRef.current && !searchBoxRef.current.contains(e.target))
+        setOpen(false);
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, []);
+
+  /* subtle mouse parallax — fine pointers only, never on touch */
+  useEffect(() => {
+    if (reduced || typeof window === "undefined") return undefined;
+    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches)
+      return undefined;
+    const onMove = (e) => {
+      pointerRef.current.x = (e.clientX / window.innerWidth) * 2 - 1;
+      pointerRef.current.y = (e.clientY / window.innerHeight) * 2 - 1;
+    };
+    window.addEventListener("pointermove", onMove, { passive: true });
+    return () => window.removeEventListener("pointermove", onMove);
+  }, [reduced]);
+
+  /* scroll */
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start start", "end end"],
+  });
+  const spring = useSpring(scrollYProgress, {
+    stiffness: 90,
+    damping: 30,
+    mass: 0.3,
+    restDelta: 0.0005,
+  });
+  const smooth = reduced ? scrollYProgress : spring;
+
+  useEffect(
+    () => smooth.on("change", (v) => v > 0.04 && setOpen(false)),
+    [smooth],
+  );
+
+  const curtainOpacity = useTransform(smooth, [0, 0.12], [1, 0]);
+  const heroOpacity = useTransform(smooth, [0, 0.13], [1, 0]);
+  const heroScale = useTransform(smooth, [0, 0.16], [1, 1.12]);
+  const heroY = useTransform(smooth, [0, 0.16], [0, -50]);
+  // Once faded out, the hero must stop catching taps/focus.
+  const heroPointer = useTransform(heroOpacity, (v) =>
+    v > 0.04 ? "auto" : "none",
+  );
+  const heroVisibility = useTransform(heroOpacity, (v) =>
+    v > 0.01 ? "visible" : "hidden",
+  );
+
+  const interiorOpacity = useTransform(smooth, [0.42, 0.72, 0.94], [0, 1, 0]);
+  const interiorScale = useTransform(smooth, [0.42, 0.76], [0.95, 1.04]);
+
+  /* navigation */
+  const goToProduct = useCallback(
+    (item) => {
+      setOpen(false);
+      navigate(`/shop/${item._id || item.id}`);
+    },
+    [navigate],
+  );
+
+  const submitSearch = (e) => {
+    e.preventDefault();
+    if (showDropdown && activeIdx >= 0 && results[activeIdx]) {
+      goToProduct(results[activeIdx]);
+      return;
+    }
     const query = searchText.trim();
-    setShowDropdown(false);
+    setOpen(false);
     navigate(query ? `/shop?q=${encodeURIComponent(query)}` : "/shop");
   };
 
-  const openProduct = (productId) => {
-    setShowDropdown(false);
-    navigate(`/shop/${productId}`);
+  const onKeyDown = (e) => {
+    if (e.key === "Escape") {
+      setOpen(false);
+      setActiveIdx(-1);
+      return;
+    }
+    if (!showDropdown || !results.length) return;
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setActiveIdx((i) => Math.min(i + 1, results.length - 1));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setActiveIdx((i) => Math.max(i - 1, -1));
+    }
   };
 
-  const rise = (delay = 0) => ({
-    initial: reduce ? false : { opacity: 0, y: 16 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.9, delay, ease },
-  });
+  const onGlCreated = useCallback(({ gl }) => {
+    gl.toneMappingExposure = 1.05;
+    gl.domElement.addEventListener(
+      "webglcontextlost",
+      (ev) => ev.preventDefault(),
+      false,
+    );
+    setReady(true);
+  }, []);
 
   return (
     <section
-      className={`${sans} relative isolate z-20 flex min-h-screen flex-col overflow-x-clip bg-[#0d0910] text-[#f3ecf4]`}
+      ref={containerRef}
+      aria-label="AVI Studio flagship"
+      className={`${sans} relative bg-[#070509] text-[#f3ecf4]`}
+      style={{ height: "320svh" }}
     >
-      {/* Editorial photograph, blended into the dark */}
-      <motion.div
-        className="absolute inset-0 -z-10 lg:left-auto lg:w-[76%]"
-        initial={reduce ? false : { opacity: 0, scale: 1.06 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1.8, ease }}
-      >
-        <img
-          src={src}
-          onError={() => setSrc(fallbackImg)}
-          alt="Editorial campaign photograph"
-          fetchPriority="high"
-          decoding="async"
-          className="h-full w-full object-cover object-[60%_20%] saturate-[0.9] contrast-[1.05]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0d0910] via-[#0d0910]/70 to-transparent lg:via-[#0d0910]/25" />
-        <div className="absolute inset-0 bg-[#0d0910]/55 lg:hidden" />
-        <div className="absolute inset-x-0 bottom-0 h-2/5 bg-gradient-to-t from-[#0d0910] via-[#0d0910]/70 to-transparent" />
-        <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0d0910]/80 to-transparent" />
-      </motion.div>
-
       <div
-        className={`pointer-events-none absolute inset-0 -z-10 opacity-[0.04] mix-blend-overlay ${GRAIN}`}
-      />
+        className="sticky top-0 flex w-full items-center justify-center overflow-hidden"
+        style={{ height: "100svh" }}
+      >
+        <Suspense fallback={<div className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-[1400ms] ease-out opacity-0" aria-hidden="true"><div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070509] via-transparent to-[#070509]/60" /></div>}>
+          {sceneEnabled && <BannerScene ready={ready} active={active} webgl={webgl} dpr={dpr} maxDpr={maxDpr} setDpr={setDpr} onGlCreated={onGlCreated} progress={smooth} pointerRef={pointerRef} reduced={reduced} lowPower={lowPower} />}
+        </Suspense>
 
-      {/* Content */}
-      <div className="relative mx-auto flex w-full max-w-[1500px] flex-1 flex-col px-6 pb-10 pt-32 md:px-12 lg:pt-36">
-        <div className="flex flex-1 items-start justify-between gap-10 lg:items-center">
-          {/* LEFT */}
-          <div className="w-full max-w-[680px]">
-            <motion.p
-              {...rise(0.1)}
-              className="mb-8 flex items-center gap-4 text-[11px] font-normal uppercase tracking-[0.3em] text-white/60"
-            >
-              <span className="h-px w-10 bg-white/50" />
-              Style <span className="text-white/30">/</span> Tech{" "}
-              <span className="text-white/30">/</span> Lifestyle
-            </motion.p>
-
-            <h1
-              className={`${serif} text-[clamp(3.6rem,9vw,8rem)] font-normal leading-[0.9] tracking-[-0.025em]`}
-            >
-              <span className="block overflow-hidden pb-[0.08em]">
-                <motion.span
-                  className="block"
-                  initial={reduce ? false : { y: "105%" }}
-                  animate={{ y: 0 }}
-                  transition={{ duration: 1.1, delay: 0.2, ease }}
-                >
-                  Wear What
-                </motion.span>
-              </span>
-              <span className="block overflow-hidden pb-[0.12em]">
-                <motion.span
-                  className="block italic text-[#c4a1f5]"
-                  initial={reduce ? false : { y: "105%" }}
-                  animate={{ y: 0 }}
-                  transition={{ duration: 1.1, delay: 0.32, ease }}
-                >
-                  Matters Most
-                </motion.span>
-              </span>
-            </h1>
-
-            <motion.p
-              {...rise(0.55)}
-              className="mt-8 max-w-[24rem] text-[17px] font-light leading-[1.55] text-white/70"
-            >
-              Curated fashion, tech &amp; lifestyle drops — delivered fast
-              across India.
-            </motion.p>
-
-            {/* CTAs */}
-            <motion.div
-              {...rise(0.68)}
-              className="mt-9 flex flex-wrap items-center gap-3"
-            >
-              <Link
-                to="/shop"
-                className="group inline-flex items-center gap-3 rounded-full bg-[#c4a1f5] px-7 py-3.5 text-[13px] font-medium tracking-[0.02em] text-[#150d1c] transition-colors duration-500 hover:bg-[#d6bcfa] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#c4a1f5]"
-              >
-                Shop collection
-                <Arrow className="group-hover:translate-x-1.5" />
-              </Link>
-              <Link
-                to="/shop"
-                className="group inline-flex items-center gap-3 rounded-full border border-white/25 px-7 py-3.5 text-[13px] font-medium tracking-[0.02em] text-white/90 transition-colors duration-500 hover:border-white/60 hover:bg-white/5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white/60"
-              >
-                Explore all
-              </Link>
-            </motion.div>
-
-            {/* Trust */}
-            <motion.ul
-              {...rise(0.82)}
-              className="mt-12 flex flex-wrap items-center gap-x-7 gap-y-4"
-            >
-              {TRUST.map((item, index) => (
-                <li key={item.label} className="flex items-center gap-7">
-                  {index > 0 && (
-                    <span className="hidden h-7 w-px bg-white/15 sm:block" />
-                  )}
-                  <div className="flex items-center gap-3">
-                    <svg
-                      viewBox="0 0 24 24"
-                      className="size-[18px] text-white/65"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.3"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      aria-hidden="true"
-                    >
-                      <path d={item.d} />
-                    </svg>
-                    <div className="leading-tight">
-                      <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-white/85">
-                        {item.label}
-                      </p>
-                      <p className="mt-1 text-[10px] font-light tracking-wide text-white/40">
-                        {item.sub}
-                      </p>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </motion.ul>
-          </div>
-
-          {/* RIGHT: editorial category links */}
-          <motion.nav
-            aria-label="Featured categories"
-            {...rise(0.9)}
-            className="hidden self-start pt-2 lg:flex lg:flex-col lg:gap-10"
-          >
-            {FEATURE_LINKS.map((item) => (
-              <Link key={item.label} to={item.to} className="group block w-56">
-                <div className="flex items-center justify-between">
-                  <span
-                    className={`${serif} text-[2.1rem] italic leading-none text-white/95 transition-colors duration-500 group-hover:text-[#c4a1f5]`}
-                  >
-                    {item.label}
-                  </span>
-                  <Arrow className="text-white/70 group-hover:translate-x-1.5 group-hover:text-[#c4a1f5]" />
-                </div>
-                <span className="mt-3 block h-px w-8 bg-[#c4a1f5] transition-all duration-500 group-hover:w-16" />
-                <p className="mt-3 text-[12px] font-light tracking-wide text-white/65">
-                  {item.sub}
-                </p>
-              </Link>
-            ))}
-          </motion.nav>
-        </div>
-
-        {/* Search */}
+        {/* ── CURTAIN (gradient, not a 160px blur — far cheaper on mobile GPUs) ── */}
         <motion.div
-          {...rise(1)}
-          ref={dropdownRef}
-          className="relative mx-auto mt-14 w-full max-w-[640px]"
+          style={{ opacity: curtainOpacity }}
+          className="pointer-events-none absolute inset-0 z-[1] bg-[#070509]"
         >
-          <form
-            onSubmit={submit}
-            role="search"
-            className="flex items-center rounded-full border border-white/20 bg-[#0d0910]/70 p-1.5 backdrop-blur-md transition-colors duration-500 focus-within:border-[#c4a1f5]/60"
+          <div
+            className="absolute left-1/2 top-1/2 h-[min(900px,140vmin)] w-[min(900px,140vmin)] -translate-x-1/2 -translate-y-1/2"
+            style={{
+              background:
+                "radial-gradient(closest-side, rgba(196,161,245,0.17), rgba(196,161,245,0.05) 55%, transparent)",
+            }}
+          />
+        </motion.div>
+
+        {/* ── HERO ── */}
+        <motion.div
+          style={{
+            opacity: heroOpacity,
+            scale: heroScale,
+            y: heroY,
+            pointerEvents: heroPointer,
+            visibility: heroVisibility,
+            willChange: "transform, opacity",
+          }}
+          className="relative z-10 flex max-h-full w-full max-w-[940px] flex-col items-center px-5 pt-6 text-center sm:px-6 sm:pt-10"
+        >
+          <div className="mb-4 flex items-center gap-3 sm:mb-6">
+            <span className="h-px w-5 bg-white/20 sm:w-6" />
+            <span className="text-[9px] uppercase tracking-[0.3em] text-white/60 sm:text-[10px] sm:tracking-[0.35em]">
+              AVI STUDIO · THE ART OF GIVING
+            </span>
+            <span className="h-px w-5 bg-white/20 sm:w-6" />
+          </div>
+
+          <h1
+            className={`${serif} font-normal leading-[0.9] tracking-[-0.03em] text-white`}
+            style={{ fontSize: "clamp(2.75rem, min(14vw, 15svh), 7.8rem)" }}
           >
-            <div className="hidden border-r border-white/10 pl-4 pr-3 md:block">
-              <Select select="all" />
-            </div>
-            <input
-              type="text"
-              value={searchText}
-              onChange={(event) => setSearchText(event.target.value)}
-              placeholder="Search for products, brands & more…"
-              aria-label="Search products"
-              aria-expanded={showDropdown}
-              className="min-w-0 flex-1 bg-transparent px-5 py-3 text-[13px] font-light tracking-wide text-white outline-none placeholder:text-white/40"
-            />
-            <button
-              type="submit"
-              aria-label="Search"
-              className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#d9b55f] transition-colors duration-300 hover:bg-[#e8c97a]"
+            Where Love <span className="italic text-[#c4a1f5]">Blooms</span>
+          </h1>
+
+          <p className="mt-4 max-w-md text-[13px] font-light tracking-wide text-white/60 sm:mt-5 sm:text-base [@media(max-height:560px)]:hidden">
+            Thoughtfully curated flowers, timeless arrangements, and beautiful
+            moments crafted to make every occasion unforgettable.
+          </p>
+
+          {/* Search */}
+          <div
+            ref={searchBoxRef}
+            className="relative mt-6 w-full max-w-[620px] sm:mt-8"
+          >
+            <form
+              onSubmit={submitSearch}
+              role="search"
+              className="group flex items-center rounded-full border border-white/15 bg-[#0f0a15]/90 p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-colors duration-300 focus-within:border-[#c4a1f5]/60 focus-within:bg-[#120c19]/95 sm:bg-[#0f0a15]/80 sm:p-2 sm:backdrop-blur-xl"
             >
-              <img src={searchIcon} alt="" className="size-4" />
-            </button>
-          </form>
-
-          {/* Search dropdown */}
-          <AnimatePresence>
-            {showDropdown && (
-              <motion.ul
-                initial={{ opacity: 0, y: -6 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -6 }}
-                transition={{ duration: 0.25 }}
-                className="absolute left-0 right-0 z-[100] mt-3 max-h-[320px] overflow-y-auto rounded-2xl border border-white/10 bg-[#120c16]/95 shadow-[0_30px_80px_rgba(0,0,0,0.8)] backdrop-blur-xl"
+              <div className="hidden border-r border-white/10 pl-4 pr-3 sm:block">
+                <Select select="all" />
+              </div>
+              <input
+                type="text"
+                inputMode="search"
+                enterKeyHint="search"
+                autoComplete="off"
+                autoCorrect="off"
+                spellCheck={false}
+                role="combobox"
+                aria-expanded={showDropdown}
+                aria-controls="banner-search-list"
+                aria-autocomplete="list"
+                value={searchText}
+                onChange={(e) => {
+                  setSearchText(e.target.value);
+                  setActiveIdx(-1);
+                  setOpen(true);
+                }}
+                onFocus={() => setOpen(true)}
+                onKeyDown={onKeyDown}
+                placeholder="Search collections, evening wear, atelier..."
+                /* 16px on phones prevents iOS Safari from zooming the page on focus */
+                className="min-w-0 flex-1 bg-transparent px-4 py-2 text-[16px] font-light tracking-wide text-white outline-none placeholder:text-white/35 sm:text-[13px]"
+              />
+              <button
+                type="submit"
+                aria-label="Search"
+                className="flex size-11 shrink-0 items-center justify-center rounded-full bg-[#d9b55f] text-[#120a1a] transition-transform duration-300 hover:scale-105 hover:bg-[#e6c46e] active:scale-95"
               >
-                {productsLoading ? (
-                  <li className="px-8 py-8 text-center text-sm text-white/45">
-                    Loading products...
-                  </li>
-                ) : productsError ? (
-                  <li className="px-8 py-8 text-center text-sm text-rose-300">
-                    Could not load products. Please try again.
-                  </li>
-                ) : filterProducts.length > 0 ? (
-                  filterProducts.slice(0, 8).map((item) => (
-                    <li key={item.id}>
-                      <button
-                        type="button"
-                        onClick={() => openProduct(item.id)}
-                        className="group flex w-full items-center justify-between border-b border-white/5 px-5 py-3 text-left transition-colors last:border-none hover:bg-white/[0.04]"
+                <img src={searchIcon} alt="" className="size-4" />
+              </button>
+            </form>
+
+            <AnimatePresence>
+              {showDropdown && (
+                <motion.ul
+                  id="banner-search-list"
+                  role="listbox"
+                  initial={{ opacity: 0, y: -8 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -8 }}
+                  transition={{ duration: 0.18, ease: "easeOut" }}
+                  className="absolute left-0 right-0 z-50 mt-2 max-h-[240px] overflow-y-auto overscroll-contain rounded-2xl border border-white/10 bg-[#0e0914] p-2 text-left shadow-[0_30px_90px_rgba(0,0,0,0.8)]"
+                >
+                  {results.length > 0 ? (
+                    results.map((item, i) => (
+                      <li
+                        key={item._id || item.id}
+                        role="option"
+                        aria-selected={i === activeIdx}
                       >
-                        <div className="flex min-w-0 items-center gap-4">
-                          <div className="size-10 shrink-0 overflow-hidden rounded-md bg-white/5">
-                            {(item.img || item.image || item.images?.[0]) && (
-                              <img
-                                src={item.img || item.image || item.images?.[0]}
-                                alt={item.name || "Product"}
-                                loading="lazy"
-                                className="size-full object-cover"
-                              />
-                            )}
-                          </div>
-                          <div className="flex min-w-0 flex-col">
-                            <span className="truncate text-sm text-white transition-colors group-hover:text-[#c4a1f5]">
-                              {item.name || "Untitled product"}
-                            </span>
-                            <span className="text-[10px] uppercase tracking-[0.2em] text-white/35">
-                              {item.category || "Collection"}
-                            </span>
-                          </div>
-                        </div>
-                        <span className="ml-3 shrink-0 text-[10px] font-medium uppercase tracking-[0.2em] text-[#d9b55f]">
-                          View →
-                        </span>
-                      </button>
+                        <button
+                          type="button"
+                          onClick={() => goToProduct(item)}
+                          onMouseEnter={() => setActiveIdx(i)}
+                          className={`flex w-full items-center justify-between rounded-xl px-4 py-3 transition-colors ${
+                            i === activeIdx ? "bg-white/10" : "hover:bg-white/5"
+                          }`}
+                        >
+                          <span className="truncate text-sm text-white/90 sm:text-xs">
+                            {item.name}
+                          </span>
+                          <span className="ml-3 shrink-0 text-[10px] uppercase tracking-widest text-[#d9b55f]">
+                            View →
+                          </span>
+                        </button>
+                      </li>
+                    ))
+                  ) : (
+                    <li className="p-4 text-center text-xs text-white/35">
+                      No pieces found
                     </li>
-                  ))
-                ) : (
-                  <li className="px-8 py-8 text-center text-sm text-white/45">
-                    No products found for “{searchText}”
-                  </li>
-                )}
-              </motion.ul>
-            )}
-          </AnimatePresence>
+                  )}
+                </motion.ul>
+              )}
+            </AnimatePresence>
+          </div>
 
-          {/* Trending */}
-          <div className="mt-6 flex flex-wrap justify-center gap-x-7 gap-y-2">
-            {TRENDING.map((category) => (
+          <div className="mt-5 flex flex-wrap justify-center gap-x-5 gap-y-2 text-[10px] uppercase tracking-[0.2em] text-white/45 sm:mt-6 sm:gap-x-7 sm:tracking-[0.22em]">
+            {TRENDING.map((cat) => (
               <Link
-                key={category}
-                to={`/shop?category=${encodeURIComponent(category)}`}
-                className="relative py-1 text-[10px] font-normal uppercase tracking-[0.25em] text-white/55 transition-colors duration-500 after:absolute after:bottom-0 after:left-0 after:h-px after:w-full after:origin-left after:scale-x-0 after:bg-[#c4a1f5] after:transition-transform after:duration-500 hover:text-white hover:after:scale-x-100"
+                key={cat}
+                to={`/shop?category=${encodeURIComponent(cat)}`}
+                className="py-1 transition-colors hover:text-white"
               >
-                {category}
+                {cat}
               </Link>
             ))}
           </div>
+
+          <div className="mt-8 flex flex-col items-center gap-3 sm:mt-12 [@media(max-height:680px)]:hidden">
+            <span className="text-[9px] uppercase tracking-[0.3em] text-white/35">
+              Scroll to Enter
+            </span>
+            <div className="h-8 w-px animate-pulse bg-gradient-to-b from-[#c4a1f5] via-[#d9b55f] to-transparent" />
+          </div>
+        </motion.div>
+
+        {/* ── SHOWROOM GREETING ── */}
+        <motion.div
+          style={{
+            opacity: interiorOpacity,
+            scale: interiorScale,
+            willChange: "transform, opacity",
+          }}
+          className="pointer-events-none absolute z-20 flex flex-col items-center px-6 text-center"
+        >
+          <span className="text-[10px] uppercase tracking-[0.4em] text-[#d9b55f]">
+            The Atelier &amp; Footwear Salon
+          </span>
+          <h2
+            className={`${serif} mt-2 text-white`}
+            style={{
+              fontSize: "clamp(3rem, min(12vw, 16svh), 6.5rem)",
+              lineHeight: 1,
+            }}
+          >
+            Welcome Inside
+          </h2>
+          <p className="mt-4 max-w-sm text-sm font-light text-white/60">
+            Now exploring couture dresses and limited sneakers. Scroll down to
+            browse all pieces.
+          </p>
         </motion.div>
       </div>
     </section>

@@ -4,51 +4,48 @@ import React, { lazy, Suspense } from "react";
 import "./index.css";
 import App from "./App.jsx";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import Home from "./Home/Home.jsx";
-import Blog from "./Blog/Blog.jsx";
-//import Shop from "./Shop/Shop.jsx";
-import Singleproduct from "./Shop/Singleproduct.jsx";
 import { Provider } from "react-redux";
 import Store from "./utilis/Store.jsx";
-import CartPage from "./Shop/CartPage.jsx";
-import LikePage from "./Shop/LikePage.jsx";
-import BlogPage from "./Blog/BlogPage.jsx";
-import About from "./components/About.jsx";
-import Contact from "./Contact/Contact.jsx";
 import AuthProvider from "./context/AuthProvider.jsx";
 import PrivateRoute from "./privateRoute/PrivateRoute.jsx";
-import Login from "./components/Login.jsx";
-import Signup from "./components/Signup.jsx";
-import Checkout from "./Shop/Checkout.jsx";
-import OrderSuccess from "./Shop/OrderSuccess.jsx";
-import OrdersPage from "./Shop/OrdersPage.jsx";
-import ProfilePage from "./Shop/ProfilePage.jsx";
-
-const Shop = lazy(() => import("./Shop/Shop.jsx"));
 import Shimmer from "./components/Shimmer.jsx";
+const Home = lazy(() => import("./Home/Home.jsx"));
+const Blog = lazy(() => import("./Blog/Blog.jsx"));
+const Singleproduct = lazy(() => import("./Shop/Singleproduct.jsx"));
+const CartPage = lazy(() => import("./Shop/CartPage.jsx"));
+const LikePage = lazy(() => import("./Shop/LikePage.jsx"));
+const BlogPage = lazy(() => import("./Blog/BlogPage.jsx"));
+const About = lazy(() => import("./components/About.jsx"));
+const Contact = lazy(() => import("./Contact/Contact.jsx"));
+const Login = lazy(() => import("./components/Login.jsx"));
+const Signup = lazy(() => import("./components/Signup.jsx"));
+const Checkout = lazy(() => import("./Shop/Checkout.jsx"));
+const OrderSuccess = lazy(() => import("./Shop/OrderSuccess.jsx"));
+const OrdersPage = lazy(() => import("./Shop/OrdersPage.jsx"));
+const ProfilePage = lazy(() => import("./Shop/ProfilePage.jsx"));
+const Shop = lazy(() => import("./Shop/Shop.jsx"));
+
+const withFallback = (Component) => (
+  <Suspense fallback={<Shimmer />}>
+    <Component />
+  </Suspense>
+);
 
 const approuter = createBrowserRouter([
   {
     path: "/",
     element: <App />,
     children: [
-      { path: "/", element: <Home /> },
-      { path: "/blog", element: <Blog /> },
-      { path: "/blog/:id", element: <BlogPage /> },
-      {
-        path: "/shop",
-        element: (
-          <Suspense fallback={<Shimmer />}>
-            <Shop />
-          </Suspense>
-        ),
-      },
-      { path: "shop/:id", element: <Singleproduct /> },
+      { path: "/", element: withFallback(Home) },
+      { path: "/blog", element: withFallback(Blog) },
+      { path: "/blog/:id", element: withFallback(BlogPage) },
+      { path: "/shop", element: withFallback(Shop) },
+      { path: "shop/:id", element: withFallback(Singleproduct) },
       {
         path: "/cart-page",
         element: (
           <PrivateRoute>
-            <CartPage />
+            {withFallback(CartPage)}
           </PrivateRoute>
         ),
       },
@@ -56,17 +53,17 @@ const approuter = createBrowserRouter([
         path: "/like-page",
         element: (
           <PrivateRoute>
-            <LikePage />
+            {withFallback(LikePage)}
           </PrivateRoute>
         ),
       },
-      { path: "/about", element: <About /> },
-      { path: "/contact", element: <Contact /> },
+      { path: "/about", element: withFallback(About) },
+      { path: "/contact", element: withFallback(Contact) },
       {
         path: "/checkout",
         element: (
           <PrivateRoute>
-            <Checkout />
+            {withFallback(Checkout)}
           </PrivateRoute>
         ),
       },
@@ -75,7 +72,7 @@ const approuter = createBrowserRouter([
         path: "/orders",
         element: (
           <PrivateRoute>
-            <OrdersPage />
+            {withFallback(OrdersPage)}
           </PrivateRoute>
         ),
       },
@@ -83,7 +80,7 @@ const approuter = createBrowserRouter([
         path: "/profile",
         element: (
           <PrivateRoute>
-            <ProfilePage />
+            {withFallback(ProfilePage)}
           </PrivateRoute>
         ),
       },
@@ -91,7 +88,7 @@ const approuter = createBrowserRouter([
         path: "/profile",
         element: (
           <PrivateRoute>
-            <ProfilePage />
+            {withFallback(ProfilePage)}
           </PrivateRoute>
         ),
       },
@@ -101,17 +98,17 @@ const approuter = createBrowserRouter([
     path: "/order-success",
     element: (
       <PrivateRoute>
-        <OrderSuccess />
+        {withFallback(OrderSuccess)}
       </PrivateRoute>
     ),
   },
   {
     path: "/login",
-    element: <Login />,
+    element: withFallback(Login),
   },
   {
     path: "/signup",
-    element: <Signup />,
+    element: withFallback(Signup),
   },
 ]);
 

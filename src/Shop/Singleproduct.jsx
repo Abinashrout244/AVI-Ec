@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 
 import Popularpost from "../Shop/Popularpost";
@@ -22,7 +22,8 @@ export default function Singleproduct() {
   const [product, setProduct] = useState(null);
   const [activeImage, setActiveImage] = useState("");
   const [isZoomed, setIsZoomed] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 50, y: 50 });
+  const zoomBoundsRef = useRef(null);
+  const zoomImageRef = useRef(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
@@ -137,14 +138,19 @@ export default function Singleproduct() {
   // Handle products that have no images.
   const displayImages = images.length > 0 ? images : [];
 
+  const handleZoomEnter = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    zoomBoundsRef.current = { left, top, width, height };
+    setIsZoomed(true);
+  };
+
   const handleMouseMove = (e) => {
-    const { left, top, width, height } =
-      e.currentTarget.getBoundingClientRect();
+    const bounds = zoomBoundsRef.current;
+    if (!bounds || !zoomImageRef.current) return;
 
-    const x = ((e.clientX - left) / width) * 100;
-    const y = ((e.clientY - top) / height) * 100;
-
-    setMousePosition({ x, y });
+    const x = ((e.clientX - bounds.left) / bounds.width) * 100;
+    const y = ((e.clientY - bounds.top) / bounds.height) * 100;
+    zoomImageRef.current.style.transformOrigin = `${x}% ${y}%`;
   };
 
   return (
@@ -251,11 +257,15 @@ export default function Singleproduct() {
                   {/* Desktop zoomable image */}
                   <div
                     className="hidden md:flex w-full h-full cursor-crosshair items-center justify-center p-8 overflow-hidden"
-                    onMouseEnter={() => setIsZoomed(true)}
-                    onMouseLeave={() => setIsZoomed(false)}
+                    onMouseEnter={handleZoomEnter}
+                    onMouseLeave={() => {
+                      zoomBoundsRef.current = null;
+                      setIsZoomed(false);
+                    }}
                     onMouseMove={handleMouseMove}
                   >
                     <img
+                      ref={zoomImageRef}
                       src={activeImage || displayImages[0]}
                       alt={product.name || "Product"}
                       onError={(e) => {
@@ -265,7 +275,7 @@ export default function Singleproduct() {
                       className="max-h-full max-w-full object-contain transition-transform duration-150 drop-shadow-[0_15px_30px_rgba(0,0,0,0.7)]"
                       style={{
                         transform: isZoomed ? "scale(2.2)" : "scale(1)",
-                        transformOrigin: `${mousePosition.x}% ${mousePosition.y}%`,
+                        transformOrigin: "50% 50%",
                       }}
                     />
                   </div>

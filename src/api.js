@@ -1,11 +1,20 @@
 const API_URL = "https://my-store-api-sgnu.onrender.com";
 
-export async function fetchProducts() {
-  const response = await fetch(`${API_URL}/products`);
+let productsRequest;
 
-  if (!response.ok) {
-    throw new Error(`Failed to fetch products: ${response.status}`);
+export function fetchProducts() {
+  if (!productsRequest) {
+    productsRequest = fetch(`${API_URL}/products`)
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to fetch products: ${response.status}`);
+        }
+        return response.json();
+      })
+      .finally(() => {
+        productsRequest = undefined;
+      });
   }
 
-  return response.json();
+  return productsRequest;
 }

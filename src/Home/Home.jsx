@@ -28,7 +28,6 @@ const Home = () => {
     <div className="overflow-x-clip bg-[#0d0910]">
       {/* Hero, full bleed */}
       <Banner />
-
       <Divider />
       <HomeCategory />
 

@@ -102,6 +102,7 @@ const HeroBanner = ({ title, page }) => {
     const ctx = canvas.getContext("2d");
     canvas.width = canvas.offsetWidth;
     canvas.height = canvas.offsetHeight;
+    const [r, g, b] = cfg.accentRgb.split(",");
 
     const particles = Array.from({ length: 55 }, () => ({
       x: Math.random() * canvas.width,
@@ -112,13 +113,20 @@ const HeroBanner = ({ title, page }) => {
       opacity: Math.random() * 0.5 + 0.1,
     }));
 
-    let raf;
+    let raf = 0;
+    let inView = typeof IntersectionObserver === "undefined";
+    const stop = () => {
+      if (!raf) return;
+      cancelAnimationFrame(raf);
+      raf = 0;
+    };
     const draw = () => {
+      raf = 0;
+      if (!inView || document.hidden) return;
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       particles.forEach((p) => {
         ctx.beginPath();
         ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        const [r, g, b] = cfg.accentRgb.split(",");
         ctx.fillStyle = `rgba(${r},${g},${b},${p.opacity})`;
         ctx.fill();
         p.x += p.dx;
@@ -130,8 +138,29 @@ const HeroBanner = ({ title, page }) => {
       });
       raf = requestAnimationFrame(draw);
     };
-    draw();
-    return () => cancelAnimationFrame(raf);
+    const start = () => {
+      if (!raf && inView && !document.hidden) raf = requestAnimationFrame(draw);
+    };
+    const observer =
+      typeof IntersectionObserver === "undefined"
+        ? null
+        : new IntersectionObserver(([entry]) => {
+            inView = entry.isIntersecting;
+            if (inView) start();
+            else stop();
+          });
+    observer?.observe(canvas);
+    const onVisibilityChange = () => {
+      if (document.hidden) stop();
+      else start();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    start();
+    return () => {
+      stop();
+      observer?.disconnect();
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
   }, [cfg.accentRgb]);
 
   return (

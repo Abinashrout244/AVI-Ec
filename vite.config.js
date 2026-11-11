@@ -7,6 +7,13 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
     chunkSizeWarningLimit: 1000, // size in KB (default is 500)
+    rollupOptions: {
+      output: {
+        manualChunks(id) {
+          if (id.includes("/node_modules/three/")) return "three-vendor";
+        },
+      },
+    },
   },
   base: "/",
 });

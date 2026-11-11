@@ -29,7 +29,7 @@ const categoryList = [
   },
   {
     imgUrl:
-      "https://images.unsplash.com/photo-1756705533779-105bf34e0722?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
+      "https://images.unsplash.com/photo-1756705533779-105bf34e0722?fm=jpg&q=60&w=1200&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D",
     imgAlt: "Photography",
     iconName: icon,
     title: "Photography",
@@ -145,6 +145,7 @@ const HomeCategory = () => {
       </motion.div>
 
       {/* Category Grid */}
+
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -153,10 +154,11 @@ const HomeCategory = () => {
         className="grid grid-cols-2 sm:grid-cols-3 gap-4 md:gap-5"
       >
         {categoryList.map((item, index) => (
-          <motion.div key={index} variants={itemVariants}>
-            <Link to={`/shop?category=${encodeURIComponent(item.categoryKey)}`}>
-              <CategoryCard {...item} />
-            </Link>
+          <motion.div key={item.categoryKey || index} variants={itemVariants}>
+            <CategoryCard
+              {...item}
+              to={`/shop?category=${encodeURIComponent(item.categoryKey)}`}
+            />
           </motion.div>
         ))}
       </motion.div>
