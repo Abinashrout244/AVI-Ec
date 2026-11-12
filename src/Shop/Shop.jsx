@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import HeroBanner from "../components/HeroBanner";
 import { fetchProducts } from "../api";
 import Pegination from "./Pegination";
-import { useLocation, Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ProductCard from "./ProductCard";
 import { CATEGORIES } from "../utilis/Categorydata";
 
@@ -13,21 +13,44 @@ const SORT_OPTIONS = [
   { label: "Name: A to Z", value: "name_asc" },
 ];
 
+const GRID_CLASSES =
+  "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4";
+
+/* ── Skeleton card (loader) ── */
+const SkeletonCard = () => (
+  <div className="rounded-2xl overflow-hidden bg-[#0b0e17] border border-white/[0.06] animate-pulse">
+    <div className="aspect-square bg-white/[0.06]" />
+    <div className="p-4 space-y-3">
+      <div className="h-2 w-1/3 rounded bg-amber-400/20" />
+      <div className="h-3.5 w-4/5 rounded bg-white/[0.08]" />
+      <div className="h-2.5 w-1/2 rounded bg-white/[0.06]" />
+      <div className="h-5 w-2/5 rounded bg-white/[0.08] mt-4" />
+      <div className="h-9 w-full rounded-lg bg-white/[0.06] mt-3" />
+    </div>
+  </div>
+);
+
 /* ── Main Shop ── */
 const Shop = () => {
   const [baseProducts, setBaseProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [reloadKey, setReloadKey] = useState(0);
   const [currPage, setCurrPage] = useState(1);
   const [search, setSearch] = useState("");
   const [selectCategory, setSelectCategory] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
   const [isSortOpen, setIsSortOpen] = useState(false);
+  const [stuck, setStuck] = useState(false);
+
   const sortRef = useRef(null);
+  const gridRef = useRef(null);
+  const sentinelRef = useRef(null);
 
   const productperpage = 20;
   const location = useLocation();
 
+  // Load products
   useEffect(() => {
     let ignore = false;
 
@@ -36,25 +59,29 @@ const Shop = () => {
         setLoading(true);
         setError("");
         const data = await fetchProducts();
-        if (!ignore) {
-          setBaseProducts(data || []);
-        }
+        if (!ignore) setBaseProducts(data || []);
       } catch (err) {
-        if (!ignore) {
-          setError(err.message || "Failed to load products.");
-        }
+        if (!ignore) setError(err.message || "Failed to load products.");
       } finally {
-        if (!ignore) {
-          setLoading(false);
-        }
+        if (!ignore) setLoading(false);
       }
     };
 
     loadProducts();
-
     return () => {
       ignore = true;
     };
+  }, [reloadKey]);
+
+  // Detect when the category band becomes stuck under the navbar
+  useEffect(() => {
+    const onScroll = () => {
+      const el = sentinelRef.current;
+      if (el) setStuck(el.getBoundingClientRect().top <= 68);
+    };
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
   // Close dropdown on outside click
@@ -108,9 +135,10 @@ const Shop = () => {
   const firstindex = lastindex - productperpage;
   const currentProducts = filtered.slice(firstindex, lastindex);
 
+  // Scroll to the top of the grid so cards land right below the sticky bar
   const peginate = (n) => {
     setCurrPage(n);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    gridRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
   };
 
   useEffect(() => {
@@ -125,14 +153,25 @@ const Shop = () => {
     >
       <HeroBanner title="Our Shop" page="Shop" />
 
-      {/* ── Sticky Category Pill Bar (Anchored below floating nav) ── */}
-      <div className="sticky top-[68px] z-30 w-full px-4 sm:px-6 pointer-events-none py-2">
-        <div className="max-w-6xl mx-auto relative pointer-events-auto">
-          <div className="pointer-events-none absolute left-3 top-0 bottom-0 w-8 bg-gradient-to-r from-[#04060e] to-transparent z-10 rounded-l-full sm:hidden" />
-          <div className="pointer-events-none absolute right-3 top-0 bottom-0 w-8 bg-gradient-to-l from-[#04060e] to-transparent z-10 rounded-r-full sm:hidden" />
+      {/* Marks where the band starts sticking */}
+      <div ref={sentinelRef} className="h-0" />
+
+      {/* Solid backdrop behind the navbar, only visible once scrolled */}
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none fixed inset-x-0 top-0 z-20 h-[80px] bg-[#05070f] transition-opacity duration-200 ${
+          stuck ? "opacity-100" : "opacity-0"
+        }`}
+      />
+
+      {/* ── Sticky Category Band ── */}
+      <div className="sticky top-[68px] z-30 w-full px-4 sm:px-6 py-2.5 bg-[#05070f]">
+        <div className="max-w-6xl mx-auto relative">
+          <div className="pointer-events-none absolute left-3 top-0 bottom-0 w-8 bg-gradient-to-r from-[#12141c] to-transparent z-10 rounded-l-full sm:hidden" />
+          <div className="pointer-events-none absolute right-3 top-0 bottom-0 w-8 bg-gradient-to-l from-[#12141c] to-transparent z-10 rounded-r-full sm:hidden" />
 
           <div
-            className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-full bg-[#12141c]/80 backdrop-blur-2xl border border-white/[0.08] shadow-[0_12px_36px_rgba(0,0,0,0.7)] no-scrollbar scroll-smooth"
+            className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-full bg-[#12141c] border border-white/[0.08] shadow-[0_10px_30px_rgba(0,0,0,0.6)] no-scrollbar scroll-smooth"
             style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
           >
             {CATEGORIES.map((cat) => {
@@ -164,10 +203,16 @@ const Shop = () => {
             })}
           </div>
         </div>
+
+        {/* Soft fade so cards dissolve under the band instead of hard-cutting */}
+        <div className="pointer-events-none absolute inset-x-0 top-full h-6 bg-gradient-to-b from-[#05070f] to-transparent" />
       </div>
 
       {/* ── Main Content Area ── */}
-      <div className="relative z-10 max-w-screen-xl mx-auto px-3 sm:px-6 pt-4 pb-12">
+      <div
+        ref={gridRef}
+        className="relative z-10 max-w-screen-xl mx-auto px-3 sm:px-6 pt-6 pb-12 scroll-mt-36"
+      >
         <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
           {/* Search Bar */}
           <div className="relative flex-1 min-w-[220px] max-w-md group">
@@ -209,11 +254,17 @@ const Shop = () => {
 
           <div className="flex items-center gap-3 ml-auto">
             <span className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-white/[0.03] border border-white/[0.06] text-xs text-white/40">
-              Showing{" "}
-              <span className="text-white/90 font-semibold">
-                {filtered.length}
-              </span>{" "}
-              items
+              {loading ? (
+                "Loading items…"
+              ) : (
+                <>
+                  Showing{" "}
+                  <span className="text-white/90 font-semibold">
+                    {filtered.length}
+                  </span>{" "}
+                  items
+                </>
+              )}
             </span>
 
             {/* Custom Glass Dropdown */}
@@ -292,7 +343,7 @@ const Shop = () => {
         </div>
 
         {/* ── Active Filter Badges ── */}
-        {(selectCategory !== "All" || search) && (
+        {!loading && (selectCategory !== "All" || search) && (
           <div className="flex items-center gap-2 mb-5 flex-wrap">
             {selectCategory !== "All" && (
               <span className="flex items-center gap-2 text-xs px-3 py-1 rounded-full bg-amber-400/10 border border-amber-400/30 text-amber-300 backdrop-blur-md">
@@ -323,9 +374,38 @@ const Shop = () => {
           </div>
         )}
 
-        {/* ── Products Grid ── */}
-        {currentProducts.length > 0 ? (
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+        {/* ── Products Grid / Loader / Error / Empty ── */}
+        {loading ? (
+          <div role="status" aria-live="polite">
+            <div className="flex items-center justify-center gap-3 mb-8">
+              <div className="h-7 w-7 rounded-full border-2 border-amber-400/20 border-t-amber-400 animate-spin shadow-[0_0_16px_rgba(251,191,36,0.25)]" />
+              <span className="text-xs tracking-[0.2em] uppercase text-white/50 font-medium animate-pulse">
+                Loading products
+              </span>
+            </div>
+            <div className={GRID_CLASSES}>
+              {Array.from({ length: 10 }).map((_, i) => (
+                <SkeletonCard key={i} />
+              ))}
+            </div>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center py-24 gap-4">
+            <span className="text-5xl">⚠️</span>
+            <p className="text-white/60 font-medium">{error}</p>
+            <button
+              onClick={() => setReloadKey((k) => k + 1)}
+              className="px-6 py-2.5 rounded-xl text-slate-900 font-bold text-sm transition-all hover:scale-[1.03]"
+              style={{
+                background: "linear-gradient(135deg,#fbbf24,#f59e0b)",
+                boxShadow: "0 8px 24px rgba(251,191,36,0.3)",
+              }}
+            >
+              Try Again
+            </button>
+          </div>
+        ) : currentProducts.length > 0 ? (
+          <div className={GRID_CLASSES}>
             {currentProducts.map((item) => (
               <ProductCard key={item.id} item={item} />
             ))}
@@ -350,7 +430,7 @@ const Shop = () => {
           </div>
         )}
 
-        {filtered.length > productperpage && (
+        {!loading && !error && filtered.length > productperpage && (
           <Pegination
             productperpage={productperpage}
             totalproducts={filtered.length}
