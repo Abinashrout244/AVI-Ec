@@ -125,32 +125,40 @@ const Shop = () => {
     >
       <HeroBanner title="Our Shop" page="Shop" />
 
-      {/* ── Category Bar ── */}
-      <div className="sticky top-0 z-30 border-y border-white/[0.06] bg-[#04060e]/85 backdrop-blur-2xl shadow-[0_10px_30px_rgba(0,0,0,0.5)]">
-        <div className="max-w-screen-xl mx-auto px-4 sm:px-6 relative">
-          <div className="pointer-events-none absolute left-0 top-0 bottom-0 w-8 bg-gradient-to-r from-[#04060e] to-transparent z-10 sm:hidden" />
-          <div className="pointer-events-none absolute right-0 top-0 bottom-0 w-8 bg-gradient-to-l from-[#04060e] to-transparent z-10 sm:hidden" />
+      {/* ── Sticky Category Pill Bar (Anchored below floating nav) ── */}
+      <div className="sticky top-[68px] z-30 w-full px-4 sm:px-6 pointer-events-none py-2">
+        <div className="max-w-6xl mx-auto relative pointer-events-auto">
+          <div className="pointer-events-none absolute left-3 top-0 bottom-0 w-8 bg-gradient-to-r from-[#04060e] to-transparent z-10 rounded-l-full sm:hidden" />
+          <div className="pointer-events-none absolute right-3 top-0 bottom-0 w-8 bg-gradient-to-l from-[#04060e] to-transparent z-10 rounded-r-full sm:hidden" />
 
-          <div className="flex items-center gap-2 overflow-x-auto py-3.5 no-scrollbar scroll-smooth">
+          <div
+            className="flex items-center gap-2 overflow-x-auto p-1.5 rounded-full bg-[#12141c]/80 backdrop-blur-2xl border border-white/[0.08] shadow-[0_12px_36px_rgba(0,0,0,0.7)] no-scrollbar scroll-smooth"
+            style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+          >
             {CATEGORIES.map((cat) => {
               const active = selectCategory === cat.label;
               return (
                 <button
                   key={cat.label}
                   onClick={() => filterCategory(cat.label)}
-                  className={`group relative flex-shrink-0 flex items-center gap-2 pl-1.5 pr-3.5 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all duration-300 select-none ${
+                  className={`group relative shrink-0 flex items-center gap-2 pl-1.5 pr-4 py-1.5 rounded-full text-xs font-medium tracking-wide transition-all duration-300 select-none outline-none ${
                     active
-                      ? "text-amber-300 bg-amber-400/[0.12] border border-amber-400/40 shadow-[0_0_16px_rgba(251,191,36,0.18)]"
-                      : "text-white/60 hover:text-white bg-white/[0.03] hover:bg-white/[0.07] border border-white/[0.07] hover:border-white/20"
+                      ? "text-amber-300 bg-gradient-to-r from-amber-400/[0.18] to-amber-500/[0.08] border border-amber-400/40 shadow-[0_0_16px_rgba(251,191,36,0.22)]"
+                      : "text-zinc-400 hover:text-white bg-white/[0.02] hover:bg-white/[0.06] border border-white/[0.05] hover:border-white/15"
                   }`}
                 >
-                  <img
-                    src={cat.image}
-                    alt={cat.label}
-                    className="w-5 h-5 rounded-full object-cover border border-white/20 group-hover:scale-105 transition-transform duration-200"
-                    loading="lazy"
-                  />
-                  <span>{cat.label}</span>
+                  <div className="relative w-5 h-5 rounded-full overflow-hidden p-[1px] bg-gradient-to-tr from-white/30 to-white/5 group-hover:scale-105 transition-transform duration-300">
+                    <img
+                      src={cat.image}
+                      alt={cat.label}
+                      className="w-full h-full rounded-full object-cover"
+                      loading="lazy"
+                    />
+                  </div>
+                  <span className="leading-none">{cat.label}</span>
+                  {active && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_8px_#fbbf24]" />
+                  )}
                 </button>
               );
             })}
@@ -158,8 +166,8 @@ const Shop = () => {
         </div>
       </div>
 
-      {/* ── Main Content ── */}
-      <div className="max-w-screen-xl mx-auto px-3 sm:px-6 py-6">
+      {/* ── Main Content Area ── */}
+      <div className="relative z-10 max-w-screen-xl mx-auto px-3 sm:px-6 pt-4 pb-12">
         <div className="flex items-center justify-between gap-3 mb-6 flex-wrap">
           {/* Search Bar */}
           <div className="relative flex-1 min-w-[220px] max-w-md group">
