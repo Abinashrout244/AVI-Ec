@@ -1,5 +1,21 @@
-import React, { Suspense, lazy, useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
-import { useScroll, useSpring, useTransform, useReducedMotion, motion, AnimatePresence } from "framer-motion";
+import React, {
+  Suspense,
+  lazy,
+  useCallback,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
+import {
+  useScroll,
+  useSpring,
+  useTransform,
+  useReducedMotion,
+  motion,
+  AnimatePresence,
+} from "framer-motion";
 import { useNavigate, Link } from "react-router-dom";
 import searchIcon from "../assets/icons/search-2.svg";
 import Select from "../components/Select";
@@ -8,7 +24,14 @@ import { fetchProducts } from "../api.js";
 const BannerScene = lazy(() => import("./BannerScene.jsx"));
 const serif = "font-['Instrument_Serif',Georgia,serif]";
 const sans = "font-['Hanken_Grotesk',system-ui,sans-serif]";
-const TRENDING = ["Electronics", "Fashion", "Beauty", "Shoes", "Bags", "Phones"];
+const TRENDING = [
+  "Electronics",
+  "Fashion",
+  "Beauty",
+  "Shoes",
+  "Bags",
+  "Phones",
+];
 
 const detectLowPower = () => {
   if (typeof window === "undefined") return false;
@@ -69,6 +92,7 @@ const Banner = () => {
   const [open, setOpen] = useState(false);
   const [activeIdx, setActiveIdx] = useState(-1);
   const [sceneEnabled, setSceneEnabled] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState("all");
 
   const [lowPower] = useState(detectLowPower);
   const [webgl, setWebgl] = useState(true);
@@ -80,10 +104,9 @@ const Banner = () => {
 
   useEffect(() => {
     if (typeof window.requestIdleCallback === "function") {
-      const idleId = window.requestIdleCallback(
-        () => setSceneEnabled(true),
-        { timeout: 900 },
-      );
+      const idleId = window.requestIdleCallback(() => setSceneEnabled(true), {
+        timeout: 900,
+      });
       return () => window.cancelIdleCallback?.(idleId);
     }
 
@@ -110,6 +133,14 @@ const Banner = () => {
   }, []);
 
   /* search (derived — no extra state/effect round trip) */
+  const categories = useMemo(() => {
+    return [
+      ...new Set(
+        products.map((p) => String(p?.category ?? "").trim()).filter(Boolean),
+      ),
+    ].sort();
+  }, [products]);
+
   const index = useMemo(
     () =>
       products.map((p) => ({
@@ -119,15 +150,28 @@ const Banner = () => {
       })),
     [products],
   );
+
   const deferred = useDeferredValue(searchText);
+
   const results = useMemo(() => {
     const q = deferred.trim().toLowerCase();
+
     if (!q) return [];
+
     return index
-      .filter((r) => r.name.includes(q) || r.cat.includes(q))
+      .filter((r) => {
+        const matchesSearch = r.name.includes(q) || r.cat.includes(q);
+
+        const matchesCategory =
+          selectedCategory === "all" ||
+          r.cat === selectedCategory.toLowerCase();
+
+        return matchesSearch && matchesCategory;
+      })
       .slice(0, 6)
       .map((r) => r.p);
-  }, [deferred, index]);
+  }, [deferred, index, selectedCategory]);
+
   const showDropdown = open && searchText.trim().length > 0;
 
   /* close dropdown on outside click */
@@ -243,8 +287,31 @@ const Banner = () => {
         className="sticky top-0 flex w-full items-center justify-center overflow-hidden"
         style={{ height: "100svh" }}
       >
-        <Suspense fallback={<div className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-[1400ms] ease-out opacity-0" aria-hidden="true"><div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070509] via-transparent to-[#070509]/60" /></div>}>
-          {sceneEnabled && <BannerScene ready={ready} active={active} webgl={webgl} dpr={dpr} maxDpr={maxDpr} setDpr={setDpr} onGlCreated={onGlCreated} progress={smooth} pointerRef={pointerRef} reduced={reduced} lowPower={lowPower} />}
+        <Suspense
+          fallback={
+            <div
+              className="pointer-events-none absolute inset-0 z-0 transition-opacity duration-[1400ms] ease-out opacity-0"
+              aria-hidden="true"
+            >
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#070509] via-transparent to-[#070509]/60" />
+            </div>
+          }
+        >
+          {sceneEnabled && (
+            <BannerScene
+              ready={ready}
+              active={active}
+              webgl={webgl}
+              dpr={dpr}
+              maxDpr={maxDpr}
+              setDpr={setDpr}
+              onGlCreated={onGlCreated}
+              progress={smooth}
+              pointerRef={pointerRef}
+              reduced={reduced}
+              lowPower={lowPower}
+            />
+          )}
         </Suspense>
 
         {/* ── CURTAIN (gradient, not a 160px blur — far cheaper on mobile GPUs) ── */}
@@ -304,7 +371,15 @@ const Banner = () => {
               className="group flex items-center rounded-full border border-white/15 bg-[#0f0a15]/90 p-1.5 shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-colors duration-300 focus-within:border-[#c4a1f5]/60 focus-within:bg-[#120c19]/95 sm:bg-[#0f0a15]/80 sm:p-2 sm:backdrop-blur-xl"
             >
               <div className="hidden border-r border-white/10 pl-4 pr-3 sm:block">
-                <Select select="all" />
+                <Select
+                  select={selectedCategory}
+                  onChange={(value) => {
+                    setSelectedCategory(value);
+                    setActiveIdx(-1);
+                    setOpen(true);
+                  }}
+                  categories={categories}
+                />
               </div>
               <input
                 type="text"
